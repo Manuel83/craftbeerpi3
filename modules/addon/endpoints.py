@@ -20,9 +20,9 @@ modules = {}
 def merge(source, destination):
     """
     Helper method to merge two dicts
-    :param source: 
-    :param destination: 
-    :return: 
+    :param source:
+    :param destination:
+    :return:
     """
     for key, value in source.items():
         if isinstance(value, dict):
@@ -38,7 +38,7 @@ def merge(source, destination):
 def getPlugins():
     """
     Endpoint for all plugins
-    :return: 
+    :return:
     """
     result = []
     for filename in os.listdir("./modules/plugins"):
@@ -96,9 +96,9 @@ def saveFile(name):
 def deletePlugin(name):
 
     """
-    Delete plugin 
+    Delete plugin
     :param name: plugin name
-    :return: HTTP 204 if ok - HTTP 500 if plugin not exists 
+    :return: HTTP 204 if ok - HTTP 500 if plugin not exists
     """
     if os.path.isdir("./modules/plugins/"+name) is False:
         return ('Dir Not found', 500)
@@ -110,8 +110,8 @@ def deletePlugin(name):
 def reload(name):
     """
     hot reload plugnin
-    :param name: 
-    :return: 
+    :param name:
+    :return:
     """
     try:
         if name in cache["modules"]:
@@ -130,9 +130,9 @@ def reload(name):
 def plugins():
     """
     Read the central plugin yaml to get a list of all official plugins
-    :return: 
+    :return:
     """
-    response = requests.get("https://raw.githubusercontent.com/craftbeerpi/pluginlist/master/plugins.yaml")
+    response = requests.get("https://raw.githubusercontent.com/Manuel83/craftbeerpi-plugins/master/plugins.yaml")
     cbpi.cache["plugins"] = merge(yaml.load(response.text), cbpi.cache["plugins"])
     for key, value in  cbpi.cache["plugins"].iteritems():
         value["installed"] = os.path.isdir("./modules/plugins/%s/" % (key))
@@ -196,7 +196,3 @@ def initPlugins(app):
 def init(cbpi):
     print "INITIALIZE ADDON MODULE"
     cbpi.app.register_blueprint(blueprint, url_prefix='/api/editor')
-
-
-
-
