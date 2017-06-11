@@ -6,8 +6,5 @@ craftbeerpi.db
 *.templog
 
 modules/plugins/*
-!modules/plugins/my_plugin/__init__.py
-!modules/plugins/cbpi**/__init__.py
+!modules/plugins/__init__.py
 *.pyc
-
-
