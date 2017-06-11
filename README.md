@@ -14,7 +14,7 @@ Open a terminal window on Raspberry Pi and type:
 
 This will download (clone) the software to your local Raspberry Pi.
 
-Type <code>cd craftbeerpi</code> to navigate into the craftbeerpi folder.
+Type <code>cd craftbeerpi3</code> to navigate into the craftbeerpi folder.
 
 Type <code>sudo ./install.sh</code>
 
