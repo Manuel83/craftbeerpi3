@@ -1,0 +1,13 @@
+.idea/
+*.log
+craftbeerpi.db
+**/node_modules/*
+*.pyc
+*.templog
+
+modules/plugins/*
+!modules/plugins/my_plugin/__init__.py
+!modules/plugins/cbpi**/__init__.py
+*.pyc
+
+
