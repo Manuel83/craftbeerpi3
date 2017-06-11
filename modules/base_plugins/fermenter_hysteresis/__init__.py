@@ -13,6 +13,7 @@ class Hysteresis(FermenterController):
 
         super(FermenterController, self).stop()
         self.heater_off()
+        self.cooler_off()
 
     def run(self):
         while self.is_running():
