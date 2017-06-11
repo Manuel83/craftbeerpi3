@@ -125,6 +125,16 @@ class FermenterController(ControllerBase, ActorController, SensorController):
         if f.heater is not None:
             self.actor_off(int(f.heater))
 
+    def cooler_on(self):
+        f = self.api.cache.get("fermenter").get(self.fermenter_id)
+        if f.cooler is not None:
+            self.actor_on(id=int(f.cooler))
+
+    def cooler_off(self):
+        f = self.api.cache.get("fermenter").get(self.fermenter_id)
+        if self.cooler is not None:
+            self.actor_off(int(f.cooler))
+
     @cbpi.try_catch(None)
     def get_temp(self, id=None):
 
