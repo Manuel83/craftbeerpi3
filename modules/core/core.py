@@ -6,7 +6,7 @@ import datetime
 from datetime import datetime
 from flask.views import MethodView
 from flask_classy import FlaskView, route
-from flask_sqlalchemy import SQLAlchemy
+
 from time import localtime, strftime
 from functools import wraps, update_wrapper
 from props import *

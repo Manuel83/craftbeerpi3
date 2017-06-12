@@ -26,6 +26,14 @@ class Kettle2View(BaseView):
     def post_post_callback(self, m):
         m.state = False
 
+    def pre_put_callback(self, m):
+        try:
+            m.instance.stop()
+        except:
+            pass
+
+    def post_put_callback(self, m):
+        m.state = False
 
     @route('/<int:id>/targettemp/<temp>', methods=['POST'])
     def postTargetTemp(self, id, temp):
@@ -47,7 +55,7 @@ class Kettle2View(BaseView):
                 cfg.update(dict(api=cbpi, kettle_id=kettle.id, heater=kettle.heater, sensor=kettle.sensor))
                 instance = cbpi.get_controller(kettle.logic).get("class")(**cfg)
                 instance.init()
-                kettle.controller_instance = instance
+                kettle.instance = instance
                 def run(instance):
                     instance.run()
                 t = self.api.socketio.start_background_task(target=run, instance=instance)
@@ -55,7 +63,7 @@ class Kettle2View(BaseView):
             cbpi.emit("UPDATE_KETTLE", cbpi.cache.get("kettle").get(id))
         else:
             # Stop controller
-            kettle.controller_instance.stop()
+            kettle.instance.stop()
             kettle.state = not kettle.state
             cbpi.emit("UPDATE_KETTLE", cbpi.cache.get("kettle").get(id))
         return ('', 204)

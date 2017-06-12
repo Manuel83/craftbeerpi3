@@ -5,10 +5,10 @@ from flask import Flask, render_template, redirect, json, g
 
 
 from flask_socketio import SocketIO, emit
-from flask_sqlalchemy import SQLAlchemy
+
 import logging
 
-from sqlalchemy.ext.declarative import DeclarativeMeta
+
 
 from modules.core.core import CraftBeerPi, ActorBase, SensorBase
 from modules.core.db import DBModel
@@ -16,13 +16,9 @@ from modules.core.db import DBModel
 app = Flask(__name__)
 
 logging.basicConfig(filename='./logs/app.log',level=logging.INFO)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../craftbeerpi.db'
-
-#app.config['SQLALCHEMY_ECHO'] = False
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'craftbeerpi'
 app.config['UPLOAD_FOLDER'] = './upload'
-db = SQLAlchemy(app)
+
 
 @app.teardown_appcontext
 def close_connection(exception):

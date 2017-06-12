@@ -67,6 +67,15 @@ class FermenterView(BaseView):
         m.state = False
         m.steps = []
 
+    def pre_put_callback(self, m):
+        m.state = False
+        try:
+            m.instance.stop()
+        except:
+            pass
+
+    def post_put_callback(self, m):
+        m.state = False
 
     @route('/<int:id>/targettemp/<temp>', methods=['POST'])
     def postTargetTemp(self, id, temp):
@@ -199,7 +208,7 @@ class FermenterView(BaseView):
     def toggle(self, id):
         fermenter = cbpi.cache.get(self.cache_key)[id]
         try:
-
+            print fermenter.state
             if fermenter.state is False:
                 # Start controller
                 if fermenter.logic is not None:
@@ -208,7 +217,7 @@ class FermenterView(BaseView):
                         dict(api=cbpi, fermenter_id=fermenter.id, heater=fermenter.heater, sensor=fermenter.sensor))
                     instance = cbpi.get_fermentation_controller(fermenter.logic).get("class")(**cfg)
                     instance.init()
-                    fermenter.controller_instance = instance
+                    fermenter.instance = instance
 
                     def run(instance):
                         instance.run()
@@ -218,12 +227,12 @@ class FermenterView(BaseView):
                 cbpi.emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key).get(id))
             else:
                 # Stop controller
-                fermenter.controller_instance.stop()
+                fermenter.instance.stop()
                 fermenter.state = not fermenter.state
                 cbpi.emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key).get(id))
 
         except Exception as e:
-
+            print e
             cbpi.notify("Toogle Fementer Controller failed", "Pleae check the %s configuration" % fermenter.name,
                         type="danger", timeout=None)
             return ('', 500)

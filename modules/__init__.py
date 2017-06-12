@@ -3,7 +3,7 @@ import pprint
 import sys, os
 from flask import Flask, render_template, redirect
 from flask_socketio import SocketIO, emit
-from flask_sqlalchemy import SQLAlchemy
+
 import logging
 # Define the WSGI application object
 
