@@ -18,7 +18,7 @@ except Exception as e:
 @cbpi.actor
 class GPIOSimple(ActorBase):
 
-    gpio = Property.Select("GPIO", options=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26])
+    gpio = Property.Select("GPIO", options=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27])
 
     def init(self):
         GPIO.setup(int(self.gpio), GPIO.OUT)
@@ -35,7 +35,7 @@ class GPIOSimple(ActorBase):
 @cbpi.actor
 class GPIOPWM(ActorBase):
 
-    gpio = Property.Select("GPIO", options=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26])
+    gpio = Property.Select("GPIO", options=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27])
     duty_cylce = Property.Number("Duty Cycle", configurable=True)
 
     p = None
@@ -69,7 +69,7 @@ class GPIOPWM(ActorBase):
 @cbpi.actor
 class RelayBoard(ActorBase):
 
-    gpio = Property.Select("GPIO", options=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26])
+    gpio = Property.Select("GPIO", options=[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27])
 
     def init(self):
         GPIO.setup(int(self.gpio), GPIO.OUT)
