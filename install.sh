@@ -56,6 +56,11 @@ show_menu () {
 
            fi
 
+           sudo mv ./config/splash.png /usr/share/plymouth/themes/pix/splash.png
+
+           sed "s@#DIR#@${PWD}@g" config/craftbeerpiboot > /etc/init.d/craftbeerpiboot
+           chmod 755 /etc/init.d/craftbeerpiboot;
+
            whiptail --title "Installition Finished" --msgbox "CraftBeerPi installation finished! You must hit OK to continue." 8 78
            show_menu
            ;;
@@ -84,7 +89,7 @@ show_menu () {
        4)
            confirmAnswer "Are you sure you want to remove CraftBeerPi from autostart"
            if [ $? = 0 ]; then
-               sudo rm -f /etc/init.d/craftbeerpiboot
+               update-rc.d -f craftbeerpiboot remove
                show_menu
            else
                show_menu
