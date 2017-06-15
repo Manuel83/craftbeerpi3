@@ -9,6 +9,8 @@ from flask_classy import FlaskView, route
 
 from time import localtime, strftime
 from functools import wraps, update_wrapper
+
+
 from props import *
 
 from hardware import *
@@ -245,6 +247,12 @@ class CraftBeerPi(ActorAPI, SensorAPI):
             return default
         else:
             return cfg.value
+
+    def add_config_parameter(self, name, value, type, description, options=None):
+        from modules.config import Config
+        with self.app.app_context():
+            Config.insert(**{"name":name, "value": value, "type": type, "description": description, "options": options})
+
 
     def clear_cache(self, key, is_array=False):
         if is_array:

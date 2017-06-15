@@ -76,18 +76,35 @@ class DBModel(object):
     def insert(cls, **kwargs):
         cur = get_db().cursor()
 
-        query = 'INSERT INTO %s (%s) VALUES (%s)' % (
-            cls.__table_name__,
-            ', '.join("'%s'" % str(x) for x in cls.__fields__),
-            ', '.join(['?'] * len(cls.__fields__)))
 
-        data = ()
-        for f in cls.__fields__:
-            if f in cls.__json_fields__:
-                data = data + (json.dumps(kwargs.get(f)),)
-            else:
-                data = data + (kwargs.get(f),)
+        if cls.__priamry_key__ is not None and kwargs.has_key(cls.__priamry_key__):
+            query = "INSERT INTO %s (%s, %s) VALUES (?, %s)" % (
+                cls.__table_name__,
+                cls.__priamry_key__,
+                ', '.join("'%s'" % str(x) for x in cls.__fields__),
+                ', '.join(['?'] * len(cls.__fields__)))
+            data = ()
+            data = data + (kwargs.get(cls.__priamry_key__),)
+            for f in cls.__fields__:
+                if f in cls.__json_fields__:
+                    data = data + (json.dumps(kwargs.get(f)),)
+                else:
+                    data = data + (kwargs.get(f),)
+        else:
 
+            query = 'INSERT INTO %s (%s) VALUES (%s)' % (
+                cls.__table_name__,
+                ', '.join("'%s'" % str(x) for x in cls.__fields__),
+                ', '.join(['?'] * len(cls.__fields__)))
+
+            data = ()
+            for f in cls.__fields__:
+                if f in cls.__json_fields__:
+                    data = data + (json.dumps(kwargs.get(f)),)
+                else:
+                    data = data + (kwargs.get(f),)
+
+        print query, data
         cur.execute(query, data)
         get_db().commit()
         i = cur.lastrowid
