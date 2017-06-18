@@ -17,6 +17,12 @@ class ActorController(object):
 
         self.api.switch_actor_off(int(id))
 
+    @cbpi.try_catch(None)
+    def actor_power(self, power, id=None):
+        if id is None:
+            id = self.heater
+        self.api.actor_power(int(id), power)
+
 
 class SensorController(object):
 

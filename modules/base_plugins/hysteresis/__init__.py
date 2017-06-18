@@ -29,6 +29,9 @@ class Hysteresis(KettleController):
         :return: 
         '''
         while self.is_running():
+
+            self.actor_power(50)
+
             if self.get_temp() < self.get_target_temp() - int(self.on):
                 self.heater_on(100)
             elif self.get_temp() >= self.get_target_temp() - int(self.off):
