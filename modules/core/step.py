@@ -17,6 +17,10 @@ class ActorAPI(NotificationAPI):
     def actor_off(self, id):
         self.api.switch_actor_off(int(id))
 
+    @cbpi.try_catch(None)
+    def actor_power(self, id, power):
+        self.api.actor_power(int(id), power)
+
 class SensorAPI(NotificationAPI):
 
     @cbpi.try_catch(None)
@@ -55,6 +59,7 @@ class Timer(object):
     timer_end = Property.Number("TIMER_END", configurable=False)
 
     def start_timer(self, timer):
+        print "START TIMER NEW"
         if self.timer_end is not None:
             return
         self.timer_end = int(time.time()) + timer
@@ -69,6 +74,12 @@ class Timer(object):
             return True
         else:
             return False
+
+    def timer_remaining(self):
+        if self.timer_end is not None:
+            return self.timer_end - int(time.time())
+        else:
+            return None
 
     def is_timer_finished(self):
         if self.timer_end is None:
@@ -105,11 +116,14 @@ class StepBase(Timer, ActorAPI, SensorAPI, KettleAPI):
 
 
     def __init__(self, *args, **kwds):
+
         for a in kwds:
+
             super(StepBase, self).__setattr__(a, kwds.get(a))
+
+
         self.api = kwds.get("api")
         self.id = kwds.get("id")
-
         self.name = kwds.get("name")
         self.kettle_id = kwds.get("kettleid")
         self.value = None
