@@ -4,7 +4,7 @@ import sys
 from flask import Blueprint, request, send_from_directory
 from importlib import import_module
 from modules import socketio, cbpi
-
+from modules.utils import chown_unroot
 
 from git import Repo
 import os
@@ -138,7 +138,7 @@ def plugins():
         value["installed"] = os.path.isdir("./modules/plugins/%s/" % (key))
 
     return json.dumps(cbpi.cache["plugins"])
-
+ 
 
 @blueprint.route('/<name>/download', methods=['POST'])
 def download_addon(name):
@@ -148,7 +148,10 @@ def download_addon(name):
     if plugin is None:
         return ('', 404)
     try:
-        Repo.clone_from(plugin.get("repo_url"), "./modules/plugins/%s/" % (name))
+        module_path= "./modules/plugins/%s/" % (name)
+        Repo.clone_from(plugin.get("repo_url"), module_path)
+        chown_unroot(module_path)
+
         cbpi.notify("Download successful", "Plugin %s downloaded successfully" % name)
     finally:
         plugin["loading"] = False
@@ -157,9 +160,11 @@ def download_addon(name):
 
 @blueprint.route('/<name>/update', methods=['POST'])
 def update_addon(name):
-    repo = Repo("./modules/plugins/%s/" % (name))
+    module_path= "./modules/plugins/%s/" % (name)
+    repo = Repo(module_path)
     o = repo.remotes.origin
     info = o.pull()
+    chown_unroot(module_path)
     cbpi.notify("Plugin Updated", "Plugin %s updated successfully. Please restart the system" % name)
     return ('', 204)
 
