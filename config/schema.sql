@@ -86,6 +86,9 @@ INSERT INTO config VALUES ('unit', 'C', 'select', 'Temperature Unit', '["C","F"]
 INSERT INTO config VALUES ('brewery_name', 'My Home Brewery', 'text', 'Your brewery name', NULL );
 INSERT INTO config VALUES ('buzzer', 16, 'select', 'Buzzer GPIO', '[16,17,18,19,20]');
 INSERT INTO config VALUES ('setup', 'YES', 'select', 'Show the Setup dialog', '["YES","NO"]');
+INSERT INTO config VALUES ('brew_name', '', 'text', 'Brew Name', NULL);
+INSERT INTO config VALUES ('donation_notification', 'YES', 'select', 'Disable Donation Notification', '["YES","NO"]');
+
 
 CREATE TABLE actor
 (

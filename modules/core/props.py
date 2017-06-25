@@ -9,10 +9,11 @@ class Property(object):
             self.options = options
 
     class Number(PropertyType):
-        def __init__(self, label, configurable=False, default_value=0, unit=""):
+        def __init__(self, label, configurable=False, default_value=None, unit=""):
             PropertyType.__init__(self)
             self.label = label
             self.configurable = configurable
+            self.default_value = default_value
 
     class Text(PropertyType):
         def __init__(self, label, configurable=False, default_value=""):

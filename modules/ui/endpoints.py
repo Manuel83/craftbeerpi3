@@ -9,6 +9,8 @@ def init(cbpi):
     cbpi.app.register_blueprint(react, url_prefix='/ui')
 
 
+
+
 @react.route('/')
 def index():
     return react.send_static_file("index.html")

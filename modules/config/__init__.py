@@ -25,6 +25,7 @@ class ConfigView(BaseView):
 
         if self.api.cache.get(self.cache_key) is not None:
             #self.pre_post_callback(self.api.cache.get(self.cache_key)[name])
+            print self.api.cache.get(self.cache_key)[name]
             self.api.cache.get(self.cache_key)[name].__dict__.update(**update_data)
         m = self.model.update(**self.api.cache.get(self.cache_key)[name].__dict__)
         self.post_put_callback(self.api.cache.get(self.cache_key)[name])
@@ -50,7 +51,6 @@ class ConfigView(BaseView):
             for key, value  in cls.model.get_all().iteritems():
                 cls.post_init_callback(value)
                 cls.api.cache[cls.cache_key][value.name] = value
-
 
 @cbpi.initalizer(order=1)
 def init(cbpi):

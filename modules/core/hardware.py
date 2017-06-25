@@ -10,6 +10,9 @@ class Base(object):
     def get_config_parameter(self, key, default_value):
         return self.api.get_config_parameter(key, default_value)
 
+    def sleep(self, seconds):
+        self.api.socketio.sleep(seconds)
+
     def init(self):
         print "INIT BASE"
 

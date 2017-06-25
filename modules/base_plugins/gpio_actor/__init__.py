@@ -57,6 +57,11 @@ class GPIOPWM(ActorBase):
         self.p.start(int(self.power))
 
     def set_power(self, power):
+        '''
+        Optional: Set the power of your actor
+        :param power: int value between 0 - 100
+        :return: 
+        '''
         if power is not None:
             self.power = int(power)
         self.p.ChangeDutyCycle(self.power)
@@ -87,7 +92,13 @@ class RelayBoard(ActorBase):
 class Dummy(ActorBase):
 
     def on(self, power=100):
+        '''
+        Code to switch on the actor
+        :param power: int value between 0 - 100
+        :return: 
+        '''
         print "ON"
 
     def off(self):
         print "OFF"
+

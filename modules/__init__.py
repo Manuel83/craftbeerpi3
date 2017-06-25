@@ -63,3 +63,6 @@ cbpi.run_background_processes()
 
 
 
+app.logger.info("##########################################")
+app.logger.info("### STARTUP COMPLETE")
+app.logger.info("##########################################")

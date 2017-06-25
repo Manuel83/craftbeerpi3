@@ -1,3 +1,4 @@
+import inspect
 import pprint
 
 import sqlite3
@@ -28,6 +29,7 @@ class ActorAPI(object):
         self.app.logger.info("Init Actors")
         t = self.cache.get("actor_types")
         for key, value in t.iteritems():
+            value.get("class").api = self
             value.get("class").init_global()
 
         for key in self.cache.get("actors"):
@@ -73,12 +75,8 @@ class ActorAPI(object):
 
         if actor.state == 0:
             return
-
-
         actor.instance.off()
         actor.state = 0
-
-
         self.emit("SWITCH_ACTOR", actor)
 
 class SensorAPI(object):
@@ -231,7 +229,6 @@ class CraftBeerPi(ActorAPI, SensorAPI):
         self.emit("NOTIFY", msg)
 
     def beep(self):
-
         if self.buzzer is not None:
             self.buzzer.beep()
 
@@ -286,6 +283,15 @@ class CraftBeerPi(ActorAPI, SensorAPI):
     def actor(self, cls):
         return self.__parseProps("actor_types", cls)
 
+    def actor2(self, description="", power=True, **options):
+
+        def decorator(f):
+            print f()
+            print options
+            print description
+            return f
+        return decorator
+
     def sensor(self, cls):
         return self.__parseProps("sensor_types", cls)
 
@@ -320,9 +326,13 @@ class CraftBeerPi(ActorAPI, SensorAPI):
         for m in members:
             if isinstance(tmpObj.__getattribute__(m), StepProperty.Number):
                 t = tmpObj.__getattribute__(m)
-                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "number", "configurable": t.configurable})
+                print t.__dict__
+                #self.cache[key][name]["properties"].append(t.__dict__)
+                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "number", "configurable": t.configurable, "default_value": t.default_value})
             elif isinstance(tmpObj.__getattribute__(m), StepProperty.Text):
                 t = tmpObj.__getattribute__(m)
+                print t.__dict__
+                #self.cache[key][name]["properties"].append(t.__dict__)
                 self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "text", "configurable": t.configurable})
             elif isinstance(tmpObj.__getattribute__(m), StepProperty.Select):
                 t = tmpObj.__getattribute__(m)
@@ -420,7 +430,7 @@ class CraftBeerPi(ActorAPI, SensorAPI):
         self.app.logger.info("Invoke Init")
         self.cache["init"] = sorted(self.cache["init"], key=lambda k: k['order'])
         for i in self.cache.get("init"):
-            self.app.logger.info("-> %s " % i.get("function").__name__)
+            self.app.logger.info("INITIALIZER - METHOD %s PAHT %s: " % (i.get("function").__name__, str(inspect.getmodule(i.get("function")).__file__) ))
             i.get("function")(self)
 
 
