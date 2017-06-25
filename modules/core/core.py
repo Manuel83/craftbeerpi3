@@ -326,7 +326,6 @@ class CraftBeerPi(ActorAPI, SensorAPI):
         for m in members:
             if isinstance(tmpObj.__getattribute__(m), StepProperty.Number):
                 t = tmpObj.__getattribute__(m)
-                print t.__dict__
                 #self.cache[key][name]["properties"].append(t.__dict__)
                 self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "number", "configurable": t.configurable, "default_value": t.default_value})
             elif isinstance(tmpObj.__getattribute__(m), StepProperty.Text):

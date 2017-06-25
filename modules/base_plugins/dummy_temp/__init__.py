@@ -20,18 +20,14 @@ class DummyTempSensor(SensorActive):
         return "°C" if self.get_config_parameter("unit", "C") == "C" else "°F"
 
     def stop(self):
-        '''
-        Stop the sensor. Is called when the sensor config is updated or the sensor is deleted
-        :return: 
-        '''
-        pass
+        SensorActive.stop(self)
 
     def execute(self):
         '''
         Active sensor has to handle his own loop
         :return: 
         '''
-        while self.is_running():
+        while self.is_running() is True:
             self.data_received(self.temp)
             socketio.sleep(5)
 
