@@ -224,9 +224,7 @@ class CraftBeerPi(ActorAPI, SensorAPI):
     def notify(self, headline, message, type="success", timeout=5000):
         self.beep()
         msg = {"id": str(uuid.uuid1()), "type": type, "headline": headline, "message": message, "timeout": timeout}
-        if timeout is None:
-            self.cache["messages"].append(msg)
-        self.emit("NOTIFY", msg)
+        self.emit_message(msg)
 
     def beep(self):
         if self.buzzer is not None:
