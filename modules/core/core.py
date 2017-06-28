@@ -171,7 +171,7 @@ class SensorAPI(object):
     def get_sensor_value(self, id):
         try:
             id = int(id)
-            return int(self.cache.get("sensors")[id].instance.last_value)
+            return float(self.cache.get("sensors")[id].instance.last_value)
         except Exception as e:
 
             return None
