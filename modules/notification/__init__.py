@@ -32,10 +32,9 @@ def messageEvent(message, **kwargs):
     :param kwargs: other parameter
     :return: None
     """
-
-    msg = {"id": len(cbpi.cache["messages"]), "type": "info", "message": message, "read": False}
-    cbpi.cache["messages"].append(msg)
-    cbpi.emit('MESSAGE', msg,)
+    if message["timeout"] is None:
+        cbpi.cache["messages"].append(message)
+    cbpi.emit("NOTIFY", message)
 
 @cbpi.initalizer(order=2)
 def init(cbpi):
