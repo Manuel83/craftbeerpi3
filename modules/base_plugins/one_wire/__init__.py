@@ -87,10 +87,14 @@ class ONE_WIRE_SENSOR(SensorPassive):
 
     def read(self):
         if self.get_config_parameter("unit", "C") == "C":
-            self.data_received(round(self.t.value + float(self.offset), 2))
+            self.data_received(round(self.t.value + self.offset_value(), 2))
         else:
-            self.data_received(round(9.0 / 5.0 * self.t.value + 32 + float(self.offset), 2))
+            self.data_received(round(9.0 / 5.0 * self.t.value + 32 + self.offset_value(), 2))
 
+    @cbpi.try_catch(0)
+    def offset_value(self):
+        return float(self.offset)
+            
     @classmethod
     def init_global(self):
         try:
