@@ -18,6 +18,12 @@ Type <code>cd craftbeerpi3</code> to navigate into the craftbeerpi folder.
 
 Type <code>sudo ./install.sh</code>
 
+## Hardware Wiring
+
+Here you will find a guide how to wire everything up.
+
+http://web.craftbeerpi.com/hardware/
+
 ## ATTENTION
 
 CraftBeerPi 3.0 is a complete rewrite. Server as well as user interface. I recommend to use a second SD card for testing.
