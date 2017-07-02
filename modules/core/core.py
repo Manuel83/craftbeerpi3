@@ -159,9 +159,8 @@ class SensorAPI(object):
     def log_action(self, text):
         filename = "./logs/action.log"
         formatted_time = strftime("%Y-%m-%d %H:%M:%S", localtime())
-
-
         with open(filename, "a") as file:
+            text = text.encode("utf-8")
             file.write("%s,%s\n" % (formatted_time, text))
 
     def shutdown_sensor(self, id):
@@ -243,6 +242,15 @@ class CraftBeerPi(ActorAPI, SensorAPI):
         else:
             return cfg.value
 
+    def set_config_parameter(self, name, value):
+        from modules.config import Config
+        with self.app.app_context():
+            update_data = {"name": name, "value": value}
+            self.cache.get("config")[name].__dict__.update(**update_data)
+            c = Config.update(**update_data)
+            self.emit("UPDATE_CONFIG", c)
+
+
     def add_config_parameter(self, name, value, type, description, options=None):
         from modules.config import Config
         with self.app.app_context():
@@ -281,10 +289,13 @@ class CraftBeerPi(ActorAPI, SensorAPI):
     def actor(self, cls):
         return self.__parseProps("actor_types", cls)
 
+
+
     def actor2(self, description="", power=True, **options):
 
         def decorator(f):
             print f()
+            print f
             print options
             print description
             return f
@@ -458,7 +469,7 @@ class CraftBeerPi(ActorAPI, SensorAPI):
         def job(interval, method):
             while True:
                 try:
-                    method()
+                    method(self)
                 except Exception as e:
                     self.app.logger.error("Exception" + method.__name__ + ": " + str(e))
                 self.socketio.sleep(interval)

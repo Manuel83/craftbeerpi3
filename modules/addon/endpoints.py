@@ -188,11 +188,11 @@ def loadPlugins():
 
 @cbpi.initalizer(order=1)
 def initPlugins(app):
-    print "INITIALIZE CUSTOM PLUGINS"
+
     loadCorePlugins()
     loadPlugins()
 
 @cbpi.initalizer(order=2)
 def init(cbpi):
-    print "INITIALIZE ADDON MODULE"
+
     cbpi.app.register_blueprint(blueprint, url_prefix='/api/editor')

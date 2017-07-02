@@ -50,7 +50,7 @@ class MashStep(StepBase):
         '''
 
         # Check if Target Temp is reached
-        if self.get_kettle_temp(self.kettle) >= int(self.temp):
+        if self.get_kettle_temp(self.kettle) >= float(self.temp):
             # Check if Timer is Running
             if self.is_timer_finished() is None:
                 self.start_timer(int(self.timer) * 60)

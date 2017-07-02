@@ -24,11 +24,9 @@ class ConfigView(BaseView):
         update_data = {"name": data["name"], "value": data["value"]}
 
         if self.api.cache.get(self.cache_key) is not None:
-            #self.pre_post_callback(self.api.cache.get(self.cache_key)[name])
-            print self.api.cache.get(self.cache_key)[name]
             self.api.cache.get(self.cache_key)[name].__dict__.update(**update_data)
         m = self.model.update(**self.api.cache.get(self.cache_key)[name].__dict__)
-        self.post_put_callback(self.api.cache.get(self.cache_key)[name])
+        self._post_put_callback(self.api.cache.get(self.cache_key)[name])
         return json.dumps(self.api.cache.get(self.cache_key)[name].__dict__)
 
     @route('/<id>', methods=["GET"])
@@ -54,6 +52,6 @@ class ConfigView(BaseView):
 
 @cbpi.initalizer(order=1)
 def init(cbpi):
-    print "INITIALIZE CONFIG MODULE"
+
     ConfigView.register(cbpi.app, route_base='/api/config')
     ConfigView.init_cache()

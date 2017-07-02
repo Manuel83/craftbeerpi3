@@ -15,7 +15,7 @@ class Kettle2View(BaseView):
     cache_key = "kettle"
 
     @classmethod
-    def pre_post_callback(self, data):
+    def _pre_post_callback(self, data):
         data["target_temp"] = 0
 
     @classmethod
@@ -23,16 +23,16 @@ class Kettle2View(BaseView):
         obj.state = False
 
 
-    def post_post_callback(self, m):
+    def _post_post_callback(self, m):
         m.state = False
 
-    def pre_put_callback(self, m):
+    def _pre_put_callback(self, m):
         try:
             m.instance.stop()
         except:
             pass
 
-    def post_put_callback(self, m):
+    def _post_put_callback(self, m):
         m.state = False
 
     @route('/<int:id>/targettemp/<temp>', methods=['POST'])
@@ -76,11 +76,11 @@ def set_target_temp(id, temp):
     :param temp: target temp to set
     :return: None
     '''
-    print "GOT EVENT %s %s" % (id, temp)
+
     Kettle2View().postTargetTemp(id,temp)
 
 @cbpi.backgroundtask(key="read_target_temps", interval=5)
-def read_target_temps():
+def read_target_temps(api):
     """
     background process that reads all passive sensors in interval of 1 second
     :return: None

@@ -113,5 +113,5 @@ def set_temp(t):
 
 @cbpi.initalizer()
 def init(cbpi):
-    cbpi.app.logger.info("INITIALIZE ONE WIRE MODULE")
+
     cbpi.app.register_blueprint(blueprint, url_prefix='/api/one_wire')

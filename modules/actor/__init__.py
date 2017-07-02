@@ -17,10 +17,10 @@ class ActorView(BaseView):
         obj.state = 0
         obj.power = 100
 
-    def post_post_callback(self, m):
+    def _post_post_callback(self, m):
         self.api.init_actor(m.id)
 
-    def post_put_callback(self, m):
+    def _post_put_callback(self, m):
 
         self.api.init_actor(m.id)
 
@@ -62,8 +62,6 @@ class ActorView(BaseView):
 
 @cbpi.initalizer(order=1000)
 def init(cbpi):
-    print "INITIALIZE ACTOR MODULE"
-    cbpi.app.logger.info("INITIALIZE ACTOR MODULE")
     ActorView.register(cbpi.app, route_base='/api/actor')
     ActorView.init_cache()
     cbpi.init_actors()

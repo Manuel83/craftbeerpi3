@@ -63,18 +63,19 @@ class FermenterView(BaseView):
     model = Fermenter
     cache_key = "fermenter"
 
-    def post_post_callback(self, m):
+
+    def _post_post_callback(self, m):
         m.state = False
         m.steps = []
 
-    def pre_put_callback(self, m):
+    def _pre_put_callback(self, m):
         m.state = False
         try:
             m.instance.stop()
         except:
             pass
 
-    def post_put_callback(self, m):
+    def _post_put_callback(self, m):
         m.state = False
 
     @route('/<int:id>/targettemp/<temp>', methods=['POST'])
@@ -282,7 +283,7 @@ class FermenterView(BaseView):
 
 
 @cbpi.backgroundtask(key="read_target_temps_fermenter", interval=5)
-def read_target_temps():
+def read_target_temps(api):
     """
     background process that reads all passive sensors in interval of 1 second
     :return: None
@@ -295,7 +296,7 @@ def read_target_temps():
 instance = FermenterView()
 
 @cbpi.backgroundtask(key="fermentation_task", interval=1)
-def execute_fermentation_step():
+def execute_fermentation_step(api):
     with cbpi.app.app_context():
         instance.check_step()
 
@@ -310,6 +311,6 @@ def init_active_steps():
 
 @cbpi.initalizer(order=1)
 def init(cbpi):
-    print "INITIALIZE CONFIG MODULE"
+
     FermenterView.register(cbpi.app, route_base='/api/fermenter')
     FermenterView.init_cache()

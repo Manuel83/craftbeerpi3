@@ -5,7 +5,7 @@ class Base(object):
 
     @classmethod
     def init_global(cls):
-        print "GLOBAL ACTOR INIT"
+        pass
 
     def get_config_parameter(self, key, default_value):
         return self.api.get_config_parameter(key, default_value)
@@ -14,10 +14,10 @@ class Base(object):
         self.api.socketio.sleep(seconds)
 
     def init(self):
-        print "INIT BASE"
+        pass
 
     def stop(self):
-        print "STOP HARDWARE"
+        pass
 
     def update(self, **kwds):
         pass
@@ -99,10 +99,10 @@ class ActorBase(Base):
         return 1
 
     def set_power(self, power):
-        print "SET POWER TO %s" % power
+        pass
 
     def on(self, power=0):
-        print "ON"
+        pass
 
     def off(self):
-        print "OFF"
+        pass
