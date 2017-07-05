@@ -88,10 +88,18 @@ class BeerXMLImport(FlaskView):
         return float(e.find('./RECIPE[%s]/BOIL_TIME' % (str(id))).text)
 
     def getSteps(self, id):
+
+
+
         e = xml.etree.ElementTree.parse(self.BEER_XML_FILE).getroot()
         steps = []
         for e in e.findall('./RECIPE[%s]/MASH/MASH_STEPS/MASH_STEP' % (str(id))):
-            steps.append({"name": e.find("NAME").text, "temp": float(e.find("STEP_TEMP").text), "timer": float(e.find("STEP_TIME").text)})
+
+            if self.api.get_config_parameter("unit", "C") == "C":
+                temp = float(e.find("STEP_TEMP").text)
+            else:
+                temp = round(9.0 / 5.0 * float(e.find("STEP_TEMP").text) + 32, 2)
+            steps.append({"name": e.find("NAME").text, "temp": temp, "timer": float(e.find("STEP_TIME").text)})
 
         return steps
 
