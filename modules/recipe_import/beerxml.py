@@ -66,11 +66,12 @@ class BeerXMLImport(FlaskView):
 
             for row in steps:
                 Step.insert(**{"name": row.get("name"), "type": mashstep_type, "config": {"kettle": mash_kettle, "temp": float(row.get("temp")), "timer": row.get("timer")}})
-            Step.insert(**{"name": "ChilStep", "type": "ChilStep", "config": {"timer": 15}})
             ## Add cooking step
             Step.insert(**{"name": "Boil", "type": boilstep_type, "config": {"kettle": boil_kettle, "temp": boil_temp, "timer": boil_time}})
             ## Add Whirlpool step
             Step.insert(**{"name": "Whirlpool", "type": "ChilStep", "config": {"timer": 15}})
+            ##reorder chilstep after boil and whirlpool steps
+            Step.insert(**{"name": "ChilStep", "type": "ChilStep", "config": {"timer": 15}})
             self.api.emit("UPDATE_ALL_STEPS", Step.get_all())
             self.api.notify(headline="Recipe %s loaded successfully" % name, message="")
         except Exception as e:
