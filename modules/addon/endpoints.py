@@ -14,6 +14,7 @@ import shutil
 
 blueprint = Blueprint('addon', __name__)
 
+user_yaml = None
 
 modules = {}
 
@@ -137,6 +138,15 @@ def plugins():
     for key, value in  cbpi.cache["plugins"].iteritems():
         value["installed"] = os.path.isdir("./modules/plugins/%s/" % (key))
 
+    user_yaml=cbpi.get_config_parameter("user_yaml", None)
+    if user_yaml is None:
+        pass
+    else:
+        response = requests.get(user_yaml)
+        cbpi.cache["plugins"] = merge(yaml.load(response.text), cbpi.cache["plugins"])
+        for key, value in  cbpi.cache["plugins"].iteritems():
+            value["installed"] = os.path.isdir("./modules/plugins/%s/" % (key))
+
     return json.dumps(cbpi.cache["plugins"])
 
 
@@ -194,5 +204,13 @@ def initPlugins(app):
 
 @cbpi.initalizer(order=2)
 def init(cbpi):
+
+    global user_yaml
+    user_yaml = cbpi.get_config_parameter("user_yaml", None)
+    if user_yaml is None:
+	try:
+	    cbpi.add_config_parameter("user_yaml", "", "text", "User yaml http address")
+        except:
+            pass
 
     cbpi.app.register_blueprint(blueprint, url_prefix='/api/editor')
