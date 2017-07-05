@@ -344,7 +344,7 @@ class CraftBeerPi(ActorAPI, SensorAPI):
                 self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "text", "configurable": t.configurable})
             elif isinstance(tmpObj.__getattribute__(m), StepProperty.Select):
                 t = tmpObj.__getattribute__(m)
-                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "select", "options": t.options})
+                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "select", "configurable": True, "options": t.options})
             elif isinstance(tmpObj.__getattribute__(m), StepProperty.Actor):
                 t = tmpObj.__getattribute__(m)
                 self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "actor",  "configurable": t.configurable})
