@@ -50,7 +50,7 @@ class ConfigView(BaseView):
                 cls.post_init_callback(value)
                 cls.api.cache[cls.cache_key][value.name] = value
 
-@cbpi.initalizer(order=1)
+@cbpi.initalizer(order=0)
 def init(cbpi):
 
     ConfigView.register(cbpi.app, route_base='/api/config')

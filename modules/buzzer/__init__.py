@@ -41,7 +41,7 @@ class Buzzer(object):
 
         start_new_thread(play, (self.sound,))
 
-@cbpi.initalizer(order=0)
+@cbpi.initalizer(order=1)
 def init(cbpi):
     gpio = cbpi.get_config_parameter("buzzer", 16)
     cbpi.buzzer = Buzzer(gpio)
