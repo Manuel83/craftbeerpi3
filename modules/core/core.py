@@ -267,7 +267,7 @@ class CraftBeerPi(ActorAPI, SensorAPI):
     # helper method for parsing props
     def __parseProps(self, key, cls):
         name = cls.__name__
-        self.cache[key][name] = {"name": name, "class": cls, "properties": []}
+        self.cache[key][name] = {"name": name, "class": cls, "properties": [], "actions": []}
         tmpObj = cls()
         members = [attr for attr in dir(tmpObj) if not callable(getattr(tmpObj, attr)) and not attr.startswith("__")]
         for m in members:
@@ -283,6 +283,13 @@ class CraftBeerPi(ActorAPI, SensorAPI):
                 t = tmpObj.__getattribute__(m)
                 self.cache[key][name]["properties"].append(
                     {"name": m, "label": t.label, "type": "select",  "configurable": True, "options": t.options})
+
+        for name, method in cls.__dict__.iteritems():
+            if hasattr(method, "action"):
+                label = method.__getattribute__("label")
+                self.cache[key][cls.__name__]["actions"].append({"method": name, "label": label})
+
+
         return cls
 
 
@@ -315,6 +322,8 @@ class CraftBeerPi(ActorAPI, SensorAPI):
 
     def get_fermentation_controller(self, name):
         return self.cache["fermentation_controller_types"].get(name)
+
+
     # Step action
     def action(self,label):
         def real_decorator(func):

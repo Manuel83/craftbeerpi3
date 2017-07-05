@@ -12,6 +12,11 @@ class SensorView(BaseView):
     model = Sensor
     cache_key = "sensors"
 
+    @route('<int:id>/action/<method>', methods=["POST"])
+    def action(self, id, method):
+
+        cbpi.cache.get("sensors").get(id).instance.__getattribute__(method)()
+        return ('', 204)
 
     def _post_post_callback(self, m):
         cbpi.init_sensor(m.id)
