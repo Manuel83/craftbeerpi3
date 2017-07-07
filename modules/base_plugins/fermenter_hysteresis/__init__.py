@@ -8,8 +8,8 @@ class Hysteresis(FermenterController):
 
     heater_offset_min = Property.Number("Heater Offset ON", True, 0)
     heater_offset_max = Property.Number("Heater Offset OFF", True, 0)
-    cooler_offset_min = Property.Number("Cooler Offset OFF", True, 0)
-    cooler_offset_max = Property.Number("Cooler Offset ON", True, 0)
+    cooler_offset_min = Property.Number("Cooler Offset ON", True, 0)
+    cooler_offset_max = Property.Number("Cooler Offset OFF", True, 0)
 
     def stop(self):
         super(FermenterController, self).stop()
