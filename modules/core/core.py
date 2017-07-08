@@ -283,6 +283,15 @@ class CraftBeerPi(ActorAPI, SensorAPI):
                 t = tmpObj.__getattribute__(m)
                 self.cache[key][name]["properties"].append(
                     {"name": m, "label": t.label, "type": "select",  "configurable": True, "options": t.options})
+            elif isinstance(tmpObj.__getattribute__(m), Property.Actor):
+                t = tmpObj.__getattribute__(m)
+                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "actor",  "configurable": t.configurable})
+            elif isinstance(tmpObj.__getattribute__(m), Property.Sensor):
+                t = tmpObj.__getattribute__(m)
+                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "sensor", "configurable": t.configurable})
+            elif isinstance(tmpObj.__getattribute__(m), Property.Kettle):
+                t = tmpObj.__getattribute__(m)
+                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "kettle", "configurable": t.configurable})
 
         for name, method in cls.__dict__.iteritems():
             if hasattr(method, "action"):
