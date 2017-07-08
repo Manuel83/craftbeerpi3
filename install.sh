@@ -136,7 +136,7 @@ show_menu () {
            fi
            ;;
         10)
-            confirmAnswer "Are you sure you want to reboo the Raspberry Pi?"
+            confirmAnswer "Are you sure you want to reboot the Raspberry Pi?"
             if [ $? = 0 ]; then
               sudo reboot
             else
