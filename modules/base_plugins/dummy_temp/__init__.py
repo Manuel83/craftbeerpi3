@@ -11,7 +11,12 @@ from modules.core.props import Property
 @cbpi.sensor
 class DummyTempSensor(SensorActive):
 
-    temp = Property.Number("Temperature", configurable=True, default_value=5)
+    temp = Property.Number("Temperature", configurable=True, default_value=5, description="Dummy Temperature as decimal value")
+
+    @cbpi.action("My Custom Action")
+    def my_action(self):
+        print "HELLO WORLD"
+        pass
 
     def get_unit(self):
         '''
@@ -29,7 +34,7 @@ class DummyTempSensor(SensorActive):
         '''
         while self.is_running() is True:
             self.data_received(self.temp)
-            socketio.sleep(5)
+            self.sleep(5)
 
     @classmethod
     def init_global(cls):

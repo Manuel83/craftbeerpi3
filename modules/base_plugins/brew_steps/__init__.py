@@ -14,9 +14,9 @@ class MashStep(StepBase):
     Just put the decorator @cbpi.step on top of a method
     '''
     # Properties
-    temp = Property.Number("Temperature", configurable=True)
-    kettle = StepProperty.Kettle("Kettle")
-    timer = Property.Number("Timer in Minutes", configurable=True)
+    temp = Property.Number("Temperature", configurable=True, description="Target Temperature of Mash Step")
+    kettle = StepProperty.Kettle("Kettle", description="Kettle in which the mashing takes place")
+    timer = Property.Number("Timer in Minutes", configurable=True, description="Timer is started when the target temperature is reached")
 
     def init(self):
         '''
@@ -66,8 +66,8 @@ class MashInStep(StepBase):
     Just put the decorator @cbpi.step on top of a method
     '''
     # Properties
-    temp = Property.Number("Temperature", configurable=True)
-    kettle = StepProperty.Kettle("Kettle")
+    temp = Property.Number("Temperature", configurable=True,  description="Target Temperature of Mash Step")
+    kettle = StepProperty.Kettle("Kettle", description="Kettle in which the mashing takes place")
     s = False
 
     @cbpi.action("Change Power")
@@ -101,7 +101,7 @@ class MashInStep(StepBase):
 @cbpi.step
 class ChilStep(StepBase):
 
-    timer = Property.Number("Timer in Minutes", configurable=True, default_value=0)
+    timer = Property.Number("Timer in Minutes", configurable=True, default_value=0, description="Timer is started immediately")
 
     @cbpi.action("Stat Timer")
     def start(self):
@@ -125,8 +125,8 @@ class ChilStep(StepBase):
 @cbpi.step
 class PumpStep(StepBase):
 
-    pump = StepProperty.Actor("Pump")
-    timer = Property.Number("Timer in Minutes", configurable=True, default_value=0)
+    pump = StepProperty.Actor("Pump", description="Pump actor gets toogled")
+    timer = Property.Number("Timer in Minutes", configurable=True, default_value=0, description="Timer is started immediately")
 
     @cbpi.action("Stat Timer")
     def start(self):
@@ -156,16 +156,15 @@ class BoilStep(StepBase):
     Just put the decorator @cbpi.step on top of a method
     '''
     # Properties
-    temp = Property.Number("Temperature", configurable=True, default_value=100)
-    kettle = StepProperty.Kettle("Kettle")
-    timer = Property.Number("Timer in Minutes", configurable=True, default_value=90)
-    hop_1 = Property.Number("Hop 1 Addition", configurable=True)
+    temp = Property.Number("Temperature", configurable=True, default_value=100, description="Target temperature for boiling")
+    kettle = StepProperty.Kettle("Kettle", description="Kettle in which the boiling step takes place")
+    timer = Property.Number("Timer in Minutes", configurable=True, default_value=90, description="Timer is started when target temperature is reached")
+    hop_1 = Property.Number("Hop 1 Addition", configurable=True, description="Fist Hop alert")
     hop_1_added = Property.Number("",default_value=None)
-
-    hop_2 = Property.Number("Hop 2 Addition", configurable=True)
+    hop_2 = Property.Number("Hop 2 Addition", configurable=True, description="Second Hop alert")
     hop_2_added = Property.Number("", default_value=None)
     hop_3 = Property.Number("Hop 3 Addition", configurable=True)
-    hop_3_added = Property.Number("", default_value=None)
+    hop_3_added = Property.Number("", default_value=None, description="Second Hop alert")
 
     def init(self):
         '''

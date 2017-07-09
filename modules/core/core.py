@@ -274,24 +274,24 @@ class CraftBeerPi(ActorAPI, SensorAPI):
             if isinstance(tmpObj.__getattribute__(m), Property.Number):
                 t = tmpObj.__getattribute__(m)
                 self.cache[key][name]["properties"].append(
-                    {"name": m, "label": t.label, "type": "number", "configurable": t.configurable})
+                    {"name": m, "label": t.label, "type": "number", "configurable": t.configurable, "description": t.description})
             elif isinstance(tmpObj.__getattribute__(m), Property.Text):
                 t = tmpObj.__getattribute__(m)
                 self.cache[key][name]["properties"].append(
-                    {"name": m, "label": t.label, "type": "text", "configurable": t.configurable})
+                    {"name": m, "label": t.label, "type": "text", "configurable": t.configurable, "description": t.description})
             elif isinstance(tmpObj.__getattribute__(m), Property.Select):
                 t = tmpObj.__getattribute__(m)
                 self.cache[key][name]["properties"].append(
-                    {"name": m, "label": t.label, "type": "select",  "configurable": True, "options": t.options})
+                    {"name": m, "label": t.label, "type": "select",  "configurable": True, "options": t.options, "description": t.description})
             elif isinstance(tmpObj.__getattribute__(m), Property.Actor):
                 t = tmpObj.__getattribute__(m)
-                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "actor",  "configurable": t.configurable})
+                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "actor",  "configurable": t.configurable, "description": t.description})
             elif isinstance(tmpObj.__getattribute__(m), Property.Sensor):
                 t = tmpObj.__getattribute__(m)
-                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "sensor", "configurable": t.configurable})
+                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "sensor", "configurable": t.configurable, "description": t.description})
             elif isinstance(tmpObj.__getattribute__(m), Property.Kettle):
                 t = tmpObj.__getattribute__(m)
-                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "kettle", "configurable": t.configurable})
+                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "kettle", "configurable": t.configurable, "description": t.description})
 
         for name, method in cls.__dict__.iteritems():
             if hasattr(method, "action"):
@@ -353,25 +353,22 @@ class CraftBeerPi(ActorAPI, SensorAPI):
         for m in members:
             if isinstance(tmpObj.__getattribute__(m), StepProperty.Number):
                 t = tmpObj.__getattribute__(m)
-                #self.cache[key][name]["properties"].append(t.__dict__)
-                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "number", "configurable": t.configurable, "default_value": t.default_value})
+                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "number", "configurable": t.configurable, "default_value": t.default_value, "description": t.description})
             elif isinstance(tmpObj.__getattribute__(m), StepProperty.Text):
                 t = tmpObj.__getattribute__(m)
-                print t.__dict__
-                #self.cache[key][name]["properties"].append(t.__dict__)
-                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "text", "configurable": t.configurable})
+                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "text", "configurable": t.configurable, "description": t.description})
             elif isinstance(tmpObj.__getattribute__(m), StepProperty.Select):
                 t = tmpObj.__getattribute__(m)
-                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "select", "configurable": True, "options": t.options})
+                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "select", "configurable": True, "options": t.options, "description": t.description})
             elif isinstance(tmpObj.__getattribute__(m), StepProperty.Actor):
                 t = tmpObj.__getattribute__(m)
-                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "actor",  "configurable": t.configurable})
+                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "actor",  "configurable": t.configurable, "description": t.description})
             elif isinstance(tmpObj.__getattribute__(m), StepProperty.Sensor):
                 t = tmpObj.__getattribute__(m)
-                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "sensor", "configurable": t.configurable})
+                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "sensor", "configurable": t.configurable, "description": t.description})
             elif isinstance(tmpObj.__getattribute__(m), StepProperty.Kettle):
                 t = tmpObj.__getattribute__(m)
-                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "kettle", "configurable": t.configurable})
+                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "kettle", "configurable": t.configurable, "description": t.description})
 
         for name, method in cls.__dict__.iteritems():
             if hasattr(method, "action"):

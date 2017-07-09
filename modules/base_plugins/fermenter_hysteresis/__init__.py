@@ -6,10 +6,10 @@ from modules.core.props import Property
 @cbpi.fermentation_controller
 class Hysteresis(FermenterController):
 
-    heater_offset_min = Property.Number("Heater Offset ON", True, 0)
-    heater_offset_max = Property.Number("Heater Offset OFF", True, 0)
-    cooler_offset_min = Property.Number("Cooler Offset ON", True, 0)
-    cooler_offset_max = Property.Number("Cooler Offset OFF", True, 0)
+    heater_offset_min = Property.Number("Heater Offset ON", True, 0, description="Offset as decimal number when the heater is switched on. Should be geather then 'Heater Offset OFF'. For example 2 means the heater will be switched on if the current temperature is 2 degrees above the target temperature")
+    heater_offset_max = Property.Number("Heater Offset OFF", True, 0, description="Offset as decimal number when the heater is switched off. Should be smaller then 'Heater Offset ON'. For example 1 means the heater will be switched off if the current temperature is 1 degrees above the target temperature")
+    cooler_offset_min = Property.Number("Cooler Offset ON", True, 0, description="Offset as decimal number when the cooler is switched on. Should be geather then 'Cooler Offset OFF'. For example 2 means the cooler will be switched on if the current temperature is 2 degrees below the target temperature")
+    cooler_offset_max = Property.Number("Cooler Offset OFF", True, 0, description="Offset as decimal number when the cooler is switched off. Should be less then 'Cooler Offset ON'. For example 1 means the cooler will be switched off if the current temperature is 1 degrees below the target temperature")
 
     def stop(self):
         super(FermenterController, self).stop()
