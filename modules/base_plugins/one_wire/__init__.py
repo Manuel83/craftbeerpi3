@@ -66,8 +66,8 @@ class myThread (threading.Thread):
 @cbpi.sensor
 class ONE_WIRE_SENSOR(SensorPassive):
 
-
-    offset = Property.Number("Offset", True, 0,description="Offset which is added to the received sensor data. positie and negatie values are possible" )
+    sensor_name = Property.Select("Sensor", getSensors(), description="The OneWire sensor address.")
+    offset = Property.Number("Offset", True, 0, description="Offset which is added to the received sensor data. Positive and negative values are both allowed.")
 
     def init(self):
 
