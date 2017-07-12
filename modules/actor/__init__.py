@@ -60,6 +60,13 @@ class ActorView(BaseView):
         t = self.api.socketio.start_background_task(target=self.toggleTimeJob, id=id, t=t)
         return ('', 204)
 
+    @route('<int:id>/action/<method>', methods=["POST"])
+    def action(self, id, method):
+
+        cbpi.cache.get("actors").get(id).instance.__getattribute__(method)()
+        return ('', 204)
+
+
 @cbpi.initalizer(order=1000)
 def init(cbpi):
     ActorView.register(cbpi.app, route_base='/api/actor')

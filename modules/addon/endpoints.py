@@ -166,7 +166,9 @@ def update_addon(name):
 
 def loadCorePlugins():
     for filename in os.listdir("./modules/base_plugins"):
-        if filename.endswith(".py") or filename.endswith(".pyc"):
+
+
+        if os.path.isdir("./modules/base_plugins/"+filename) is False:
             continue
         try:
             modules[filename] = import_module("modules.base_plugins.%s" % (filename))
@@ -178,7 +180,7 @@ def loadCorePlugins():
 
 def loadPlugins():
     for filename in os.listdir("./modules/plugins"):
-        if filename.endswith(".py") or filename.endswith(".pyc"):
+        if os.path.isdir("./modules/plugins/" + filename) is False:
             continue
         try:
             modules[filename] = import_module("modules.plugins.%s" % (filename))
