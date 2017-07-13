@@ -1,4 +1,5 @@
-from flask import json
+import yaml
+from flask import json, url_for, Response
 from flask_classy import FlaskView, route
 from git import Repo, Git
 
@@ -101,7 +102,44 @@ class SystemView(FlaskView):
     def dump(self):
         return json.dumps(cbpi.cache)
 
+    @route('/endpoints', methods=['GET'])
+    def endpoints(self):
+        import urllib
+        output = []
+        vf = self.api.app.view_functions
+
+        for f in self.api.app.view_functions:
+            print  f
+        endpoints = {}
+        re =  {
+            "swagger": "2.0",
+            "host": "",
+            "info": {
+                "description":"",
+                "version": "",
+                "title": "CraftBeerPi"
+            },
+            "schemes": ["http"],
+            "paths": endpoints}
+        for rule in self.api.app.url_map.iter_rules():
+            r = rule
+            endpoints[rule.rule] = {}
+            if "HEAD" in r.methods: r.methods.remove("HEAD")
+            if "OPTIONS" in r.methods: r.methods.remove("OPTIONS")
+            for m in rule.methods:
+                endpoints[rule.rule][m] = dict(summary="", description="", consumes=["application/json"],produces=["application/json"])
+
+        with open("config/version.yaml", 'r') as stream:
+
+            y = yaml.load(stream)
+        pprint.pprint(y)
+        pprint.pprint(re)
+        return Response(yaml.dump(re), mimetype='text/yaml')
+
+
+
 @cbpi.initalizer()
 def init(cbpi):
-    print "INITIALIZE SYSTEM MODULE"
+
+    SystemView.api = cbpi
     SystemView.register(cbpi.app, route_base='/api/system')

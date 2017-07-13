@@ -105,5 +105,4 @@ def init(app):
     :param app: the flask app
     :return: None
     """
-    print "INITIALIZE LOG MODULE"
     LogView.register(cbpi.app, route_base='/api/logs')

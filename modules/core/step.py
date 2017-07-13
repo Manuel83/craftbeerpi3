@@ -44,7 +44,7 @@ class KettleAPI(NotificationAPI):
         return self.api.cache.get("kettle").get(id).target_temp
 
     def set_target_temp(self, temp, id=None):
-        temp = int(temp)
+        temp = float(temp)
 
         try:
             if id is None:
@@ -59,7 +59,7 @@ class Timer(object):
     timer_end = Property.Number("TIMER_END", configurable=False)
 
     def start_timer(self, timer):
-        print "START TIMER NEW"
+
         if self.timer_end is not None:
             return
         self.timer_end = int(time.time()) + timer
@@ -100,13 +100,13 @@ class StepBase(Timer, ActorAPI, SensorAPI, KettleAPI):
         self.n = True
 
     def init(self):
-        print "INIT STEP"
+        pass
 
     def finish(self):
-        print "FINSIH STEP"
+        pass
 
     def reset(self):
-        print "REST STEP"
+        pass
 
     def execute(self):
         print "-------------"

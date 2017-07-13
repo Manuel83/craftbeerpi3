@@ -66,7 +66,8 @@ class myThread (threading.Thread):
 @cbpi.sensor
 class ONE_WIRE_SENSOR(SensorPassive):
 
-    sensor_name = Property.Select("Sensor", getSensors())
+    sensor_name = Property.Select("Sensor", getSensors(), description="The OneWire sensor address.")
+    offset = Property.Number("Offset", True, 0, description="Offset which is added to the received sensor data. Positive and negative values are both allowed.")
 
     def init(self):
 
@@ -86,10 +87,14 @@ class ONE_WIRE_SENSOR(SensorPassive):
 
     def read(self):
         if self.get_config_parameter("unit", "C") == "C":
-            self.data_received(round(self.t.value, 2))
+            self.data_received(round(self.t.value + self.offset_value(), 2))
         else:
-            self.data_received(round(9.0 / 5.0 * self.t.value + 32, 2))
+            self.data_received(round(9.0 / 5.0 * self.t.value + 32 + self.offset_value(), 2))
 
+    @cbpi.try_catch(0)
+    def offset_value(self):
+        return float(self.offset)
+            
     @classmethod
     def init_global(self):
         try:
@@ -108,5 +113,5 @@ def set_temp(t):
 
 @cbpi.initalizer()
 def init(cbpi):
-    cbpi.app.logger.info("INITIALIZE ONE WIRE MODULE")
+
     cbpi.app.register_blueprint(blueprint, url_prefix='/api/one_wire')

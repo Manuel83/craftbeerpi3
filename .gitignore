@@ -8,3 +8,7 @@ craftbeerpi.db
 modules/plugins/*
 !modules/plugins/__init__.py
 *.pyc
+*.js
+modules/ui/package.json
+
+modules/ui/.babelrc

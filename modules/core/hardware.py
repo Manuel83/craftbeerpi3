@@ -5,16 +5,19 @@ class Base(object):
 
     @classmethod
     def init_global(cls):
-        print "GLOBAL ACTOR INIT"
+        pass
 
     def get_config_parameter(self, key, default_value):
         return self.api.get_config_parameter(key, default_value)
 
+    def sleep(self, seconds):
+        self.api.socketio.sleep(seconds)
+
     def init(self):
-        print "INIT BASE"
+        pass
 
     def stop(self):
-        print "STOP HARDWARE"
+        pass
 
     def update(self, **kwds):
         pass
@@ -67,14 +70,15 @@ class SensorActive(SensorBase):
     __running = False
 
     def is_running(self):
+
         return self.__running
 
     def init(self):
         self.__running = True
-        print "INIT ACTIVE SENSOR"
 
     def stop(self):
         self.__running = False
+
 
     def execute(self):
         pass
@@ -95,10 +99,10 @@ class ActorBase(Base):
         return 1
 
     def set_power(self, power):
-        print "SET POWER TO %s" % power
+        pass
 
     def on(self, power=0):
-        print "ON"
+        pass
 
     def off(self):
-        print "OFF"
+        pass

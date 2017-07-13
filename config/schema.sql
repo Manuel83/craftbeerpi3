@@ -1,4 +1,4 @@
-CREATE TABLE kettle
+CREATE TABLE IF NOT EXISTS kettle
 (
     id INTEGER PRIMARY KEY NOT NULL,
     name VARCHAR(80),
@@ -13,7 +13,7 @@ CREATE TABLE kettle
     diameter INTEGER
 );
 
-CREATE TABLE step
+CREATE TABLE IF NOT EXISTS step
 (
     id INTEGER PRIMARY KEY NOT NULL,
     "order" INTEGER,
@@ -27,7 +27,7 @@ CREATE TABLE step
     kettleid INTEGER
 );
 
-CREATE TABLE sensor
+CREATE TABLE IF NOT EXISTS sensor
 (
     id INTEGER PRIMARY KEY NOT NULL,
     type VARCHAR(100),
@@ -36,7 +36,7 @@ CREATE TABLE sensor
     hide BOOLEAN
 );
 
-CREATE TABLE fermenter_step
+CREATE TABLE IF NOT EXISTS fermenter_step
 (
     id INTEGER PRIMARY KEY NOT NULL,
     name VARCHAR(80),
@@ -54,7 +54,7 @@ CREATE TABLE fermenter_step
     FOREIGN KEY (fermenter_id) REFERENCES fermenter (id)
 );
 
-CREATE TABLE fermenter
+CREATE TABLE IF NOT EXISTS fermenter
 (
     id INTEGER PRIMARY KEY NOT NULL,
     name VARCHAR(80),
@@ -69,7 +69,7 @@ CREATE TABLE fermenter
     target_temp INTEGER
 );
 
-CREATE TABLE config
+CREATE TABLE IF NOT EXISTS config
 (
     name VARCHAR(50) PRIMARY KEY NOT NULL,
     value VARCHAR(255),
@@ -79,15 +79,18 @@ CREATE TABLE config
 );
 
 
-INSERT INTO config VALUES ('kettle_cols', 4, 'select', 'Adjust the width of a kettle widget on the brewing dashboard', '[1,2,3, 4, 5, 6, 7, 8, 9, 10, 11, 12]');
-INSERT INTO config VALUES ('actor_cols', 4, 'select', 'Adjust the width of a actor widget on the brewing dashboard', '[1,2,3, 4, 5, 6, 7, 8, 9, 10, 11, 12]');
-INSERT INTO config VALUES ('sensor_cols', 4, 'select', 'Adjust the width of a sensor widget on the brewing dashboard', '[1,2,3, 4, 5, 6, 7, 8, 9, 10, 11, 12]');
-INSERT INTO config VALUES ('unit', 'C', 'select', 'Temperature Unit', '["C","F"]');
-INSERT INTO config VALUES ('brewery_name', 'My Home Brewery', 'text', 'Your brewery name', NULL );
-INSERT INTO config VALUES ('buzzer', 16, 'select', 'Buzzer GPIO', '[16,17,18,19,20]');
-INSERT INTO config VALUES ('setup', 'YES', 'select', 'Show the Setup dialog', '["YES","NO"]');
+INSERT OR IGNORE INTO config VALUES ('kettle_cols', 4, 'select', 'Adjust the width of a kettle widget on the brewing dashboard', '[1,2,3, 4, 5, 6, 7, 8, 9, 10, 11, 12]');
+INSERT OR IGNORE INTO config VALUES ('actor_cols', 4, 'select', 'Adjust the width of a actor widget on the brewing dashboard', '[1,2,3, 4, 5, 6, 7, 8, 9, 10, 11, 12]');
+INSERT OR IGNORE INTO config VALUES ('sensor_cols', 4, 'select', 'Adjust the width of a sensor widget on the brewing dashboard', '[1,2,3, 4, 5, 6, 7, 8, 9, 10, 11, 12]');
+INSERT OR IGNORE INTO config VALUES ('unit', 'C', 'select', 'Temperature Unit', '["C","F"]');
+INSERT OR IGNORE INTO config VALUES ('brewery_name', 'My Home Brewery', 'text', 'Your brewery name', NULL );
+INSERT OR IGNORE INTO config VALUES ('buzzer', 16, 'select', 'Buzzer GPIO', '[16,17,18,19,20]');
+INSERT OR IGNORE INTO config VALUES ('setup', 'YES', 'select', 'Show the Setup dialog', '["YES","NO"]');
+INSERT OR IGNORE INTO config VALUES ('brew_name', '', 'text', 'Brew Name', NULL);
+INSERT OR IGNORE INTO config VALUES ('donation_notification', 'YES', 'select', 'Disable Donation Notification', '["YES","NO"]');
 
-CREATE TABLE actor
+
+CREATE TABLE IF NOT EXISTS actor
 (
     id INTEGER PRIMARY KEY NOT NULL,
     name VARCHAR(50),

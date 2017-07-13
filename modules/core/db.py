@@ -42,13 +42,15 @@ class DBModel(object):
     def get_all(cls):
         cur = get_db().cursor()
         if cls.__order_by__ is not None:
-            cur.execute("SELECT * FROM %s ORDER BY '%s'" % (cls.__table_name__,cls.__order_by__))
+
+            cur.execute("SELECT * FROM %s ORDER BY %s.'%s'" % (cls.__table_name__,cls.__table_name__,cls.__order_by__))
         else:
             cur.execute("SELECT * FROM %s" % cls.__table_name__)
 
         if cls.__as_array__ is True:
             result = []
             for r in cur.fetchall():
+
                 result.append( cls(r))
         else:
             result = {}
@@ -104,7 +106,7 @@ class DBModel(object):
                 else:
                     data = data + (kwargs.get(f),)
 
-        print query, data
+
         cur.execute(query, data)
         get_db().commit()
         i = cur.lastrowid

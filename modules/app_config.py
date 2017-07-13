@@ -15,7 +15,9 @@ from modules.core.db import DBModel
 
 app = Flask(__name__)
 
-logging.basicConfig(filename='./logs/app.log',level=logging.INFO)
+FORMAT = '%(asctime)-15s - %(levelname)s - %(message)s'
+
+logging.basicConfig(filename='./logs/app.log',level=logging.INFO, format=FORMAT)
 app.config['SECRET_KEY'] = 'craftbeerpi'
 app.config['UPLOAD_FOLDER'] = './upload'
 
@@ -45,7 +47,7 @@ class ComplexEncoder(json.JSONEncoder):
         return None
 
 app.json_encoder = ComplexEncoder
-socketio = SocketIO(app, json=json)
+socketio = SocketIO(app, json=json, logging=False)
 cbpi   = CraftBeerPi(app, socketio)
 
 app.logger.info("##########################################")

@@ -35,6 +35,8 @@ import modules.system
 import modules.buzzer
 import modules.stats
 import modules.kettle
+import modules.recipe_import
+import modules.core.db_mirgrate
 from app_config import cbpi
 # Build the database:
 # This will create the database file using SQLAlchemy
@@ -63,3 +65,6 @@ cbpi.run_background_processes()
 
 
 
+app.logger.info("##########################################")
+app.logger.info("### STARTUP COMPLETE")
+app.logger.info("##########################################")

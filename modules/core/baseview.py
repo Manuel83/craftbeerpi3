@@ -9,7 +9,7 @@ class BaseView(FlaskView):
     cache_key = None
     api = cbpi
 
-    @route('/<int:id>')
+    @route('/<int:id>', methods=["GET"])
     def getOne(self, id):
 
         if self.api.cache.get(self.cache_key) is not None:
@@ -17,36 +17,36 @@ class BaseView(FlaskView):
         else:
             return json.dumps(self.model.get_one(id))
 
-    @route('/')
+    @route('/', methods=["GET"])
     def getAll(self):
         if self.api.cache.get(self.cache_key) is not None:
             return json.dumps(self.api.cache.get(self.cache_key))
         else:
             return json.dumps(self.model.get_all())
 
-    def pre_post_callback(self, data):
+    def _pre_post_callback(self, data):
         pass
 
 
-    def post_post_callback(self, m):
+    def _post_post_callback(self, m):
         pass
 
     @route('/', methods=["POST"])
     def post(self):
         data = request.json
-        self.pre_post_callback(data)
+        self._pre_post_callback(data)
         m = self.model.insert(**data)
         if self.api.cache.get(self.cache_key) is not None:
             self.api.cache.get(self.cache_key)[m.id] = m
 
-        self.post_post_callback(m)
+        self._post_post_callback(m)
 
         return json.dumps(m)
 
-    def pre_put_callback(self, m):
+    def _pre_put_callback(self, m):
         pass
 
-    def post_put_callback(self, m):
+    def _post_put_callback(self, m):
         pass
 
 
@@ -59,32 +59,32 @@ class BaseView(FlaskView):
         except:
             pass
         if self.api.cache.get(self.cache_key) is not None:
-            self.pre_put_callback(self.api.cache.get(self.cache_key)[id])
+            self._pre_put_callback(self.api.cache.get(self.cache_key)[id])
             self.api.cache.get(self.cache_key)[id].__dict__.update(**data)
             m = self.model.update(**self.api.cache.get(self.cache_key)[id].__dict__)
-            self.post_put_callback(self.api.cache.get(self.cache_key)[id])
+            self._post_put_callback(self.api.cache.get(self.cache_key)[id])
             return json.dumps(self.api.cache.get(self.cache_key)[id])
         else:
             m = self.model.update(**data)
 
-            self.post_put_callback(m)
+            self._post_put_callback(m)
             return json.dumps(m)
 
 
-    def pre_delete_callback(self, m):
+    def _pre_delete_callback(self, m):
         pass
 
-    def post_delete_callback(self, id):
+    def _post_delete_callback(self, id):
         pass
 
     @route('/<int:id>', methods=["DELETE"])
     def delete(self, id):
         if self.api.cache.get(self.cache_key) is not None:
-            self.pre_delete_callback(self.api.cache.get(self.cache_key)[id])
+            self._pre_delete_callback(self.api.cache.get(self.cache_key)[id])
             del self.api.cache.get(self.cache_key)[id]
         m = self.model.delete(id)
 
-        def post_delete_callback(self, id):
+        def _post_delete_callback(self, id):
             pass
         return ('',204)
 

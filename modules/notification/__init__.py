@@ -32,10 +32,9 @@ def messageEvent(message, **kwargs):
     :param kwargs: other parameter
     :return: None
     """
-
-    msg = {"id": len(cbpi.cache["messages"]), "type": "info", "message": message, "read": False}
-    cbpi.cache["messages"].append(msg)
-    cbpi.emit('MESSAGE', msg,)
+    if message["timeout"] is None:
+        cbpi.cache["messages"].append(message)
+    cbpi.emit("NOTIFY", message)
 
 @cbpi.initalizer(order=2)
 def init(cbpi):
@@ -44,9 +43,8 @@ def init(cbpi):
     :param app: the flask app
     :return: None
     """
-    print "INITIALIZE MESSAGE MODULE"
-
-    msg = {"id": len(cbpi.cache["messages"]), "type": "info", "headline": "Support CraftBeerPi with your donation", "message": "You will find the PayPay Donation button in the system menu" , "read": False}
-    cbpi.cache["messages"].append(msg)
+    if cbpi.get_config_parameter("donation_notification", "YES") == "YES":
+        msg = {"id": len(cbpi.cache["messages"]), "type": "info", "headline": "Support CraftBeerPi with your donation", "message": "You will find the PayPay Donation button in the system menu" , "read": False}
+        cbpi.cache["messages"].append(msg)
 
     NotificationView.register(cbpi.app, route_base='/api/notification')

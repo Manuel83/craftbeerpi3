@@ -16,7 +16,7 @@ def getserial():
 
 @cbpi.initalizer(order=9999)
 def sendStats(cbpi):
-    print "INITIALIZE STATS"
+
     try:
         serial = getserial()
 

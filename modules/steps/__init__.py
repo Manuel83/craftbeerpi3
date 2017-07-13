@@ -1,5 +1,5 @@
 import time
-from flask import json
+from flask import json, request
 from flask_classy import route
 
 from modules import DBModel, cbpi, get_db
@@ -21,9 +21,9 @@ class Step(DBModel):
         return r.get("order")
 
     @classmethod
-    def get_by_state(cls, state):
+    def get_by_state(cls, state, order=True):
         cur = get_db().cursor()
-        cur.execute("SELECT * FROM %s WHERE state = ?" % cls.__table_name__, state)
+        cur.execute("SELECT * FROM %s WHERE state = ? ORDER BY %s.'order'" % (cls.__table_name__,cls.__table_name__,), state)
         r = cur.fetchone()
         if r is not None:
             return cls(r)
@@ -54,12 +54,28 @@ class Step(DBModel):
         cur.execute("UPDATE %s SET stepstate = ? WHERE id =?" % cls.__table_name__, (json.dumps(state),id))
         get_db().commit()
 
+    @classmethod
+    def sort(cls, new_order):
+        cur = get_db().cursor()
+
+        for e in new_order:
+
+            cur.execute("UPDATE %s SET '%s' = ? WHERE id = ?" % (cls.__table_name__, "order"), (e[1], e[0]))
+        get_db().commit()
+
+
 class StepView(BaseView):
     model = Step
-    def pre_post_callback(self, data):
+    def _pre_post_callback(self, data):
         order = self.model.get_max_order()
         data["order"] = 1 if order is None else order + 1
         data["state"] = "I"
+
+    @route('/sort', methods=["POST"])
+    def sort_steps(self):
+        Step.sort(request.json)
+        cbpi.emit("UPDATE_ALL_STEPS", self.model.get_all())
+        return ('', 204)
 
     @route('/', methods=["DELETE"])
     def deleteAll(self):
@@ -69,16 +85,12 @@ class StepView(BaseView):
 
     @route('/action/<method>', methods=["POST"])
     def action(self, method):
-
         cbpi.cache["active_step"].__getattribute__(method)()
-
         return ('', 204)
 
     @route('/reset', methods=["POST"])
     def reset(self):
-
         self.model.reset_all_steps()
-        #db.session.commit()
         self.stop_step()
         cbpi.emit("UPDATE_ALL_STEPS", self.model.get_all())
         return ('', 204)
@@ -115,7 +127,6 @@ class StepView(BaseView):
         return ('', 204)
 
     def init_step(self, step):
-
         cbpi.log_action("Start Step %s" % step.name)
         type_cfg = cbpi.cache.get("step_types").get(step.type)
         if type_cfg is None:
@@ -128,7 +139,6 @@ class StepView(BaseView):
         cfg.update(dict(name=step.name, api=cbpi, id=step.id, timer_end=None, managed_fields=get_manged_fields_as_array(type_cfg)))
         instance = type_cfg.get("class")(**cfg)
         instance.init()
-
         # set step instance to ache
         cbpi.cache["active_step"] = instance
 
@@ -185,15 +195,16 @@ def init_after_startup():
         if type_cfg is None:
             # step type not found. cant restart step
             return
+
         cfg = step.stepstate.copy()
-        cfg.update(dict(api=cbpi, id=step.id, timer_end=None, managed_fields=get_manged_fields_as_array(type_cfg)))
+        cfg.update(dict(api=cbpi, id=step.id, managed_fields=get_manged_fields_as_array(type_cfg)))
         instance = type_cfg.get("class")(**cfg)
         instance.init()
         cbpi.cache["active_step"] = instance
 
 @cbpi.initalizer(order=2000)
 def init(cbpi):
-    print "INITIALIZE STEPS MODULE"
+
     StepView.register(cbpi.app, route_base='/api/step')
 
     def get_all():
@@ -205,7 +216,7 @@ def init(cbpi):
     cbpi.add_cache_callback("steps", get_all)
 
 @cbpi.backgroundtask(key="step_task", interval=0.1)
-def execute_step():
+def execute_step(api):
     '''
     Background job which executes the step 
     :return: 
@@ -214,9 +225,7 @@ def execute_step():
         step = cbpi.cache.get("active_step")
         if step is not None:
             step.execute()
-
             if step.is_dirty():
-
                 state = {}
                 for field in step.managed_fields:
                     state[field] = step.__getattribute__(field)
