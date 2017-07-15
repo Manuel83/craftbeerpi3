@@ -51,6 +51,8 @@ class BeerXMLImport(FlaskView):
         name = self.getRecipeName(id)
         self.api.set_config_parameter("brew_name", name)
         boil_time = self.getBoilTime(id)
+	mashin_temp = self.getMashinTemp(id)
+	mashinstep_type = cbpi.get_config_parameter("step_mashin", "MashInStep")
         mashstep_type = cbpi.get_config_parameter("step_mash", "MashStep")
         mash_kettle = cbpi.get_config_parameter("step_mash_kettle", None)
 
@@ -64,6 +66,8 @@ class BeerXMLImport(FlaskView):
 
         try:
 
+	    ## Add Mashin step
+	    Step.insert(**{"name": "MashIn", "type": mashinstep_type, "config": {"kettle": mash_kettle, "temp": mashin_temp}})
             for row in steps:
                 Step.insert(**{"name": row.get("name"), "type": mashstep_type, "config": {"kettle": mash_kettle, "temp": float(row.get("temp")), "timer": row.get("timer")}})
             Step.insert(**{"name": "ChilStep", "type": "ChilStep", "config": {"timer": 15}})
@@ -86,6 +90,10 @@ class BeerXMLImport(FlaskView):
     def getBoilTime(self, id):
         e = xml.etree.ElementTree.parse(self.BEER_XML_FILE).getroot()
         return float(e.find('./RECIPE[%s]/BOIL_TIME' % (str(id))).text)
+
+    def getMashinTemp(self, id):
+	e = xml.etree.ElementTree.parse(self.BEER_XML_FILE).getroot()
+	return float('./RECIPE[%s]/MASH/MASH_STEPS/INFUSE_TEMP' % (str(id))).text)
 
     def getSteps(self, id):
 
