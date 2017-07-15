@@ -13,12 +13,13 @@ class Buzzer(object):
     def __init__(self, gpio):
         try:
             cbpi.app.logger.info("INIT BUZZER NOW GPIO%s" % gpio)
-            self.gpio = gpio
+            self.gpio = int(gpio)
             GPIO.setmode(GPIO.BCM)
-            GPIO.setup(gpio, GPIO.OUT)
+            GPIO.setup(self.gpio, GPIO.OUT)
             self.state = True
             cbpi.app.logger.info("BUZZER SETUP OK")
         except Exception as e:
+            cbpi.app.logger.info("BUZZER EXCEPTION %s" % str(e))
             self.state = False
 
     def beep(self):
