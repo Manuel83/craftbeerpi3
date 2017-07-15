@@ -92,7 +92,7 @@ class MashInStep(StepBase):
         '''
 
         # Check if Target Temp is reached
-        if self.get_kettle_temp(self.kettle) >= int(self.temp) and self.s is False:
+        if self.get_kettle_temp(self.kettle) >= float(self.temp) and self.s is False:
             self.s = True
             self.notify("Step Temp Reached!", "Please press the next button to continue", timeout=None)
 
@@ -208,7 +208,7 @@ class BoilStep(StepBase):
         :return: 
         '''
         # Check if Target Temp is reached
-        if self.get_kettle_temp(self.kettle) >= int(self.temp):
+        if self.get_kettle_temp(self.kettle) >= float(self.temp):
             # Check if Timer is Running
             if self.is_timer_finished() is None:
                 self.start_timer(int(self.timer) * 60)
