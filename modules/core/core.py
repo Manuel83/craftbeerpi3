@@ -18,6 +18,7 @@ from hardware import *
 
 import time
 import uuid
+from os import popen, system
 
 
 class NotificationAPI(object):
@@ -84,7 +85,7 @@ class SensorAPI(object):
     def init_sensors(self):
         '''
         Initialize all sensors
-        :return: 
+        :return:
         '''
 
         self.app.logger.info("Init Sensors")
@@ -109,15 +110,15 @@ class SensorAPI(object):
     def init_sensor(self, id):
         '''
         initialize sensor by id
-        :param id: 
-        :return: 
+        :param id:
+        :return:
         '''
 
         def start_active_sensor(instance):
             '''
             start active sensors as background job
-            :param instance: 
-            :return: 
+            :param instance:
+            :return:
             '''
             instance.execute()
 
@@ -152,6 +153,9 @@ class SensorAPI(object):
         filename = "./logs/%s_%s.log" % (prefix, str(id))
         formatted_time = strftime("%Y-%m-%d %H:%M:%S", localtime())
         msg = str(formatted_time) + "," +str(value) + "\n"
+        if popen("tail -n 2 "+ filename).read().count(","+ str(value)+ "\n") == 2:
+            # if the data was logged twice, delete the last logged data and write a new one
+            system("truncate -s -\"$(tail -n1 " + filename + " | wc -c)\" " + filename)
 
         with open(filename, "a") as file:
             file.write(msg)
@@ -448,7 +452,7 @@ class CraftBeerPi(ActorAPI, SensorAPI):
     def run_init(self):
         '''
         call all initialziers after startup
-        :return: 
+        :return:
         '''
         self.app.logger.info("Invoke Init")
         self.cache["init"] = sorted(self.cache["init"], key=lambda k: k['order'])
@@ -462,10 +466,10 @@ class CraftBeerPi(ActorAPI, SensorAPI):
 
         '''
         Background Task Decorator
-        :param key: 
-        :param interval: 
-        :param config_parameter: 
-        :return: 
+        :param key:
+        :param interval:
+        :param config_parameter:
+        :return:
         '''
         def real_decorator(function):
             self.cache["background"].append({"function": function, "key": key, "interval": interval, "config_parameter": config_parameter})
@@ -477,7 +481,7 @@ class CraftBeerPi(ActorAPI, SensorAPI):
     def run_background_processes(self):
         '''
         call all background task after startup
-        :return: 
+        :return:
         '''
         self.app.logger.info("Start Background")
 
