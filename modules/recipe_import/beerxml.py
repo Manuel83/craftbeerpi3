@@ -51,6 +51,7 @@ class BeerXMLImport(FlaskView):
         name = self.getRecipeName(id)
         self.api.set_config_parameter("brew_name", name)
         boil_time = self.getBoilTime(id)
+        mashin_temp = self.getMashinTemp(id)
         mashinstep_type = cbpi.get_config_parameter("step_mashin", "MashInStep")
         mashstep_type = cbpi.get_config_parameter("step_mash", "MashStep")
         mash_kettle = cbpi.get_config_parameter("step_mash_kettle", None)
