@@ -67,8 +67,8 @@ class BeerXMLImport(FlaskView):
         try:
 
 
-			## Add Mashin step
-			Step.insert(**{"name": "MashIn", "type": mashinstep_type, "config": {"kettle": mash_kettle, "temp": mashin_temp}})
+	## Add Mashin step
+	Step.insert(**{"name": "MashIn", "type": mashinstep_type, "config": {"kettle": mash_kettle, "temp": mashin_temp}})
 
             for row in steps:
                 Step.insert(**{"name": row.get("name"), "type": mashstep_type, "config": {"kettle": mash_kettle, "temp": float(row.get("temp")), "timer": row.get("timer")}})
