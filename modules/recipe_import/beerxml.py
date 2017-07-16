@@ -91,8 +91,8 @@ class BeerXMLImport(FlaskView):
         return float(e.find('./RECIPE[%s]/BOIL_TIME' % (str(id))).text)
 
     def getMashinTemp(self, id):
-		e = xml.etree.ElementTree.parse(self.BEER_XML_FILE).getroot()
-		return float('./RECIPE[%s]/MASH/MASH_STEPS/INFUSE_TEMP' % (str(id))).text)
+        e = xml.etree.ElementTree.parse(self.BEER_XML_FILE).getroot()
+        return float('./RECIPE[%s]/MASH/MASH_STEPS/INFUSE_TEMP' % (str(id))).text)
 
     def getSteps(self, id):
 
