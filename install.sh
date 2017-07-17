@@ -29,12 +29,12 @@ show_menu () {
    if [ $BUTTON -eq 0 ]; then
        case $OPTION in
        1)
-           confirmAnswer "Would you like run apt-get update & apt-get upgrade?"
+           confirmAnswer "Would you like to run apt-get update & apt-get upgrade?"
            if [ $? = 0 ]; then
              apt-get -y update; apt-get -y upgrade;
            fi
 
-           confirmAnswer "Would you like to install wiringPI? This is required to control the GPIO"
+           confirmAnswer "Would you like to install wiringPI? This is required to control the GPIO."
            if [ $? = 0 ]; then
              git clone git://git.drogon.net/wiringPi;
              cd wiringPi;
@@ -48,7 +48,7 @@ show_menu () {
            apt-get -y install libpcre3-dev
            pip install -r requirements.txt
 
-           confirmAnswer "Would you like to add active 1-wire support at your Raspberry PI now? IMPORTANT: The 1-wire thermometer must be conneted to GPIO 4!"
+           confirmAnswer "Would you like to add active 1-wire support to your Raspberry PI now? IMPORTANT: The 1-wire thermometer must be conneted to GPIO 4!"
            if [ $? = 0 ]; then
              #apt-get -y update; apt-get -y upgrade;
              echo '# CraftBeerPi 1-wire support' >> "/boot/config.txt"
@@ -65,7 +65,7 @@ show_menu () {
            show_menu
            ;;
        2)
-          confirmAnswer "Are you sure you want to clear the CraftBeerPi. All hardware setting will be deleted"
+          confirmAnswer "Are you sure you want to clear the CraftBeerPi? All hardware settings will be deleted."
           if [ $? = 0 ]; then
             sudo rm -f craftbeerpi.db
             whiptail --title "Database Delted" --msgbox "The CraftBeerPi database was succesfully deleted. You must hit OK to continue." 8 78
@@ -75,19 +75,19 @@ show_menu () {
           fi
           ;;
        3)
-           confirmAnswer "Are you sure you want to add CraftBeerPi to autostart"
+           confirmAnswer "Are you sure you want to add CraftBeerPi to autostart?"
            if [ $? = 0 ]; then
              sed "s@#DIR#@${PWD}@g" config/craftbeerpiboot > /etc/init.d/craftbeerpiboot
              chmod 755 /etc/init.d/craftbeerpiboot;
              update-rc.d craftbeerpiboot defaults;
-             whiptail --title "Added succesfull to autostart" --msgbox "The CraftBeerPi was added to autostart succesfully. You must hit OK to continue." 8 78
+             whiptail --title "Succesfull add to autostart" --msgbox "CraftBeerPi was added to autostart succesfully. You must hit OK to continue." 8 78
              show_menu
            else
             show_menu
            fi
            ;;
        4)
-           confirmAnswer "Are you sure you want to remove CraftBeerPi from autostart"
+           confirmAnswer "Are you sure you want to remove CraftBeerPi from autostart?"
            if [ $? = 0 ]; then
                update-rc.d -f craftbeerpiboot remove
                show_menu
@@ -103,7 +103,7 @@ show_menu () {
            ;;
        6)
            sudo /etc/init.d/craftbeerpiboot stop
-           whiptail --title "CraftBeerPi stoped" --msgbox "The software is stoped" 8 78
+           whiptail --title "CraftBeerPi stoped" --msgbox "The software is stopped." 8 78
            show_menu
             ;;
        7)
@@ -126,10 +126,10 @@ show_menu () {
             fi
             ;;
         9)
-           confirmAnswer "Are you sure you want to delete all CraftBeerPi log files"
+           confirmAnswer "Are you sure you want to delete all CraftBeerPi log files?"
            if [ $? = 0 ]; then
               sudo rm -rf logs/*.log
-              whiptail --title "Log files deleted" --msgbox "All CraftBeerPi Files are deleted. You must hit OK to continue." 8 78
+              whiptail --title "Log files deleted" --msgbox "All CraftBeerPi files are deleted. You must hit OK to continue." 8 78
               show_menu
            else
               show_menu
