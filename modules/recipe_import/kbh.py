@@ -30,7 +30,7 @@ class KBH(FlaskView):
             return json.dumps(result)
         except Exception as e:
             print e
-            self.api.notify(headline="Failed to load KHB database.", message="ERROR", type="danger")
+            self.api.notify(headline="Failed to load Kleiner Brauhelfer database.", message="ERROR", type="danger")
             return ('', 500)
         finally:
             if conn:
