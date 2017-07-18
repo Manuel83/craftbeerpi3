@@ -103,7 +103,7 @@ show_menu () {
            ;;
        6)
            sudo /etc/init.d/craftbeerpiboot stop
-           whiptail --title "CraftBeerPi stoped" --msgbox "The software is stopped." 8 78
+           whiptail --title "CraftBeerPi stopped" --msgbox "The software is stopped." 8 78
            show_menu
             ;;
        7)
