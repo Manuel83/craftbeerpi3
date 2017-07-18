@@ -15,7 +15,7 @@ class BeerXMLImport(FlaskView):
     @route('/', methods=['GET'])
     def get(self):
         if not os.path.exists(self.BEER_XML_FILE):
-            self.api.notify(headline="File Not Found", message="Please upload a Beer.xml File",
+            self.api.notify(headline="File Not Found", message="Please upload a beer.xml file.",
                             type="danger")
             return ('', 404)
         result = []
@@ -36,11 +36,11 @@ class BeerXMLImport(FlaskView):
                 file = request.files['file']
                 if file and self.allowed_file(file.filename):
                     file.save(os.path.join(self.api.app.config['UPLOAD_FOLDER'], "beer.xml"))
-                    self.api.notify(headline="Upload Successful", message="The Beer XML file was uploaded succesfully")
+                    self.api.notify(headline="Upload Successful", message="The beer.xml file was succesfully uploaded.")
                     return ('', 204)
                 return ('', 404)
         except Exception as e:
-            self.api.notify(headline="Upload Failed", message="Failed to upload Beer xml", type="danger")
+            self.api.notify(headline="Upload Failed", message="Failed to upload beer.xml file.", type="danger")
             return ('', 500)
 
     @route('/<int:id>', methods=['POST'])
