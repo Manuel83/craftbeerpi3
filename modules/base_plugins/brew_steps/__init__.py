@@ -164,7 +164,7 @@ class BoilStep(StepBase):
     hop_2 = Property.Number("Hop 2 Addition", configurable=True, description="Second hop alert.")
     hop_2_added = Property.Number("", default_value=None)
     hop_3 = Property.Number("Hop 3 Addition", configurable=True)
-    hop_3_added = Property.Number("", default_value=None, description="Second hop alert.")
+    hop_3_added = Property.Number("", default_value=None, description="Third hop alert.")
 
     def init(self):
         '''
