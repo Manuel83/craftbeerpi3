@@ -17,7 +17,7 @@ class KBH(FlaskView):
         conn = None
         try:
             if not os.path.exists(self.api.app.config['UPLOAD_FOLDER'] + '/kbh.db'):
-                self.api.notify(headline="File Not Found", message="Please upload a Kleiner Brauhelfer Database", type="danger")
+                self.api.notify(headline="File Not Found", message="Please upload a Kleiner Brauhelfer database.", type="danger")
                 return ('', 404)
 
             conn = sqlite3.connect(self.api.app.config['UPLOAD_FOLDER'] + '/kbh.db')
@@ -30,7 +30,7 @@ class KBH(FlaskView):
             return json.dumps(result)
         except Exception as e:
             print e
-            self.api.notify(headline="Failed to load KHB database", message="ERROR", type="danger")
+            self.api.notify(headline="Failed to load KHB database.", message="ERROR", type="danger")
             return ('', 500)
         finally:
             if conn:
@@ -47,11 +47,11 @@ class KBH(FlaskView):
                 if file and self.allowed_file(file.filename):
                     filename = secure_filename(file.filename)
                     file.save(os.path.join(self.api.app.config['UPLOAD_FOLDER'], "kbh.db"))
-                    self.api.notify(headline="Upload Successful", message="The Kleiner Brauhelfer Database was uploaded succesfully")
+                    self.api.notify(headline="Upload Successful", message="The Kleiner Brauhelfer database was succesfully uploaded.")
                     return ('', 204)
                 return ('', 404)
         except Exception as e:
-            self.api.notify(headline="Upload Failed", message="Failed to upload Kleiner Brauhelfer", type="danger")
+            self.api.notify(headline="Upload Failed", message="Failed to upload Kleiner Brauhelfer database.", type="danger")
 
             return ('', 500)
 
