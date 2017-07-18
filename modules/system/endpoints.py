@@ -48,7 +48,7 @@ class SystemView(FlaskView):
         o.fetch()
         g = Git('./')
         g.checkout(name)
-        cbpi.notify("Checkout successful", "Please restart the system")
+        cbpi.notify("Checkout successful.", "Please restart the system.")
         return ('', 204)
 
     @route('/git/status', methods=['GET'])
@@ -95,7 +95,7 @@ class SystemView(FlaskView):
         repo = Repo('./')
         o = repo.remotes.origin
         info = o.pull()
-        cbpi.notify("Pull successful", "The lasted updated was downloaded. Please restart the system")
+        cbpi.notify("Pull successful", "The lastet update was downloaded. Please restart the system.")
         return ('', 204)
 
     @route('/dump', methods=['GET'])
