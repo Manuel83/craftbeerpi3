@@ -74,6 +74,14 @@ class ControllerBase(object):
 
 class KettleController(ControllerBase, ActorController, SensorController):
 
+    @staticmethod
+    def chart(kettle):
+        result = []
+        result.append({"name": "Temp", "data_type": "sensor", "data_id": kettle.sensor})
+        result.append({"name": "Target Temp", "data_type": "kettle", "data_id": kettle.id})
+
+        return result
+
     def __init__(self, *args, **kwds):
         ControllerBase.__init__(self, *args, **kwds)
         self.kettle_id = kwds.get("kettle_id")
@@ -106,6 +114,13 @@ class KettleController(ControllerBase, ActorController, SensorController):
         return self.api.cache.get("kettle").get(id).target_temp
 
 class FermenterController(ControllerBase, ActorController, SensorController):
+
+    @staticmethod
+    def chart(fermenter):
+        result = []
+        result.append({"name": "Temp", "data_type": "sensor", "data_id": fermenter.sensor})
+        result.append({"name": "Target Temp", "data_type": "fermenter", "data_id": fermenter.id})
+        return result
 
     def __init__(self, *args, **kwds):
         ControllerBase.__init__(self, *args, **kwds)
