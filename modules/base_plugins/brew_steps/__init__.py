@@ -57,11 +57,7 @@ class MashStep(StepBase):
 
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
-<<<<<<< HEAD
             self.notify("Mash Step Completed!", "Starting the next step", timeout=None)
-=======
-            self.notify("Step Completed!", "Starting the next step", timeout=None)
->>>>>>> 1c4e16e35839ec699a431a3840d7dfda9430c4cf
             self.next()
 
 
@@ -214,7 +210,6 @@ class BoilStep(StepBase):
         '''
         # Check if Target Temp is reached
         if self.get_kettle_temp(self.kettle) >= float(self.temp):
-            self.notify("Boil Temp Reached!", "Starting the boil timer", timeout=None)
             # Check if Timer is Running
             if self.is_timer_finished() is None:
                 self.start_timer(int(self.timer) * 60)
