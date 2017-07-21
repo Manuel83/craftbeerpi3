@@ -225,11 +225,38 @@ class CraftBeerPi(ActorAPI, SensorAPI):
         msg = {"id": str(uuid.uuid1()), "type": type, "headline": headline, "message": message, "timeout": timeout}
         self.emit_message(msg)
 
+
     def beep(self):
-        if self.buzzer is not None:
-            self.buzzer.beep()
+		if self.buzzer is not None:
+			self.buzzer.beep()
 
 
+    def MashStepEndBeep(self):
+		if self.buzzer is not None:
+			self.buzzer.MashStepEndBeep()
+
+
+    def MashInStepEndBeep(self):
+		if self.buzzer is not None:
+			self.buzzer.MashInStepEndBeep()
+		
+		
+    def ChilStepEndBeep(self):
+		if self.buzzer is not None:
+			self.buzzer.ChilStepEndBeep()	
+		
+
+    def PumpStepEndBeep(self):
+		if self.buzzer is not None:
+			self.buzzer.PumpStepEndBeep()
+
+
+    def BoilStepEndBeep(self):
+		if self.buzzer is not None:
+			self.buzzer.BoilStepEndBeep()		
+		
+
+		
     def add_cache_callback(self, key,  method):
         method.callback = True
         self.cache[key] = method

@@ -7,7 +7,6 @@ from modules.core.step import StepBase
 from modules import cbpi
 
 
-
 @cbpi.step
 class MashStep(StepBase):
     '''
@@ -57,6 +56,8 @@ class MashStep(StepBase):
 
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
+	    # if you dont want a beep sound comment out like :  # cbpi.MashStepEndBeep()
+	    cbpi.MashStepEndBeep()
             self.next()
 
 
@@ -95,7 +96,8 @@ class MashInStep(StepBase):
         if self.get_kettle_temp(self.kettle) >= float(self.temp) and self.s is False:
             self.s = True
             self.notify("Step Temp Reached!", "Please press the next button to continue", timeout=None)
-
+	    # if you dont want a beep sound comment out like :  # cbpi.MashInStepEndBeep()
+	    cbpi.MashInStepEndBeep()
 
 
 @cbpi.step
@@ -120,6 +122,8 @@ class ChilStep(StepBase):
             self.start_timer(int(self.timer) * 60)
 
         if self.is_timer_finished() == True:
+	    # if you dont want a beep sound comment out like :  # cbpi.ChilStepEndBeep()
+	    cbpi.ChilStepEndBeep()		
             self.next()
 
 @cbpi.step
@@ -148,6 +152,8 @@ class PumpStep(StepBase):
             self.start_timer(int(self.timer) * 60)
 
         if self.is_timer_finished() == True:
+	    # if you dont want a beep sound comment out like :  # cbpi.PumpStepEndBeep()
+	    cbpi.PumpStepEndBeep()		
             self.next()
 
 @cbpi.step
@@ -218,4 +224,6 @@ class BoilStep(StepBase):
                 self.check_hop_timer(3, self.hop_3)
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
+	    # if you dont want a beep sound comment out like :  # cbpi.BoilStepEndBeep()
+	    cbpi.BoilStepEndBeep()		
             self.next()
