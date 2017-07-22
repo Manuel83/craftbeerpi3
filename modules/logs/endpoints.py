@@ -65,6 +65,8 @@ class LogView(FlaskView):
                     pass
         return array
 
+    def convert_chart_data_to_json(self, chart_data):
+        return {"name": chart_data["name"], "data": self.read_log_as_json(chart_data["data_type"], chart_data["data_id"])}
 
     @route('/<t>/<int:id>', methods=["POST"])
     def get_logs_as_json(self, t, id):
@@ -76,13 +78,12 @@ class LogView(FlaskView):
 
         if t == "k":
             kettle = cbpi.cache.get("kettle").get(id)
-            result.append({"name": "Temp", "data": self.read_log_as_json("sensor", kettle.sensor)})
-            result.append({"name": "Target Temp", "data": self.read_log_as_json("kettle", kettle.id)})
+            result = map(self.convert_chart_data_to_json, cbpi.get_controller(kettle.logic).get("class").chart(kettle))
 
         if t == "f":
             fermenter = cbpi.cache.get("fermenter").get(id)
-            result.append({"name": "Temp", "data": self.read_log_as_json("sensor", fermenter.sensor)})
-            result.append({"name": "Target Temp", "data": self.read_log_as_json("fermenter", fermenter.id)})
+            result = map(self.convert_chart_data_to_json, cbpi.get_fermentation_controller(fermenter.logic).get("class").chart(fermenter))
+
         return json.dumps(result)
 
     @route('/download/<file>')
