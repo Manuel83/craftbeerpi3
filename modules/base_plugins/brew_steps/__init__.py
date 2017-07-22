@@ -95,8 +95,8 @@ class MashInStep(StepBase):
 
         # Check if Target Temp is reached
         if self.get_kettle_temp(self.kettle) >= float(self.temp) and self.s is False:
-            self.s = True
-            self.notify("Step Temp Reached!", "Please press the next button to continue", timeout=None)
+	    self.s = True
+	    self.notify("Step Temp Reached!", "Please press the next button to continue", timeout=None)
 	    # if you dont want a beep sound comment out like :  # cbpi.MashInStepEndBeep()
 	    cbpi.MashInStepEndBeep()
 
@@ -125,7 +125,7 @@ class ChilStep(StepBase):
         if self.is_timer_finished() == True:
 	    # if you dont want a beep sound comment out like :  # cbpi.ChilStepEndBeep()
 	    cbpi.ChilStepEndBeep()		
-            self.next()
+	    self.next()
 
 @cbpi.step
 class PumpStep(StepBase):
@@ -155,7 +155,7 @@ class PumpStep(StepBase):
         if self.is_timer_finished() == True:
 	    # if you dont want a beep sound comment out like :  # cbpi.PumpStepEndBeep()
 	    cbpi.PumpStepEndBeep()		
-            self.next()
+	    self.next()
 
 @cbpi.step
 class BoilStep(StepBase):
@@ -225,7 +225,7 @@ class BoilStep(StepBase):
                 self.check_hop_timer(3, self.hop_3)
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
-            self.notify("Boil Step Completed!", "Starting the next step", timeout=None)
+	    self.notify("Boil Step Completed!", "Starting the next step", timeout=None)
 	    # if you dont want a beep sound comment out like :  # cbpi.BoilStepEndBeep()
 	    cbpi.BoilStepEndBeep()
 	    self.next()
