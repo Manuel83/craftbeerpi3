@@ -56,9 +56,10 @@ class MashStep(StepBase):
 
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
+	    self.notify("Mash Step Completed!", "Starting the next step", timeout=None)
 	    # if you dont want a beep sound comment out like :  # cbpi.MashStepEndBeep()
 	    cbpi.MashStepEndBeep()
-            self.next()
+	    self.next()
 
 
 @cbpi.step
@@ -224,6 +225,7 @@ class BoilStep(StepBase):
                 self.check_hop_timer(3, self.hop_3)
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
+            self.notify("Boil Step Completed!", "Starting the next step", timeout=None)
 	    # if you dont want a beep sound comment out like :  # cbpi.BoilStepEndBeep()
-	    cbpi.BoilStepEndBeep()		
-            self.next()
+	    cbpi.BoilStepEndBeep()
+	    self.next()
