@@ -9,6 +9,11 @@ modules/plugins/*
 !modules/plugins/__init__.py
 *.pyc
 *.js
+*.css
 modules/ui/package.json
 
 modules/ui/.babelrc
+yarn.lock
+
+
+modules/ui/package-lock.json

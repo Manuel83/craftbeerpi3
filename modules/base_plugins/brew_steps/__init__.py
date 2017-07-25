@@ -21,7 +21,7 @@ class MashStep(StepBase):
     def init(self):
         '''
         Initialize Step. This method is called once at the beginning of the step
-        :return: 
+        :return:
         '''
         # set target tep
         self.set_target_temp(self.temp, self.kettle)
@@ -31,7 +31,7 @@ class MashStep(StepBase):
         '''
         Custom Action which can be execute form the brewing dashboard.
         All method with decorator @cbpi.action("YOUR CUSTOM NAME") will be available in the user interface
-        :return: 
+        :return:
         '''
         if self.is_timer_finished() is None:
             self.start_timer(int(self.timer) * 60)
@@ -46,7 +46,7 @@ class MashStep(StepBase):
     def execute(self):
         '''
         This method is execute in an interval
-        :return: 
+        :return:
         '''
 
         # Check if Target Temp is reached
@@ -57,6 +57,7 @@ class MashStep(StepBase):
 
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
+            self.notify("Mash Step Completed!", "Starting the next step", timeout=None)
             self.next()
 
 
@@ -77,7 +78,7 @@ class MashInStep(StepBase):
     def init(self):
         '''
         Initialize Step. This method is called once at the beginning of the step
-        :return: 
+        :return:
         '''
         # set target tep
         self.s = False
@@ -88,7 +89,7 @@ class MashInStep(StepBase):
     def execute(self):
         '''
         This method is execute in an interval
-        :return: 
+        :return:
         '''
 
         # Check if Target Temp is reached
@@ -169,7 +170,7 @@ class BoilStep(StepBase):
     def init(self):
         '''
         Initialize Step. This method is called once at the beginning of the step
-        :return: 
+        :return:
         '''
         # set target tep
         self.set_target_temp(self.temp, self.kettle)
@@ -182,7 +183,7 @@ class BoilStep(StepBase):
         '''
         Custom Action which can be execute form the brewing dashboard.
         All method with decorator @cbpi.action("YOUR CUSTOM NAME") will be available in the user interface
-        :return: 
+        :return:
         '''
         if self.is_timer_finished() is None:
             self.start_timer(int(self.timer) * 60)
@@ -205,7 +206,7 @@ class BoilStep(StepBase):
     def execute(self):
         '''
         This method is execute in an interval
-        :return: 
+        :return:
         '''
         # Check if Target Temp is reached
         if self.get_kettle_temp(self.kettle) >= float(self.temp):
@@ -218,4 +219,5 @@ class BoilStep(StepBase):
                 self.check_hop_timer(3, self.hop_3)
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
+            self.notify("Boil Step Completed!", "Starting the next step", timeout=None)
             self.next()
