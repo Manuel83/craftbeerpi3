@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, request
-from modules import  cbpi
+from flask import Blueprint
+
+from modules import cbpi
 
 react = Blueprint('react', __name__, template_folder='templates', static_folder='static')
 
