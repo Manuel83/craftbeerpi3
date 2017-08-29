@@ -18,6 +18,7 @@ def getSensors():
         arr = []
         for dirname in os.listdir('/sys/bus/w1/devices'):
             if (dirname.startswith("28") or dirname.startswith("10")):
+                cbpi.app.logger.info("Device %s Found (Family: 28/10, Thermometer on GPIO4 (w1))" % dirname)
                 arr.append(dirname)
         return arr
     except:
