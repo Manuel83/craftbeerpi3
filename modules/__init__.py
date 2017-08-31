@@ -29,7 +29,7 @@ import modules.sensors
 import modules.actor
 import modules.notification
 import modules.fermenter
-import modules.addon
+from modules.addon.endpoints import initPlugins
 import modules.ui
 import modules.system
 import modules.buzzer
@@ -37,6 +37,7 @@ import modules.stats
 import modules.kettle
 import modules.recipe_import
 import modules.core.db_mirgrate
+
 from app_config import cbpi
 # Build the database:
 # This will create the database file using SQLAlchemy
@@ -59,6 +60,7 @@ def init_db():
             pass
 
 init_db()
+initPlugins()
 cbpi.run_init()
 
 cbpi.run_background_processes()

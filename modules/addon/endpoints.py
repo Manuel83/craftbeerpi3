@@ -188,9 +188,8 @@ def loadPlugins():
             cbpi.notify("Failed to load plugin %s " % filename, str(e), type="danger", timeout=None)
             cbpi.app.logger.error(e)
 
-@cbpi.initalizer(order=1)
-def initPlugins(app):
-
+#@cbpi.initalizer(order=1)
+def initPlugins():
     loadCorePlugins()
     loadPlugins()
 
