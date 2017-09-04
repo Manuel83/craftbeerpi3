@@ -274,11 +274,11 @@ class CraftBeerPi(ActorAPI, SensorAPI):
             if isinstance(tmpObj.__getattribute__(m), Property.Number):
                 t = tmpObj.__getattribute__(m)
                 self.cache[key][name]["properties"].append(
-                    {"name": m, "label": t.label, "type": "number", "configurable": t.configurable, "description": t.description})
+                    {"name": m, "label": t.label, "type": "number", "configurable": t.configurable, "description": t.description, "default_value": t.default_value})
             elif isinstance(tmpObj.__getattribute__(m), Property.Text):
                 t = tmpObj.__getattribute__(m)
                 self.cache[key][name]["properties"].append(
-                    {"name": m, "label": t.label, "type": "text", "configurable": t.configurable, "description": t.description})
+                    {"name": m, "label": t.label, "type": "text", "configurable": t.configurable, "default_value": t.default_value, "description": t.description})
             elif isinstance(tmpObj.__getattribute__(m), Property.Select):
                 t = tmpObj.__getattribute__(m)
                 self.cache[key][name]["properties"].append(
@@ -356,7 +356,7 @@ class CraftBeerPi(ActorAPI, SensorAPI):
                 self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "number", "configurable": t.configurable, "default_value": t.default_value, "description": t.description})
             elif isinstance(tmpObj.__getattribute__(m), StepProperty.Text):
                 t = tmpObj.__getattribute__(m)
-                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "text", "configurable": t.configurable, "description": t.description})
+                self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "text", "configurable": t.configurable, "default_value": t.default_value, "description": t.description})
             elif isinstance(tmpObj.__getattribute__(m), StepProperty.Select):
                 t = tmpObj.__getattribute__(m)
                 self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "select", "configurable": True, "options": t.options, "description": t.description})
