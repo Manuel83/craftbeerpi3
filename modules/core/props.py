@@ -22,6 +22,7 @@ class Property(object):
             PropertyType.__init__(self)
             self.label = label
             self.configurable = configurable
+            self.default_value = default_value
             self.description = description
 
     class Actor(PropertyType):
