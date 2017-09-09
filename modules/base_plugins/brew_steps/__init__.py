@@ -165,7 +165,9 @@ class BoilStep(StepBase):
     hop_2 = Property.Number("Hop 2 Addition", configurable=True, description="Second Hop alert")
     hop_2_added = Property.Number("", default_value=None)
     hop_3 = Property.Number("Hop 3 Addition", configurable=True)
-    hop_3_added = Property.Number("", default_value=None, description="Second Hop alert")
+    hop_3_added = Property.Number("", default_value=None, description="Third Hop alert")
+    fining = Property.Number("Fining Addition", configurable=True, default_value=15)
+    fining_added = Property.Number("",default_value=None, description="Fining Agent Alert")
 
     def init(self):
         '''
@@ -203,6 +205,13 @@ class BoilStep(StepBase):
             self.__setattr__("hop_%s_added" % number, True)
             self.notify("Hop Alert", "Please add Hop %s" % number, timeout=None)
 
+    def check_fining_timer(self, value):
+
+        if self.__getattribute__("fining_added") is not True and (int(value) * 60) == (
+            self.timer_end - int(time.time())):
+            self.__setattr__("fining_added", True)
+            self.notify("Fining Alert", "Please add fining agent", timeout=None)
+
     def execute(self):
         '''
         This method is execute in an interval
@@ -212,11 +221,13 @@ class BoilStep(StepBase):
         if self.get_kettle_temp(self.kettle) >= float(self.temp):
             # Check if Timer is Running
             if self.is_timer_finished() is None:
+                self.notify("Boil Temp Reached", "Starting the boil timer")
                 self.start_timer(int(self.timer) * 60)
             else:
                 self.check_hop_timer(1, self.hop_1)
                 self.check_hop_timer(2, self.hop_2)
                 self.check_hop_timer(3, self.hop_3)
+                self.check_fining_timer(self.fining)
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
             self.notify("Boil Step Completed!", "Starting the next step", timeout=None)
