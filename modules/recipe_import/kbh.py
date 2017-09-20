@@ -2,18 +2,28 @@ from flask import json, request
 from flask_classy import FlaskView, route
 from git import Repo, Git
 import sqlite3
-from modules.app_config import cbpi
+from modules.core.core import cbpi
 from werkzeug.utils import secure_filename
 import pprint
 import time
 import os
-from modules.steps import Step, StepView
+from modules.step import Step, StepView
 
 
 class KBH(FlaskView):
 
     @route('/', methods=['GET'])
     def get(self):
+
+        """
+        Get all recipes from uploaded kleinerbrauhelfer database
+        ---
+        tags:
+          - kleinerbrauhelfer
+        responses:
+          200:
+            description: Recipes from kleinerbrauhelfer database
+        """
         conn = None
         try:
             if not os.path.exists(self.api.app.config['UPLOAD_FOLDER'] + '/kbh.db'):
@@ -41,6 +51,16 @@ class KBH(FlaskView):
 
     @route('/upload', methods=['POST'])
     def upload_file(self):
+        """
+        Upload KleinerBrauhelfer Database File
+        ---
+        tags:
+          - kleinerbrauhelfer
+        
+        responses:
+          200:
+            description: File uploaed
+        """
         try:
             if request.method == 'POST':
                 file = request.files['file']
@@ -57,6 +77,23 @@ class KBH(FlaskView):
 
     @route('/<int:id>', methods=['POST'])
     def load(self, id):
+        """
+        Load Recipe from Kleinerbrauhelfer Database
+        ---
+        tags:
+          - kleinerbrauhelfer
+        parameters:
+          - in: path
+            name: id
+            schema:
+              type: integer
+            required: true
+            description: Numeric ID of recipe
+
+        responses:
+          200:
+            description: Recipe loaded
+        """
         mashstep_type = cbpi.get_config_parameter("step_mash", "MashStep")
         mashinstep_type = cbpi.get_config_parameter("step_mashin", "MashInStep")
         chilstep_type = cbpi.get_config_parameter("step_chil", "ChilStep")
@@ -102,8 +139,8 @@ class KBH(FlaskView):
 
 
 
-@cbpi.initalizer()
+@cbpi.addon.core.initializer()
 def init(cbpi):
 
     KBH.api = cbpi
-    KBH.register(cbpi.app, route_base='/api/kbh')
+    KBH.register(cbpi._app, route_base='/api/kbh')

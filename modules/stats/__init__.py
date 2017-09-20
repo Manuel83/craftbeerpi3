@@ -19,10 +19,9 @@ def sendStats(cbpi):
 
     try:
         serial = getserial()
-
         info = {
         "id": serial,
-        "version": "3.0",
+        "version": "3.1",
         "kettle": len(cbpi.cache.get("kettle")),
         "hardware": len(cbpi.cache.get("actors")),
         "thermometer": "CBP3.0",
@@ -30,7 +29,7 @@ def sendStats(cbpi):
         }
 
         import requests
-        r = requests.post('http://statistics.craftbeerpi.com', json=info)
+        #r = requests.post('http://statistics.craftbeerpi.com', json=info)
 
     except Exception as e:
         pass

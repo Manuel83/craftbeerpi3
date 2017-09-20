@@ -2,12 +2,12 @@ from flask import json, request
 from flask_classy import FlaskView, route
 from git import Repo, Git
 import sqlite3
-from modules.app_config import cbpi
+from modules.core.core import cbpi
 from werkzeug.utils import secure_filename
 import pprint
 import time
 import os
-from modules.steps import Step,StepView
+from modules.step import Step,StepView
 import xml.etree.ElementTree
 
 
@@ -56,7 +56,7 @@ class RESTImport(FlaskView):
         return ('', 204)
 
 
-@cbpi.initalizer()
+@cbpi.addon.core.initializer()
 def init(cbpi):
     RESTImport.api = cbpi
-    RESTImport.register(cbpi.app, route_base='/api/recipe/import/v1')
+    RESTImport.register(cbpi._app, route_base='/api/recipe/import/v1')

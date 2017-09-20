@@ -2,62 +2,11 @@ import time
 from flask import request
 from flask_classy import route
 
-from modules import DBModel, cbpi, get_db
+from modules.core.core import  cbpi
+from modules.core.db import get_db, DBModel
 from modules.core.baseview import BaseView
+from modules.database.dbmodel import Fermenter, FermenterStep
 
-
-class Fermenter(DBModel):
-    __fields__ = ["name", "brewname", "sensor", "sensor2", "sensor3", "heater", "cooler",  "logic",  "config",  "target_temp"]
-    __table_name__ = "fermenter"
-    __json_fields__ = ["config"]
-
-class FermenterStep(DBModel):
-    __fields__ = ["name", "days", "hours", "minutes", "temp", "direction", "order", "state", "start", "end", "timer_start", "fermenter_id"]
-    __table_name__ = "fermenter_step"
-
-    @classmethod
-    def get_by_fermenter_id(cls, id):
-        cur = get_db().cursor()
-        cur.execute("SELECT * FROM %s WHERE fermenter_id = ?" % cls.__table_name__,(id,))
-        result = []
-        for r in cur.fetchall():
-            result.append(cls(r))
-        return result
-
-    @classmethod
-    def get_max_order(cls,id):
-        cur = get_db().cursor()
-        cur.execute("SELECT max(fermenter_step.'order') as 'order' FROM %s WHERE fermenter_id = ?" % cls.__table_name__, (id,))
-        r = cur.fetchone()
-        return r.get("order")
-
-    @classmethod
-    def update_state(cls, id, state):
-        cur = get_db().cursor()
-        cur.execute("UPDATE %s SET state = ? WHERE id =?" % cls.__table_name__, (state, id))
-        get_db().commit()
-
-    @classmethod
-    def update_timer(cls, id, timer):
-        cur = get_db().cursor()
-        cur.execute("UPDATE %s SET timer_start = ? WHERE id =?" % cls.__table_name__, (timer, id))
-        get_db().commit()
-
-    @classmethod
-    def get_by_state(cls, state):
-        cur = get_db().cursor()
-        cur.execute("SELECT * FROM %s WHERE state = ?" % cls.__table_name__, state)
-        r = cur.fetchone()
-        if r is not None:
-            return cls(r)
-        else:
-            return None
-
-    @classmethod
-    def reset_all_steps(cls,id):
-        cur = get_db().cursor()
-        cur.execute("UPDATE %s SET state = 'I', start = NULL, end = NULL, timer_start = NULL WHERE fermenter_id = ?" % cls.__table_name__, (id,))
-        get_db().commit()
 
 class FermenterView(BaseView):
     model = Fermenter
@@ -86,7 +35,7 @@ class FermenterView(BaseView):
         temp = float(temp)
         cbpi.cache.get(self.cache_key)[id].target_temp = float(temp)
         self.model.update(**self.api.cache.get(self.cache_key)[id].__dict__)
-        cbpi.emit("UPDATE_FERMENTER_TARGET_TEMP", {"id": id, "target_temp": temp})
+        cbpi.ws_emit("UPDATE_FERMENTER_TARGET_TEMP", {"id": id, "target_temp": temp})
         return ('', 204)
 
     @route('/<int:id>/brewname', methods=['POST'])
@@ -95,7 +44,7 @@ class FermenterView(BaseView):
         brewname = data.get("brewname")
         cbpi.cache.get(self.cache_key)[id].brewname = brewname
         self.model.update(**self.api.cache.get(self.cache_key)[id].__dict__)
-        cbpi.emit("UPDATE_FERMENTER_BREWNAME", {"id": id, "brewname": brewname})
+        cbpi.ws_emit("UPDATE_FERMENTER_BREWNAME", {"id": id, "brewname": brewname})
         return ('', 204)
 
     @classmethod
@@ -119,7 +68,7 @@ class FermenterView(BaseView):
 
         cbpi.cache.get(self.cache_key)[id].steps.append(f)
 
-        cbpi.emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key)[id])
+        cbpi.ws_emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key)[id])
 
         return ('', 204)
 
@@ -141,7 +90,7 @@ class FermenterView(BaseView):
 
                 FermenterStep.update(**s.__dict__)
                 break
-        cbpi.emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key)[id])
+        cbpi.ws_emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key)[id])
         return ('', 204)
 
     @route('/<int:id>/step/<int:stepid>', methods=["DELETE"])
@@ -152,7 +101,7 @@ class FermenterView(BaseView):
                 del cbpi.cache.get(self.cache_key)[id].steps[idx]
                 FermenterStep.delete(s.id)
                 break
-        cbpi.emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key)[id])
+        cbpi.ws_emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key)[id])
         return ('', 204)
 
     @route('/<int:id>/start', methods=['POST'])
@@ -179,7 +128,8 @@ class FermenterView(BaseView):
 
         if inactive is not None:
             fermenter = self.get_fermenter(inactive.fermenter_id)
-            current_temp = cbpi.get_sensor_value(int(fermenter.sensor))
+
+            current_temp = cbpi.sensor.get_value(int(fermenter.sensor))
 
             inactive.state = 'A'
             inactive.start = time.time()
@@ -190,7 +140,7 @@ class FermenterView(BaseView):
 
             cbpi.cache["fermenter_task"][id] = inactive
 
-        cbpi.emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key)[id])
+        cbpi.ws_emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key)[id])
         return ('', 204)
 
     @route('/<int:id>/reset', methods=["POST"])
@@ -202,7 +152,7 @@ class FermenterView(BaseView):
         if id in cbpi.cache["fermenter_task"]:
             del cbpi.cache["fermenter_task"][id]
 
-        cbpi.emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key)[id])
+        cbpi.ws_emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key)[id])
         return ('', 204)
 
     @route('/<int:id>/automatic', methods=['POST'])
@@ -216,21 +166,23 @@ class FermenterView(BaseView):
                     cfg = fermenter.config.copy()
                     cfg.update(
                         dict(api=cbpi, fermenter_id=fermenter.id, heater=fermenter.heater, sensor=fermenter.sensor))
-                    instance = cbpi.get_fermentation_controller(fermenter.logic).get("class")(**cfg)
+                    instance = cbpi.fermentation.get_controller(fermenter.logic).get("class")(**cfg)
                     instance.init()
                     fermenter.instance = instance
 
                     def run(instance):
                         instance.run()
 
-                    t = cbpi.socketio.start_background_task(target=run, instance=instance)
+                    t = cbpi._socketio.start_background_task(target=run, instance=instance)
                 fermenter.state = not fermenter.state
-                cbpi.emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key).get(id))
+                cbpi.ws_emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key).get(id))
+                cbpi.emit("FERMENTER_CONTROLLER_STARTED", id=id)
             else:
                 # Stop controller
                 fermenter.instance.stop()
                 fermenter.state = not fermenter.state
-                cbpi.emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key).get(id))
+                cbpi.ws_emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key).get(id))
+                cbpi.emit("FERMENTER_CONTROLLER_STOPPED", id=id)
 
         except Exception as e:
             print e
@@ -255,7 +207,7 @@ class FermenterView(BaseView):
 
         step.timer_start = target_time
 
-        cbpi.emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key)[id])
+        cbpi.ws_emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key)[id])
 
     def check_step(self):
         for key, value in cbpi.cache["fermenter_task"].iteritems():
@@ -282,35 +234,33 @@ class FermenterView(BaseView):
                 pass
 
 
-@cbpi.backgroundtask(key="read_target_temps_fermenter", interval=5)
-def read_target_temps(api):
+@cbpi.addon.core.backgroundjob(key="read_target_temps_fermenter", interval=5)
+def read_target_temps(cbpi):
     """
     background process that reads all passive sensors in interval of 1 second
     :return: None
     """
-    result = {}
     for key, value in cbpi.cache.get("fermenter").iteritems():
-        cbpi.save_to_file(key, value.target_temp, prefix="fermenter")
+        cbpi.sensor.write_log(key, value.target_temp, prefix="fermenter")
+
 
 
 instance = FermenterView()
 
-@cbpi.backgroundtask(key="fermentation_task", interval=1)
-def execute_fermentation_step(api):
-    with cbpi.app.app_context():
+@cbpi.addon.core.backgroundjob(key="fermentation_task", interval=1)
+def execute_fermentation_step(cbpi):
+    with cbpi._app.app_context():
         instance.check_step()
 
 
 def init_active_steps():
-    '''
-    active_steps = FermenterStep.query.filter_by(state='A')
-    for a in active_steps:
-        db.session.expunge(a)
-        cbpi.cache["fermenter_task"][a.fermenter_id] = a
-    '''
+    pass
 
-@cbpi.initalizer(order=1)
+
+
+@cbpi.addon.core.initializer(order=1)
 def init(cbpi):
 
-    FermenterView.register(cbpi.app, route_base='/api/fermenter')
+    cbpi.cache["fermenter_task"] = {}
+    FermenterView.register(cbpi._app, route_base='/api/fermenter')
     FermenterView.init_cache()

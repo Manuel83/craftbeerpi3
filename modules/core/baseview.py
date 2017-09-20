@@ -1,6 +1,6 @@
 from flask import request, json
 from flask_classy import route, FlaskView
-from modules import cbpi
+from modules.core.core import cbpi
 
 
 class BaseView(FlaskView):
@@ -11,7 +11,6 @@ class BaseView(FlaskView):
 
     @route('/<int:id>', methods=["GET"])
     def getOne(self, id):
-
         if self.api.cache.get(self.cache_key) is not None:
             return json.dumps(self.api.cache.get(self.cache_key).get(id))
         else:
@@ -33,7 +32,9 @@ class BaseView(FlaskView):
 
     @route('/', methods=["POST"])
     def post(self):
+
         data = request.json
+        self.api._app.logger.info("INSERT Model %s", self.model.__name__)
         self._pre_post_callback(data)
         m = self.model.insert(**data)
         if self.api.cache.get(self.cache_key) is not None:
@@ -94,7 +95,7 @@ class BaseView(FlaskView):
 
     @classmethod
     def init_cache(cls):
-        with cls.api.app.app_context():
+        with cls.api._app.app_context():
 
             if cls.model.__as_array__ is True:
                 cls.api.cache[cls.cache_key] = []

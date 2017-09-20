@@ -2,18 +2,28 @@ from flask import json, request
 from flask_classy import FlaskView, route
 from git import Repo, Git
 import sqlite3
-from modules.app_config import cbpi
+from modules.core.core import cbpi
 from werkzeug.utils import secure_filename
 import pprint
 import time
 import os
-from modules.steps import Step,StepView
+from modules.step import Step,StepView
 import xml.etree.ElementTree
 
 class BeerXMLImport(FlaskView):
     BEER_XML_FILE = "./upload/beer.xml"
     @route('/', methods=['GET'])
     def get(self):
+
+        """
+        Get BeerXML
+        ---
+        tags:
+          - beerxml
+        responses:
+          200:
+            description: BeerXML file stored in CraftBeerPI
+        """
         if not os.path.exists(self.BEER_XML_FILE):
             self.api.notify(headline="File Not Found", message="Please upload a Beer.xml File",
                             type="danger")
@@ -31,6 +41,16 @@ class BeerXMLImport(FlaskView):
 
     @route('/upload', methods=['POST'])
     def upload_file(self):
+        """
+        Upload BeerXML File
+        ---
+        tags:
+          - beerxml
+       
+        responses:
+          200:
+            description: BeerXML File Uploaded
+        """
         try:
             if request.method == 'POST':
                 file = request.files['file']
@@ -46,6 +66,23 @@ class BeerXMLImport(FlaskView):
     @route('/<int:id>', methods=['POST'])
     def load(self, id):
 
+        """
+        Load Recipe from BeerXML
+        ---
+        tags:
+          - beerxml
+        parameters:
+          - in: path
+            name: id
+            schema:
+              type: integer
+            required: true
+            description: Recipe ID from BeerXML
+
+        responses:
+          200:
+            description: Recipe loaed
+        """
 
         steps = self.getSteps(id)
         name = self.getRecipeName(id)
@@ -103,8 +140,8 @@ class BeerXMLImport(FlaskView):
 
         return steps
 
-@cbpi.initalizer()
+@cbpi.addon.core.initializer()
 def init(cbpi):
 
     BeerXMLImport.api = cbpi
-    BeerXMLImport.register(cbpi.app, route_base='/api/beerxml')
+    BeerXMLImport.register(cbpi._app, route_base='/api/beerxml')

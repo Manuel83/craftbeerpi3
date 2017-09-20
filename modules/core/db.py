@@ -1,5 +1,4 @@
 import sqlite3
-
 from flask import json, g
 
 
@@ -18,8 +17,8 @@ def get_db():
 class DBModel(object):
 
     __priamry_key__ = "id"
-    __as_array__ = False
-    __order_by__ = None
+    __as_array__    = False
+    __order_by__    = None
     __json_fields__ = []
 
     def __init__(self, args):

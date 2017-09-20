@@ -1,30 +1,34 @@
 import time
 from thread import start_new_thread
-from modules import cbpi
+
+from modules.core.baseapi import Buzzer
+from modules.core.core import cbpi
 
 try:
     import RPi.GPIO as GPIO
 except Exception as e:
     pass
 
-class Buzzer(object):
+class GPIOBuzzer(Buzzer):
 
     sound = ["H", 0.1, "L", 0.1, "H", 0.1, "L", 0.1, "H", 0.1, "L"]
+
+
     def __init__(self, gpio):
         try:
-            cbpi.app.logger.info("INIT BUZZER NOW GPIO%s" % gpio)
+            cbpi._app.logger.info("INIT BUZZER NOW GPIO%s" % gpio)
             self.gpio = int(gpio)
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.gpio, GPIO.OUT)
             self.state = True
-            cbpi.app.logger.info("BUZZER SETUP OK")
+            cbpi._app.logger.info("BUZZER SETUP OK")
         except Exception as e:
-            cbpi.app.logger.info("BUZZER EXCEPTION %s" % str(e))
+            cbpi._app.logger.info("BUZZER EXCEPTION %s" % str(e))
             self.state = False
 
     def beep(self):
         if self.state is False:
-            cbpi.app.logger.error("BUZZER not working")
+            cbpi._app.logger.error("BUZZER not working")
             return
 
         def play(sound):
@@ -42,9 +46,8 @@ class Buzzer(object):
 
         start_new_thread(play, (self.sound,))
 
-@cbpi.initalizer(order=1)
+@cbpi.addon.core.initializer(order=1)
 def init(cbpi):
     gpio = cbpi.get_config_parameter("buzzer", 16)
-    cbpi.buzzer = Buzzer(gpio)
-    cbpi.beep()
-    cbpi.app.logger.info("INIT OK")
+    cbpi.buzzer = GPIOBuzzer(gpio)
+

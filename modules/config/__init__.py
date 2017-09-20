@@ -2,14 +2,10 @@ import time
 
 from flask import json, request
 from flask_classy import route
-from modules import DBModel, cbpi, get_db
+from modules.core.core import cbpi
+from modules.core.db import DBModel
 from modules.core.baseview import BaseView
-
-class Config(DBModel):
-    __fields__ = ["type", "value", "description", "options"]
-    __table_name__ = "config"
-    __json_fields__ = ["options"]
-    __priamry_key__ = "name"
+from modules.database.dbmodel import Config
 
 
 class ConfigView(BaseView):
@@ -18,7 +14,15 @@ class ConfigView(BaseView):
 
     @route('/<name>', methods=["PUT"])
     def put(self, name):
-
+        """
+        Set new config value
+        ---
+        tags:
+          - config
+        responses:
+          204:
+            description: New config value set
+        """
         data = request.json
         data["name"] = name
         update_data = {"name": data["name"], "value": data["value"]}
@@ -27,31 +31,59 @@ class ConfigView(BaseView):
             self.api.cache.get(self.cache_key)[name].__dict__.update(**update_data)
         m = self.model.update(**self.api.cache.get(self.cache_key)[name].__dict__)
         self._post_put_callback(self.api.cache.get(self.cache_key)[name])
+
+        self.api.emit("CONFIG_UPDATE", name=name, data=data["value"])
         return json.dumps(self.api.cache.get(self.cache_key)[name].__dict__)
 
     @route('/<id>', methods=["GET"])
     def getOne(self, id):
+        """
+        Get config parameter
+        ---
+        tags:
+          - config
+        responses:
+          400:
+            description: Get one config parameter via web api is not supported
+        """
         return ('NOT SUPPORTED', 400)
 
     @route('/<id>', methods=["DELETE"])
     def delete(self, id):
+        """
+        Delete config parameter
+        ---
+        tags:
+          - config
+        responses:
+          400:
+            description: Deleting config parameter via web api is not supported
+        """
         return ('NOT SUPPORTED', 400)
 
     @route('/', methods=["POST"])
     def post(self):
+        """
+        Get config parameter
+        ---
+        tags:
+          - config
+        responses:
+          400:
+            description: Adding new config parameter via web api is not supported
+        """
         return ('NOT SUPPORTED', 400)
 
     @classmethod
     def init_cache(cls):
 
-        with cls.api.app.app_context():
+        with cls.api._app.app_context():
             cls.api.cache[cls.cache_key] = {}
             for key, value  in cls.model.get_all().iteritems():
                 cls.post_init_callback(value)
                 cls.api.cache[cls.cache_key][value.name] = value
 
-@cbpi.initalizer(order=0)
+@cbpi.addon.core.initializer(order=0)
 def init(cbpi):
-
-    ConfigView.register(cbpi.app, route_base='/api/config')
+    ConfigView.register(cbpi._app, route_base='/api/config')
     ConfigView.init_cache()
