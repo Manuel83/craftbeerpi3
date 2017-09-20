@@ -14,9 +14,9 @@ class MashStep(StepBase):
     Just put the decorator @cbpi.step on top of a method
     '''
     # Properties
-    temp = Property.Number("Temperature", configurable=True, description="Target Temperature of Mash Step")
-    kettle = StepProperty.Kettle("Kettle", description="Kettle in which the mashing takes place")
-    timer = Property.Number("Timer in Minutes", configurable=True, description="Timer is started when the target temperature is reached")
+    temp = Property.Number("Temperature", configurable=True, description="Target temperature of mash step.")
+    kettle = StepProperty.Kettle("Kettle", description="Kettle in which the mashing takes place.")
+    timer = Property.Number("Timer in Minutes", configurable=True, description="Timer is started when the target temperature is reached.")
 
     def init(self):
         '''
@@ -67,8 +67,8 @@ class MashInStep(StepBase):
     Just put the decorator @cbpi.step on top of a method
     '''
     # Properties
-    temp = Property.Number("Temperature", configurable=True,  description="Target Temperature of Mash Step")
-    kettle = StepProperty.Kettle("Kettle", description="Kettle in which the mashing takes place")
+    temp = Property.Number("Temperature", configurable=True,  description="Target temperature of mash step.")
+    kettle = StepProperty.Kettle("Kettle", description="Kettle in which the mashing takes place.")
     s = False
 
     @cbpi.action("Change Power")
@@ -95,14 +95,14 @@ class MashInStep(StepBase):
         # Check if Target Temp is reached
         if self.get_kettle_temp(self.kettle) >= float(self.temp) and self.s is False:
             self.s = True
-            self.notify("Step Temp Reached!", "Please press the next button to continue", timeout=None)
+            self.notify("Step temperature reached!", "Please press the next button to continue.", timeout=None)
 
 
 
 @cbpi.step
 class ChilStep(StepBase):
 
-    timer = Property.Number("Timer in Minutes", configurable=True, default_value=0, description="Timer is started immediately")
+    timer = Property.Number("Timer in Minutes", configurable=True, default_value=0, description="Timer is started immediately.")
 
     @cbpi.action("Stat Timer")
     def start(self):
@@ -126,8 +126,8 @@ class ChilStep(StepBase):
 @cbpi.step
 class PumpStep(StepBase):
 
-    pump = StepProperty.Actor("Pump", description="Pump actor gets toogled")
-    timer = Property.Number("Timer in Minutes", configurable=True, default_value=0, description="Timer is started immediately")
+    pump = StepProperty.Actor("Pump", description="Pump actor gets toggled.")
+    timer = Property.Number("Timer in Minutes", configurable=True, default_value=0, description="Timer is started immediately.")
 
     @cbpi.action("Stat Timer")
     def start(self):
@@ -157,15 +157,15 @@ class BoilStep(StepBase):
     Just put the decorator @cbpi.step on top of a method
     '''
     # Properties
-    temp = Property.Number("Temperature", configurable=True, default_value=100, description="Target temperature for boiling")
-    kettle = StepProperty.Kettle("Kettle", description="Kettle in which the boiling step takes place")
-    timer = Property.Number("Timer in Minutes", configurable=True, default_value=90, description="Timer is started when target temperature is reached")
-    hop_1 = Property.Number("Hop 1 Addition", configurable=True, description="Fist Hop alert")
+    temp = Property.Number("Temperature", configurable=True, default_value=100, description="Target temperature for boiling.")
+    kettle = StepProperty.Kettle("Kettle", description="Kettle in which the boiling step takes place.")
+    timer = Property.Number("Timer in Minutes", configurable=True, default_value=90, description="Timer is started when target temperature is reached.")
+    hop_1 = Property.Number("Hop 1 Addition", configurable=True, description="First hop alert.")
     hop_1_added = Property.Number("",default_value=None)
-    hop_2 = Property.Number("Hop 2 Addition", configurable=True, description="Second Hop alert")
+    hop_2 = Property.Number("Hop 2 Addition", configurable=True, description="Second hop alert.")
     hop_2_added = Property.Number("", default_value=None)
     hop_3 = Property.Number("Hop 3 Addition", configurable=True)
-    hop_3_added = Property.Number("", default_value=None, description="Second Hop alert")
+    hop_3_added = Property.Number("", default_value=None, description="Third hop alert.")
 
     def init(self):
         '''
