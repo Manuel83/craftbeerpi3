@@ -139,7 +139,7 @@ class FermenterController(ControllerBase, ActorController, SensorController):
     def heater_on(self, power=100):
         f = self.api.cache.get("fermenter").get(self.fermenter_id)
         if f.heater is not None:
-            self.actor_on(int(f.heater))
+            self.actor_on(power, int(f.heater))
 
     @cbpi.try_catch(None)
     def heater_off(self):
