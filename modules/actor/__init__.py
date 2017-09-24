@@ -1,5 +1,7 @@
 import time
 from flask_classy import route
+from flask_login import login_required
+
 from modules.core.db import DBModel
 from modules.core.core import cbpi
 from modules.core.baseview import BaseView
@@ -21,6 +23,7 @@ class ActorView(BaseView):
     def _post_put_callback(self, m):
         self.api.actor.init_one(m.id)
 
+    @login_required
     @route("<int:id>/switch/on", methods=["POST"])
     def on(self, id):
         """
@@ -42,6 +45,7 @@ class ActorView(BaseView):
         self.api.actor.on(id)
         return ('', 204)
 
+    @login_required
     @route("<int:id>/switch/off", methods=["POST"])
     def off(self, id):
         """
@@ -63,6 +67,7 @@ class ActorView(BaseView):
         self.api.actor.off(id)
         return ('', 204)
 
+    @login_required
     @route("<int:id>/power/<int:power>", methods=["POST"])
     def power(self, id, power):
         """
@@ -90,6 +95,7 @@ class ActorView(BaseView):
         self.api.actor.power(id, power)
         return ('', 204)
 
+    @login_required
     @route("<int:id>/toggle", methods=["POST"])
     def toggle(self, id):
         """
@@ -108,10 +114,7 @@ class ActorView(BaseView):
           200:
             description: Actor toggled
         """
-        if self.api.cache.get("actors").get(id).state == 0:
-            self.on(id)
-        else:
-            self.off(id)
+        cbpi.actor.toggle(id)
         return ('', 204)
 
     def toggleTimeJob(self, id, t):
@@ -121,6 +124,7 @@ class ActorView(BaseView):
         self.api.cache.get("actors").get(int(id)).timer = None
         self.toggle(int(id))
 
+    @login_required
     @route("/<id>/toggle/<int:t>", methods=["POST"])
     def toggleTime(self, id, t):
         """
@@ -145,9 +149,11 @@ class ActorView(BaseView):
           200:
             description: Actor toggled
         """
-        t = self.api._socketio.start_background_task(target=self.toggleTimeJob, id=id, t=t)
+        self.api.actor.toggle_timeout(id, t)
+        #t = self.api._socketio.start_background_task(target=self.toggleTimeJob, id=id, t=t)
         return ('', 204)
 
+    @login_required
     @route('<int:id>/action/<method>', methods=["POST"])
     def action(self, id, method):
         """
@@ -172,7 +178,8 @@ class ActorView(BaseView):
           200:
             description: Actor Action called
         """
-        cbpi.cache.get("actors").get(id).instance.__getattribute__(method)()
+
+        self.api.actor.action(id, method)
         return ('', 204)
 
 

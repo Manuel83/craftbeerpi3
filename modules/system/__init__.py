@@ -1,6 +1,7 @@
 import yaml
 from flask import json, url_for, Response
 from flask_classy import FlaskView, route
+from flask_login import login_required, current_user
 from git import Repo, Git
 from modules.core.core import cbpi
 import pprint
@@ -13,6 +14,7 @@ class SystemView(FlaskView):
         from subprocess import call
         call("halt")
 
+    @login_required
     @route('/shutdown', methods=['POST'])
     def shutdown(self):
         """
@@ -33,6 +35,7 @@ class SystemView(FlaskView):
         from subprocess import call
         call("reboot")
 
+    @login_required
     @route('/reboot', methods=['POST'])
     def reboot(self):
         """
@@ -47,6 +50,7 @@ class SystemView(FlaskView):
         self.doReboot()
         return ('', 204)
 
+    @login_required
     @route('/tags/<name>', methods=['GET'])
     def checkout_tag(self,name):
         repo = Repo('./')
@@ -58,6 +62,7 @@ class SystemView(FlaskView):
         cbpi.notify("Checkout successful", "Please restart the system")
         return ('', 204)
 
+    @login_required
     @route('/git/status', methods=['GET'])
     def git_status(self):
         """
@@ -92,6 +97,7 @@ class SystemView(FlaskView):
         return json.dumps({"tags": tags, "headcommit": str(repo.head.commit), "branchname": branch_name,
                            "master": {"changes": changes}})
 
+    @login_required
     @route('/check_update', methods=['GET'])
     def check_update(self):
         """
@@ -114,6 +120,7 @@ class SystemView(FlaskView):
 
         return json.dumps(changes)
 
+    @login_required
     @route('/git/pull', methods=['POST'])
     def update(self):
         """
@@ -131,6 +138,24 @@ class SystemView(FlaskView):
         cbpi.notify("Pull successful", "The lasted updated was downloaded. Please restart the system")
         return ('', 204)
 
+    @route('/connect', methods=['GET'])
+    def connect(self):
+        """
+        Connect
+        ---
+        tags:
+          - system
+        responses:
+          200:
+            description: CraftBeerPi System Cache
+        """
+
+        if self.api.get_config_parameter("setup", "YES") == "YES":
+            return json.dumps(dict(setup=True, loggedin= current_user.is_authenticated ))
+        else:
+            return json.dumps(dict(setup=False, loggedin= current_user.is_authenticated))
+
+    @login_required
     @route('/dump', methods=['GET'])
     def dump(self):
         """

@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint,render_template
 
 from modules.core.core import cbpi
 
@@ -11,11 +11,20 @@ def init(cbpi):
 
 @react.route('/',  methods=["GET"])
 def index():
-    return react.send_static_file("index.html")
+    #return react.send_static_file("index.html")
+
+    js_files = []
+    for key, value in cbpi.cache["js"].iteritems():
+        js_files.append(value)
+
+    print js_files
+    return render_template('index.html', js_files=js_files)
 
 
 
-
+@cbpi._app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 
 

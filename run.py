@@ -6,9 +6,11 @@ cbpi = CraftBeerPI()
 
 addon = cbpi.addon
 
+
+from modules.core.db_migrate import *
 from modules.buzzer import *
 from modules.config import *
-from modules.core.login import *
+from modules.login import *
 from modules.system import *
 from modules.ui import *
 from modules.step import *

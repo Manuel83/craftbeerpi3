@@ -7,6 +7,10 @@ from modules.core.proptypes import Property
 class Dummy(Step):
 
 
+    @cbpi.addon.step.action("WOHOO")
+    def myaction(self):
+        print "HALLO"
+
     text = Property.Text(label="Text", configurable=True, description="WOHOOO")
 
     def execute(self):

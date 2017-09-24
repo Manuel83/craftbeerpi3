@@ -87,6 +87,9 @@ class StepAPI(BaseAPI):
             return func
         return real_decorator
 
+
+
+
 class ActorAPI(BaseAPI):
 
     key = "actor_types"
@@ -150,6 +153,8 @@ class CoreAPI(BaseAPI):
         self.cbpi.cache["init"] = []
         self.cbpi.cache["js"] = {}
         self.cbpi.cache["background"] = []
+        self.cbpi.cache["web_menu"] =[]
+
     def init(self):
 
         self.cbpi.cache["init"] = sorted(self.cbpi.cache["init"], key=lambda k: k['order'])
@@ -172,6 +177,9 @@ class CoreAPI(BaseAPI):
 
     def add_js(self, name, file):
         self.cbpi.cache["js"][name] = file
+
+    def add_menu_link(self, name, path):
+        self.cbpi.cache["web_menu"].append(dict(name=name, path=path))
 
     def initializer(self, order=0, **options):
         def decorator(f):

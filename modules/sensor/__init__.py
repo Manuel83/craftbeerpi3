@@ -34,7 +34,7 @@ class SensorView(BaseView):
           200:
             description: Sensor Action called
         """
-        cbpi.cache.get("sensors").get(id).instance.__getattribute__(method)()
+        cbpi.sensor.action(id, method)
         return ('', 204)
 
     def _post_post_callback(self, m):

@@ -7,6 +7,7 @@ from datetime import datetime
 from functools import wraps, update_wrapper
 from importlib import import_module
 from time import localtime, strftime
+import time
 
 from flask import Flask, redirect, json, g, make_response
 from flask_socketio import SocketIO
@@ -15,6 +16,7 @@ from baseapi import *
 from db import DBModel
 from modules.core.basetypes import Sensor, Actor
 from modules.database.dbmodel import Kettle
+
 
 
 class ComplexEncoder(json.JSONEncoder):
@@ -109,6 +111,12 @@ class ActorCore(object):
             print e
             return False
 
+    def toggle(self, id):
+        if self.cbpi.cache.get("actors").get(id).state == 0:
+            self.on(id)
+        else:
+            self.off(id)
+
     def power(self, id, power):
         try:
             actor = self.cbpi.cache["actors"].get(int(id))
@@ -120,6 +128,20 @@ class ActorCore(object):
         except Exception as e:
             print e
             return False
+
+    def action(self, id, method):
+        self.cbpi.cache.get("actors").get(id).instance.__getattribute__(method)()
+
+
+    def toggle_timeout(self, id, seconds):
+
+        def toggle( id, seconds):
+            self.cbpi.cache.get("actors").get(int(id)).timer = int(time.time()) + int(seconds)
+            self.toggle(int(id))
+            self.cbpi.sleep(seconds)
+            self.cbpi.cache.get("actors").get(int(id)).timer = None
+            self.toggle(int(id))
+        job = self.cbpi._socketio.start_background_task(target=toggle, id=id, seconds=seconds)
 
     def get_state(self, actor_id):
         print actor_id
@@ -183,6 +205,10 @@ class SensorCore(object):
         with open(filename, "a") as file:
             file.write(msg)
 
+    def action(self, id, method):
+        self.cbpi.cache.get("sensors").get(id).instance.__getattribute__(method)()
+
+
 
 class BrewingCore(object):
     def __init__(self, cbpi):
@@ -205,6 +231,32 @@ class BrewingCore(object):
         Kettle.update(**self.cbpi.cache.get("kettle")[id].__dict__)
         self.cbpi.ws_emit("UPDATE_KETTLE_TARGET_TEMP", {"id": id, "target_temp": temp})
         self.cbpi.emit("SET_KETTLE_TARGET_TEMP", id=id, temp=temp)
+
+
+    def toggle_automatic(self, id):
+        kettle = self.cbpi.cache.get("kettle")[id]
+        if kettle.state is False:
+            # Start controller
+            if kettle.logic is not None:
+                cfg = kettle.config.copy()
+                cfg.update(dict(api=cbpi, kettle_id=kettle.id, heater=kettle.heater, sensor=kettle.sensor))
+                instance = self.get_controller(kettle.logic).get("class")(**cfg)
+                instance.init()
+                kettle.instance = instance
+
+                def run(instance):
+                    instance.run()
+
+                t = self.cbpi._socketio.start_background_task(target=run, instance=instance)
+            kettle.state = not kettle.state
+            self.cbpi.ws_emit("UPDATE_KETTLE", cbpi.cache.get("kettle").get(id))
+            self.cbpi.emit("KETTLE_CONTROLLER_STARTED", id=id)
+        else:
+            # Stop controller
+            kettle.instance.stop()
+            kettle.state = not kettle.state
+            self.cbpi.ws_emit("UPDATE_KETTLE", cbpi.cache.get("kettle").get(id))
+            self.cbpi.emit("KETTLE_CONTROLLER_STOPPED", id=id)
 
 
 class FermentationCore(object):
@@ -313,7 +365,7 @@ class CraftBeerPI(object):
             return cfg.value
 
     def emit(self, key, **kwargs):
-        print key, kwargs
+
         if self.eventbus.get(key) is not None:
             for value in self.eventbus[key]:
                 if value["async"] is False:

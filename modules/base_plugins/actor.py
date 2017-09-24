@@ -26,7 +26,6 @@ class Dummy(Actor):
 @cbpi.addon.kettle.controller()
 class MyController(KettleController):
 
-
     def run(self):
         while self.is_running():
             print "HALLO"

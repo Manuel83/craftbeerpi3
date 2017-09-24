@@ -214,38 +214,8 @@ class KettleView(BaseView):
                     description: User created
                 """
 
-        kettle = cbpi.cache.get("kettle")[id]
-        if kettle.state is False:
-            # Start controller
-            if kettle.logic is not None:
-                cfg = kettle.config.copy()
-                cfg.update(dict(api=cbpi, kettle_id=kettle.id, heater=kettle.heater, sensor=kettle.sensor))
-                instance = cbpi.brewing.get_controller(kettle.logic).get("class")(**cfg)
-                instance.init()
-                kettle.instance = instance
-                def run(instance):
-                    instance.run()
-                t = self.api._socketio.start_background_task(target=run, instance=instance)
-            kettle.state = not kettle.state
-            cbpi.ws_emit("UPDATE_KETTLE", cbpi.cache.get("kettle").get(id))
-            cbpi.emit("KETTLE_CONTROLLER_STARTED", id=id)
-        else:
-            # Stop controller
-            kettle.instance.stop()
-            kettle.state = not kettle.state
-            cbpi.ws_emit("UPDATE_KETTLE", cbpi.cache.get("kettle").get(id))
-            cbpi.emit("KETTLE_CONTROLLER_STOPPED", id=id)
+        self.api.brewing.toggle_automatic(id)
         return ('', 204)
-
-#@cbpi.event("SET_TARGET_TEMP")
-def set_target_temp(id, temp):
-    '''
-    Change Taget Temp Event
-    :param id: kettle id
-    :param temp: target temp to set
-    :return: None
-    '''
-    KettleView().postTargetTemp(id, temp)
 
 @cbpi.addon.core.backgroundjob(key="read_target_temps", interval=5)
 def read_target_temps(api):

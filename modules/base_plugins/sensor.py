@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+import os
+
+from os.path import join
+
 from modules.core.basetypes import Actor, Sensor
 from modules.core.core import cbpi
 from modules.core.proptypes import Property
@@ -33,4 +37,11 @@ class Dummy(Sensor):
 @cbpi.addon.core.action(key="clear", label="Clear all Logs")
 def woohoo(cbpi):
     print "COOL"
-    cbpi.notify(headline="HELLO WORLD",message="")
+    dir = "./logs"
+    test = os.listdir(dir)
+
+    for item in test:
+
+        if item.endswith(".log"):
+            os.remove(join(dir, item))
+    cbpi.notify(headline="Logs Deleted",message="All Logs Cleared")

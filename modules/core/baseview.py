@@ -1,5 +1,7 @@
 from flask import request, json
 from flask_classy import route, FlaskView
+from flask_login import login_required
+
 from modules.core.core import cbpi
 
 
@@ -9,6 +11,7 @@ class BaseView(FlaskView):
     cache_key = None
     api = cbpi
 
+    @login_required
     @route('/<int:id>', methods=["GET"])
     def getOne(self, id):
         if self.api.cache.get(self.cache_key) is not None:
@@ -16,6 +19,7 @@ class BaseView(FlaskView):
         else:
             return json.dumps(self.model.get_one(id))
 
+    @login_required
     @route('/', methods=["GET"])
     def getAll(self):
         if self.api.cache.get(self.cache_key) is not None:
@@ -30,6 +34,7 @@ class BaseView(FlaskView):
     def _post_post_callback(self, m):
         pass
 
+    @login_required
     @route('/', methods=["POST"])
     def post(self):
 
@@ -50,7 +55,7 @@ class BaseView(FlaskView):
     def _post_put_callback(self, m):
         pass
 
-
+    @login_required
     @route('/<int:id>', methods=["PUT"])
     def put(self, id):
         data = request.json
@@ -78,6 +83,7 @@ class BaseView(FlaskView):
     def _post_delete_callback(self, id):
         pass
 
+    @login_required
     @route('/<int:id>', methods=["DELETE"])
     def delete(self, id):
         if self.api.cache.get(self.cache_key) is not None:
