@@ -1,5 +1,7 @@
 Flask==0.11.1
 Flask-SocketIO==2.6.2
+flask_login==0.4.0
+flask_swagger==0.2.13
 eventlet==0.19.0
 greenlet==0.4.10
 python-dateutil==2.5.3
