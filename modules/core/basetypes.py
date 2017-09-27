@@ -1,3 +1,5 @@
+from modules.core.proptypes import Property
+import time
 
 class Base(object):
 
@@ -192,8 +194,40 @@ class FermenterController(ControllerBase):
         return self.get_sensor_value(int(self.api.cache.get("fermenter").get(id).sensor))
 
 
+class Timer(object):
+    timer_end = Property.Number("TIMER_END", configurable=False)
 
-class Step(Base):
+    def start_timer(self, timer):
+        if self.timer_end is not None:
+            return
+        self.timer_end = int(time.time()) + timer
+
+    def stop_timer(self):
+        if self.timer_end is not None:
+            self.timer_end = None
+
+    def is_timer_running(self):
+        if self.timer_end is not None:
+            return True
+        else:
+            return False
+
+    def timer_remaining(self):
+        if self.timer_end is not None:
+            return self.timer_end - int(time.time())
+        else:
+            return None
+
+    def is_timer_finished(self):
+        if self.timer_end is None:
+            return None
+        if self.timer_end <= int(time.time()):
+            return True
+        else:
+            return False
+
+
+class Step(Base, Timer):
 
 
     @classmethod
@@ -226,7 +260,6 @@ class Step(Base):
 
         for a in kwds:
             super(Step, self).__setattr__(a, kwds.get(a))
-
         self.api = kwds.get("api")
         self.id = kwds.get("id")
         self.name = kwds.get("name")

@@ -227,10 +227,13 @@ def execute_step(api):
         step = cbpi.cache.get("active_step")
         if step is not None:
             step.execute()
+
             if step.is_dirty():
+
                 state = {}
                 for field in step.managed_fields:
                     state[field] = step.__getattribute__(field)
+
                 Step.update_step_state(step.id, state)
                 step.reset_dirty()
                 cbpi.ws_emit("UPDATE_ALL_STEPS", Step.get_all())

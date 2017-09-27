@@ -1,1 +1,2 @@
 INSERT OR IGNORE INTO config VALUES ('password', 'beer', 'text', 'LoginPassword', NULL );
+INSERT OR IGNORE INTO config VALUES ('password_security', 'NO', 'select', 'Show Login Dialog', '["YES","NO"]');

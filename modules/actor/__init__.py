@@ -14,6 +14,7 @@ class ActorView(BaseView):
 
     @classmethod
     def post_init_callback(self, obj):
+
         obj.state = 0
         obj.power = 100
 

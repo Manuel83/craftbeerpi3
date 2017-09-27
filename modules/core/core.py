@@ -72,11 +72,14 @@ class ActorCore(object):
 
     def init_one(self, id):
         try:
+            print "INIT ONE ACTOR", id
             actor = self.cbpi.cache["actors"][id]
             clazz = self.cbpi.cache[self.key].get(actor.type)["class"]
             cfg = actor.config.copy()
             cfg.update(dict(cbpi=self.cbpi, id=id))
             self.cbpi.cache["actors"][id].instance = clazz(**cfg)
+            actor.state = 0
+            actor.power = 100
             self.cbpi.emit("INIT_ACTOR", id=id)
         except Exception as e:
             print e
@@ -277,6 +280,7 @@ class CraftBeerPI(object):
         FORMAT = '%(asctime)-15s - %(levelname)s - %(message)s'
         logging.basicConfig(filename='./logs/app.log', level=logging.INFO, format=FORMAT)
         self.cache["messages"] = []
+        self.cache["version"] = "3.1"
         self.modules = {}
         self.cache["users"] = {'manuel': {'pw': 'secret'}}
         self.addon = Addon(self)

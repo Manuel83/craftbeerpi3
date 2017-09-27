@@ -1,3 +1,4 @@
+import flask_login
 import yaml
 from flask import json, url_for, Response
 from flask_classy import FlaskView, route
@@ -6,6 +7,8 @@ from git import Repo, Git
 from modules.core.core import cbpi
 import pprint
 import time
+
+from modules.login import User
 
 
 class SystemView(FlaskView):
@@ -149,6 +152,10 @@ class SystemView(FlaskView):
           200:
             description: CraftBeerPi System Cache
         """
+        if cbpi.get_config_parameter("password_security", "NO") == "NO":
+            user = User()
+            user.id = "craftbeerpi"
+            flask_login.login_user(user)
 
         if self.api.get_config_parameter("setup", "YES") == "YES":
             return json.dumps(dict(setup=True, loggedin= current_user.is_authenticated ))

@@ -1,5 +1,5 @@
 from modules.core.db import DBModel, get_db
-
+from flask import json
 
 class Kettle(DBModel):
     __fields__ = ["name","sensor", "heater", "automatic", "logic", "config", "agitator", "target_temp"]

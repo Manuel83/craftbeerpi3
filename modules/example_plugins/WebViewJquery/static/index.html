@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <title>CraftBeerPi WebView</title>
+  </head>
+  <body>
+    <div id="root" >
+
+
+        <div id="kettle">
+
+
+        </div>
+    </div>
+    <!--script src="static/bundle.js" type="text/javascript"></script-->
+     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+    $.ajax({
+        url: "/api/system/dump",
+        dataType: "json"
+    }).then(function(data) {
+       $.each(data.actors, function (i, val) {
+           $( "#kettle" ).append("<div>"+ val.name +"</div>")
+           });
+        });
+    });
+    </script>
+  </body>
+</html>
