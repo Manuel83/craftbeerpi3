@@ -282,7 +282,7 @@ class CraftBeerPI(object):
         self.cache["messages"] = []
         self.cache["version"] = "3.1"
         self.modules = {}
-        self.cache["users"] = {'manuel': {'pw': 'secret'}}
+
         self.addon = Addon(self)
         self.actor = ActorCore(self)
         self.sensor = SensorCore(self)

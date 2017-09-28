@@ -174,7 +174,8 @@ class SystemView(FlaskView):
           200:
             description: CraftBeerPi System Cache
         """
-        return json.dumps(cbpi.cache)
+        return Response(response=json.dumps(cbpi.cache, sort_keys=True, indent=4), status=200, mimetype='application/json')
+
 
 
 @cbpi.addon.core.initializer()
