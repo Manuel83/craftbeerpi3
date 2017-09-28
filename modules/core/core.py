@@ -304,7 +304,11 @@ class CraftBeerPI(object):
         self.sensor.init()
         self.actor.init()
         self.beep()
-        self._socketio.run(self._app, host='0.0.0.0', port=5000)
+        try:
+            port = int(cbpi.get_config_parameter('port', '5000'))
+        except ValueError:
+            port = 5000
+        self._socketio.run(self._app, host='0.0.0.0', port=port)
 
     def beep(self):
         self.buzzer.beep()
