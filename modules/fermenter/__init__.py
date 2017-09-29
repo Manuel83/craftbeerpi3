@@ -77,6 +77,7 @@ class FermenterView(BaseView):
 
     def _post_put_callback(self, m):
         m.state = False
+        self.reset(int(m.id))
 
     @route('/<int:id>/targettemp/<temp>', methods=['POST'])
     def postTargetTemp(self, id, temp):
