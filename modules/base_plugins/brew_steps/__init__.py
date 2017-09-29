@@ -166,6 +166,10 @@ class BoilStep(StepBase):
     hop_2_added = Property.Number("", default_value=None)
     hop_3 = Property.Number("Hop 3 Addition", configurable=True)
     hop_3_added = Property.Number("", default_value=None, description="Third Hop alert")
+    hop_4 = Property.Number("Hop 4 Addition", configurable=True)
+    hop_4_added = Property.Number("", default_value=None, description="Fourth Hop alert")
+    hop_5 = Property.Number("Hop 5 Addition", configurable=True)
+    hop_5_added = Property.Number("", default_value=None, description="Fifth Hop alert")
     fining = Property.Number("Fining Addition", configurable=True, default_value=15)
     fining_added = Property.Number("",default_value=None, description="Fining Agent Alert")
 
@@ -227,6 +231,8 @@ class BoilStep(StepBase):
                 self.check_hop_timer(1, self.hop_1)
                 self.check_hop_timer(2, self.hop_2)
                 self.check_hop_timer(3, self.hop_3)
+                self.check_hop_timer(4, self.hop_4)
+                self.check_hop_timer(5, self.hop_5)
                 self.check_fining_timer(self.fining)
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
