@@ -1,3 +1,4 @@
+import logging
 import time
 from flask import request
 from flask_classy import route
@@ -12,6 +13,8 @@ class FermenterView(BaseView):
     model = Fermenter
     cache_key = "fermenter"
 
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
 
     def _post_post_callback(self, m):
         m.state = False
@@ -159,7 +162,7 @@ class FermenterView(BaseView):
     def toggle(self, id):
         fermenter = cbpi.cache.get(self.cache_key)[id]
         try:
-            print fermenter.state
+            self.logger.info("Fermenter [%s] is in state [%s]",fermenter.id, fermenter.state)
             if fermenter.state is False:
                 # Start controller
                 if fermenter.logic is not None:
@@ -185,7 +188,7 @@ class FermenterView(BaseView):
                 cbpi.emit("FERMENTER_CONTROLLER_STOPPED", id=id)
 
         except Exception as e:
-            print e
+            self.logger.error(e)
             cbpi.notify("Toogle Fementer Controller failed", "Pleae check the %s configuration" % fermenter.name,
                         type="danger", timeout=None)
             return ('', 500)

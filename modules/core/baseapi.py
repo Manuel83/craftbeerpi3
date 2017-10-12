@@ -1,3 +1,5 @@
+import logging
+
 from proptypes import *
 
 class BaseAPI(object):
@@ -148,6 +150,8 @@ class CoreAPI(BaseAPI):
     key = "core"
 
     def __init__(self, cbpi):
+        self.logger = logging.getLogger(__name__)
+
         self.cbpi = cbpi
         self.cbpi.cache["actions"] = {}
         self.cbpi.cache["init"] = []
@@ -160,7 +164,7 @@ class CoreAPI(BaseAPI):
         self.cbpi.cache["init"] = sorted(self.cbpi.cache["init"], key=lambda k: k['order'])
         for value in self.cbpi.cache.get("init"):
 
-            print value
+            self.logger.debug(value)
             value["function"](self.cbpi)
 
         def job(interval, method):
@@ -168,7 +172,7 @@ class CoreAPI(BaseAPI):
                 try:
                     method(self.cbpi)
                 except Exception as e:
-                    print e
+                    self.logger.debug(e)
                 self.cbpi._socketio.sleep(interval)
 
         for value in self.cbpi.cache.get("background"):

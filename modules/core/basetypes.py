@@ -1,3 +1,5 @@
+import logging
+
 from modules.core.proptypes import Property
 import time
 
@@ -13,6 +15,8 @@ class Base(object):
         self.__dirty = False
 
 class Actor(Base):
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
 
     @classmethod
     def init_global(cls):
@@ -26,15 +30,15 @@ class Actor(Base):
         pass
 
     def on(self, power=100):
-        print "SWITCH ON"
+        self.logger.info("SWITCH ON")
         pass
 
     def off(self):
-        print "SWITCH OFF"
+        self.logger.info("SWITCH OFF")
         pass
 
     def power(self, power):
-        print "SET POWER", power
+        self.logger.info("SET POWER TO [%s]", power)
         pass
 
     def state(self):
@@ -42,6 +46,8 @@ class Actor(Base):
 
 
 class Sensor(Base):
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
 
     unit = ""
 
@@ -65,7 +71,7 @@ class Sensor(Base):
         self.cbpi.ws_emit("SENSOR_UPDATE", self.cbpi.cache["sensors"][self.id])
 
     def execute(self):
-        print "EXECUTE"
+        self.logger.info("EXECUTE")
         pass
 
 
@@ -229,7 +235,6 @@ class Timer(object):
 
 class Step(Base, Timer):
 
-
     @classmethod
     def init_global(cls):
         pass
@@ -251,12 +256,13 @@ class Step(Base, Timer):
         pass
 
     def execute(self):
-        print "-------------"
-        print "Step Info"
-        print "Kettle ID: %s" % self.kettle_id
-        print "ID: %s" % self.id
+        self.logger.info("-------------")
+        self.logger.info("Step Info")
+        self.logger.info("Kettle ID: %s" % self.kettle_id)
+        self.logger.info("ID: %s" % self.id)
 
     def __init__(self, *args, **kwds):
+        self.logger = logging.getLogger(__name__)
 
         for a in kwds:
             super(Step, self).__setattr__(a, kwds.get(a))

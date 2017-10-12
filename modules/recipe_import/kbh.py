@@ -1,3 +1,5 @@
+import logging
+
 from flask import json, request
 from flask_classy import FlaskView, route
 from git import Repo, Git
@@ -11,6 +13,8 @@ from modules.step import Step, StepView
 
 
 class KBH(FlaskView):
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
 
     @route('/', methods=['GET'])
     def get(self):
@@ -39,7 +43,7 @@ class KBH(FlaskView):
                 result.append({"id": row[0], "name": row[1], "brewed": row[2]})
             return json.dumps(result)
         except Exception as e:
-            print e
+            self.logger.error(e)
             self.api.notify(headline="Failed to load KHB database", message="ERROR", type="danger")
             return ('', 500)
         finally:

@@ -1,8 +1,12 @@
 import json
+import logging
 from flask_classy import FlaskView, route
 from modules.core.core import cbpi
 
+
 class ActionView(FlaskView):
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
 
     @route('/<action>', methods=['POST'])
     def action(self, action):
@@ -15,7 +19,7 @@ class ActionView(FlaskView):
           200:
             description: action invoked
         """
-        print self.cbpi.cache["actions"]
+        self.logger.info(self.cbpi.cache["actions"])
         self.cbpi.cache["actions"][action]["function"](self.cbpi)
 
         return ('',204)

@@ -3,10 +3,12 @@ import os
 
 from os.path import join
 
-from modules.core.basetypes import Actor, Sensor
+from modules.core.basetypes import Sensor
 from modules.core.core import cbpi
 from modules.core.proptypes import Property
-import random
+
+import logging
+
 print "INit SENSOR"
 @cbpi.addon.sensor.type("Dummy Sensor")
 class Dummy(Sensor):
@@ -14,8 +16,10 @@ class Dummy(Sensor):
     text = Property.Text(label="Text", required=True, description="This is a parameter", configurable=True)
     p = Property.Select(label="hallo",options=[1,2,3])
 
-    def init(self):
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
 
+    def init(self):
         if self.api.get_config_parameter("unit","C") == "C":
             self.unit = "°C"
         else:
@@ -23,8 +27,8 @@ class Dummy(Sensor):
 
     @cbpi.addon.sensor.action("WOHOO")
     def myaction(self):
-        print self.text
-        print "SENSOR ACTION HALLO!!!"
+        self.logger.info(self.text)
+        self.logger.debug("SENSOR ACTION HALLO!!!")
 
     def execute(self):
         while True:

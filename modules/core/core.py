@@ -1,8 +1,10 @@
 import json
 import logging
+import logging.config
 import os
 import sqlite3
 import uuid
+import yaml
 from datetime import datetime
 from functools import wraps, update_wrapper
 from importlib import import_module
@@ -62,6 +64,8 @@ class ActorCore(object):
     key = "actor_types"
 
     def __init__(self, cbpi):
+        self.logger = logging.getLogger(__name__)
+
         self.cbpi = cbpi
         self.cbpi.cache["actors"] = {}
         self.cbpi.cache[self.key] = {}
@@ -72,7 +76,7 @@ class ActorCore(object):
 
     def init_one(self, id):
         try:
-            print "INIT ONE ACTOR", id
+            self.logger.info("INIT ONE ACTOR [%s]", id)
             actor = self.cbpi.cache["actors"][id]
             clazz = self.cbpi.cache[self.key].get(actor.type)["class"]
             cfg = actor.config.copy()
@@ -82,8 +86,7 @@ class ActorCore(object):
             actor.power = 100
             self.cbpi.emit("INIT_ACTOR", id=id)
         except Exception as e:
-            print e
-            self.cbpi._app.logger.error(e)
+            self.logger.error(e)
 
     def stop_one(self, id):
         self.cbpi.cache["actors"][id]["instance"].stop()
@@ -99,7 +102,7 @@ class ActorCore(object):
             self.cbpi.emit("SWITCH_ACTOR_ON", id=id, power=power)
             return True
         except Exception as e:
-            print e
+            self.logger.error(e)
             return False
 
     def off(self, id):
@@ -111,7 +114,7 @@ class ActorCore(object):
             self.cbpi.emit("SWITCH_ACTOR_OFF", id=id)
             return True
         except Exception as e:
-            print e
+            self.logger.error(e)
             return False
 
     def toggle(self, id):
@@ -129,7 +132,7 @@ class ActorCore(object):
             self.cbpi.emit("SWITCH_ACTOR_POWER_CHANGE", id=id, power=power)
             return True
         except Exception as e:
-            print e
+            self.logger.error(e)
             return False
 
     def action(self, id, method):
@@ -147,14 +150,16 @@ class ActorCore(object):
         job = self.cbpi._socketio.start_background_task(target=toggle, id=id, seconds=seconds)
 
     def get_state(self, actor_id):
-        print actor_id
-        print self.cbpi
+        self.logger.debug(actor_id)
+        self.logger.debug(self.cbpi)
 
 
 class SensorCore(object):
     key = "sensor_types"
 
     def __init__(self, cbpi):
+        self.logger = logging.getLogger(__name__)
+
         self.cbpi = cbpi
         self.cbpi.cache["sensors"] = {}
         self.cbpi.cache["sensor_instances"] = {}
@@ -172,7 +177,7 @@ class SensorCore(object):
             cfg.update(dict(cbpi=self.cbpi, id=id))
             self.cbpi.cache["sensors"][id].instance = clazz(**cfg)
             self.cbpi.cache["sensors"][id].instance.init()
-            print self.cbpi.cache["sensors"][id].instance
+            self.logger.debug(self.cbpi.cache["sensors"][id].instance)
             self.cbpi.emit("INIT_SENSOR", id=id)
 
             def job(obj):
@@ -182,11 +187,10 @@ class SensorCore(object):
             self.cbpi.emit("INIT_SENSOR", id=id)
 
         except Exception as e:
-            print "ERROR"
-            self.cbpi._app.logger.error(e)
+            self.logger.error(e)
 
     def stop_one(self, id):
-        print "OBJ", self.cbpi.cache["sensors"][id]
+        self.logger.info("OBJ [%s]", self.cbpi.cache["sensors"][id])
         self.cbpi.cache["sensors"][id].instance.stop()
         self.cbpi.emit("STOP_SENSOR", id=id)
 
@@ -197,8 +201,8 @@ class SensorCore(object):
             return None
 
     def get_state(self, actor_id):
-        print actor_id
-        print self.cbpi
+        self.logger.info("Get state actor id [%s]", actor_id)
+        self.logger.debug(self.cbpi)
 
     def write_log(self, id, value, prefix="sensor"):
         filename = "./logs/%s_%s.log" % (prefix, str(id))
@@ -277,8 +281,11 @@ class CraftBeerPI(object):
     eventbus = {}
 
     def __init__(self):
-        FORMAT = '%(asctime)-15s - %(levelname)s - %(message)s'
-        logging.basicConfig(filename='./logs/app.log', level=logging.INFO, format=FORMAT)
+        #FORMAT = '%(asctime)-15s - %(levelname)s - %(message)s'
+        #logging.basicConfig(filename='./logs/app.log', level=logging.INFO, format=FORMAT)
+        logging.config.dictConfig(yaml.load(open('./config/logger.yaml', 'r')))
+        self.logger = logging.getLogger(__name__)
+
         self.cache["messages"] = []
         self.cache["version"] = "3.1"
         self.modules = {}
@@ -324,7 +331,7 @@ class CraftBeerPI(object):
         self._socketio.emit(key, data, namespace='/brew')
 
     def __init_db(self, ):
-        print "INIT DB"
+        self.logger.info("INIT DB")
         with self._app.app_context():
             db = self.get_db()
             try:
@@ -332,7 +339,7 @@ class CraftBeerPI(object):
                     db.cursor().executescript(f.read())
                 db.commit()
             except Exception as e:
-                print e
+                self.logger.error(e)
                 pass
 
     def nocache(self, view):
@@ -383,13 +390,13 @@ class CraftBeerPI(object):
 
     def loadPlugins(self):
         for filename in os.listdir("./modules/plugins"):
-            print filename
+            self.logger.info("Loading plugin [%s]", filename)
             if os.path.isdir("./modules/plugins/" + filename) is False:
                 continue
             try:
                 self.modules[filename] = import_module("modules.plugins.%s" % (filename))
             except Exception as e:
-                print e
+                self.logger.error(e)
                 self.notify("Failed to load plugin %s " % filename, str(e), type="danger", timeout=None)
 
 
