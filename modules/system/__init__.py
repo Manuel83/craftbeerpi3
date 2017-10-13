@@ -1,7 +1,7 @@
 import flask_login
 import requests
 import yaml
-from flask import json, url_for, Response
+from flask import json, url_for, Response, request
 from flask_classy import FlaskView, route
 from flask_login import login_required, current_user
 from git import Repo, Git
@@ -55,38 +55,47 @@ class SystemView(FlaskView):
         return ('', 204)
 
     @login_required
-    @route('/tags/<name>', methods=['GET'])
-    def checkout_tag(self,name):
+    @route('/checkout', methods=['POST'])
+    def checkout_tag(self):
+
+        data = request.json
+        name = data.get("name")
+
+        if name is None:
+            return ('', 500)
+
         repo = Repo('./')
         repo.git.reset('--hard')
         o = repo.remotes.origin
         o.fetch()
         g = Git('./')
-        g.checkout(name)
+        g.checkout()
         cbpi.notify("Checkout successful", "Please restart the system")
         return ('', 204)
+
 
     @login_required
     @route('/git/status', methods=['GET'])
     def git_status(self):
 
         repo = Repo('./')
-        for remote in repo.remotes:
-            print remote
-        #o = repo.remotes.origin
-        #o.fetch()
 
-        print next((tag for tag in repo.tags if tag.commit == repo.head.commit), None)
+        o = repo.remotes.origin
+        o.fetch()
+
+        branch = repo.active_branch
+
         url = 'https://api.github.com/repos/manuel83/craftbeerpi3/releases'
         response = requests.get(url)
 
-        data = response.json()
+        result = {"current_branch": branch.name, "branches": [], "releases": []}
+        result["branches"].append({"name": "master"})
 
-        result = []
+        for branch in repo.branches:
+            result["branches"].append({"name": branch.name})
 
-        for r in data:
-            result.append({"tag_name": r.get("tag_name"), "timestamp": r.get("created_at")})
-
+        for r in response.json():
+            result["releases"].append({"name": "tags/%s" % r.get("tag_name")})
 
         """
         Check for GIT status
