@@ -160,7 +160,7 @@ class CoreAPI(BaseAPI):
         self.cbpi.cache["init"] = sorted(self.cbpi.cache["init"], key=lambda k: k['order'])
         for value in self.cbpi.cache.get("init"):
 
-            print value
+
             value["function"](self.cbpi)
 
         def job(interval, method):

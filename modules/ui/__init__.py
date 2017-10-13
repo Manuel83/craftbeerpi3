@@ -17,7 +17,7 @@ def index():
     for key, value in cbpi.cache["js"].iteritems():
         js_files.append(value)
 
-    print js_files
+
     return render_template('index.html', js_files=js_files)
 
 

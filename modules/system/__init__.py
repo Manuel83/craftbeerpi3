@@ -1,4 +1,5 @@
 import flask_login
+import requests
 import yaml
 from flask import json, url_for, Response
 from flask_classy import FlaskView, route
@@ -68,6 +69,25 @@ class SystemView(FlaskView):
     @login_required
     @route('/git/status', methods=['GET'])
     def git_status(self):
+
+        repo = Repo('./')
+        for remote in repo.remotes:
+            print remote
+        #o = repo.remotes.origin
+        #o.fetch()
+
+        print next((tag for tag in repo.tags if tag.commit == repo.head.commit), None)
+        url = 'https://api.github.com/repos/manuel83/craftbeerpi3/releases'
+        response = requests.get(url)
+
+        data = response.json()
+
+        result = []
+
+        for r in data:
+            result.append({"tag_name": r.get("tag_name"), "timestamp": r.get("created_at")})
+
+
         """
         Check for GIT status
         ---
@@ -77,28 +97,7 @@ class SystemView(FlaskView):
           200:
             description: Git Status
         """
-        repo = Repo('./')
-        o = repo.remotes.origin
-        o.fetch()
-        # Tags
-        tags = []
-        for t in repo.tags:
-            tags.append({"name": t.name, "commit": str(t.commit), "date": t.commit.committed_date,
-                         "committer": t.commit.committer.name, "message": t.commit.message})
-        try:
-            branch_name = repo.active_branch.name
-            # test1
-        except:
-            branch_name = None
-
-        changes = []
-        commits_behind = repo.iter_commits('master..origin/master')
-
-        for c in list(commits_behind):
-            changes.append({"committer": c.committer.name, "message": c.message})
-
-        return json.dumps({"tags": tags, "headcommit": str(repo.head.commit), "branchname": branch_name,
-                           "master": {"changes": changes}})
+        return json.dumps(result)
 
     @login_required
     @route('/check_update', methods=['GET'])

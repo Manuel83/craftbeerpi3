@@ -72,7 +72,7 @@ class ActorCore(object):
 
     def init_one(self, id):
         try:
-            print "INIT ONE ACTOR", id
+
             actor = self.cbpi.cache["actors"][id]
             clazz = self.cbpi.cache[self.key].get(actor.type)["class"]
             cfg = actor.config.copy()
@@ -147,8 +147,7 @@ class ActorCore(object):
         job = self.cbpi._socketio.start_background_task(target=toggle, id=id, seconds=seconds)
 
     def get_state(self, actor_id):
-        print actor_id
-        print self.cbpi
+        pass
 
 
 class SensorCore(object):
@@ -172,7 +171,7 @@ class SensorCore(object):
             cfg.update(dict(cbpi=self.cbpi, id=id))
             self.cbpi.cache["sensors"][id].instance = clazz(**cfg)
             self.cbpi.cache["sensors"][id].instance.init()
-            print self.cbpi.cache["sensors"][id].instance
+
             self.cbpi.emit("INIT_SENSOR", id=id)
 
             def job(obj):
@@ -186,7 +185,7 @@ class SensorCore(object):
             self.cbpi._app.logger.error(e)
 
     def stop_one(self, id):
-        print "OBJ", self.cbpi.cache["sensors"][id]
+
         self.cbpi.cache["sensors"][id].instance.stop()
         self.cbpi.emit("STOP_SENSOR", id=id)
 
@@ -197,8 +196,7 @@ class SensorCore(object):
             return None
 
     def get_state(self, actor_id):
-        print actor_id
-        print self.cbpi
+        pass
 
     def write_log(self, id, value, prefix="sensor"):
         filename = "./logs/%s_%s.log" % (prefix, str(id))
@@ -308,6 +306,7 @@ class CraftBeerPI(object):
             port = int(cbpi.get_config_parameter('port', '5000'))
         except ValueError:
             port = 5000
+        print port
         self._socketio.run(self._app, host='0.0.0.0', port=port)
 
     def beep(self):
@@ -324,7 +323,7 @@ class CraftBeerPI(object):
         self._socketio.emit(key, data, namespace='/brew')
 
     def __init_db(self, ):
-        print "INIT DB"
+
         with self._app.app_context():
             db = self.get_db()
             try:
@@ -332,7 +331,7 @@ class CraftBeerPI(object):
                     db.cursor().executescript(f.read())
                 db.commit()
             except Exception as e:
-                print e
+
                 pass
 
     def nocache(self, view):
@@ -383,13 +382,13 @@ class CraftBeerPI(object):
 
     def loadPlugins(self):
         for filename in os.listdir("./modules/plugins"):
-            print filename
+
             if os.path.isdir("./modules/plugins/" + filename) is False:
                 continue
             try:
                 self.modules[filename] = import_module("modules.plugins.%s" % (filename))
             except Exception as e:
-                print e
+
                 self.notify("Failed to load plugin %s " % filename, str(e), type="danger", timeout=None)
 
 

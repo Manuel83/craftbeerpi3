@@ -11,7 +11,7 @@ class Dummy(Step):
     def myaction(self):
         self.stop_timer()
         self.start_timer(10)
-        print "HALLO"
+
 
     text = Property.Text(label="Text", configurable=True, description="WOHOOO")
     time = Property.Text(label="Text", configurable=True, description="WOHOOO")
@@ -21,5 +21,5 @@ class Dummy(Step):
         pass
 
     def reset(self):
-        print "RESET STEP!!!"
+
         self.stop_timer()

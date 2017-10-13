@@ -16,7 +16,7 @@ class Actor(Base):
 
     @classmethod
     def init_global(cls):
-        print "GLOBAL INIT ACTOR"
+
         pass
 
     def init(self):
@@ -251,7 +251,7 @@ class Step(Base, Timer):
         pass
 
     def execute(self):
-        print "-------------"
+
         print "Step Info"
         print "Kettle ID: %s" % self.kettle_id
         print "ID: %s" % self.id

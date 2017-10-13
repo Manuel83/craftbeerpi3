@@ -8,7 +8,7 @@ class Dummy(Actor):
 
     @cbpi.addon.actor.action("WOHOO")
     def myaction(self):
-        print "HALLO!!!"
+        pass
 
     def on(self, power=100):
         '''
@@ -28,7 +28,7 @@ class MyController(KettleController):
 
     def run(self):
         while self.is_running():
-            print "HALLO"
+
             self.sleep(1)
 
 @cbpi.addon.fermenter.controller()
@@ -45,6 +45,6 @@ def init(cbpi):
 
     class MyBuzzer(Buzzer):
         def beep(self):
-            print "BEEEEEEP"
+            pass
 
     cbpi.buzzer = MyBuzzer()

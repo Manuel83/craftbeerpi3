@@ -14,6 +14,6 @@ def web(cbpi):
     def index():
         return s.send_static_file("index.html")
 
-    print "REGISTER"
+
     cbpi.addon.core.add_menu_link("JQuery View", "/web_view")
     cbpi._app.register_blueprint(s, url_prefix='/web_view')

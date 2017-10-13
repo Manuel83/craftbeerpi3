@@ -38,8 +38,7 @@ def log(cbpi):
     @cbpi._login_manager.user_loader
     def user_loader(user):
 
-        print cbpi.get_config_parameter("password_security", "NO")
-        print user
+
 
         if cbpi.get_config_parameter("password_security", "NO") == "YES":
             if user != "craftbeerpi":

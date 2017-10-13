@@ -7,7 +7,7 @@ from modules.core.basetypes import Actor, Sensor
 from modules.core.core import cbpi
 from modules.core.proptypes import Property
 import random
-print "INit SENSOR"
+
 @cbpi.addon.sensor.type("Dummy Sensor")
 class Dummy(Sensor):
 
@@ -23,7 +23,7 @@ class Dummy(Sensor):
 
     @cbpi.addon.sensor.action("WOHOO")
     def myaction(self):
-        print self.text
+
         print "SENSOR ACTION HALLO!!!"
 
     def execute(self):
@@ -36,7 +36,7 @@ class Dummy(Sensor):
 
 @cbpi.addon.core.action(key="clear", label="Clear all Logs")
 def woohoo(cbpi):
-    print "COOL"
+
     dir = "./logs"
     test = os.listdir(dir)
 
