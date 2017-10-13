@@ -69,7 +69,7 @@ class SystemView(FlaskView):
         o = repo.remotes.origin
         o.fetch()
         g = Git('./')
-        g.checkout()
+        g.checkout(name)
         cbpi.notify("Checkout successful", "Please restart the system")
         return ('', 204)
 
