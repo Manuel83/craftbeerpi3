@@ -14,13 +14,13 @@ class Base(object):
         self.value = None
         self.__dirty = False
 
+
 class Actor(Base):
-    def __init__(self):
-        self.logger = logging.getLogger(__name__)
+    __logger = logging.getLogger(__name__)
 
     @classmethod
     def init_global(cls):
-        print "GLOBAL INIT ACTOR"
+        cls.__logger.info("GLOBAL INIT ACTOR")
         pass
 
     def init(self):
@@ -30,15 +30,15 @@ class Actor(Base):
         pass
 
     def on(self, power=100):
-        self.logger.info("SWITCH ON")
+        self._logger.info("SWITCH ON")
         pass
 
     def off(self):
-        self.logger.info("SWITCH OFF")
+        self._logger.info("SWITCH OFF")
         pass
 
     def power(self, power):
-        self.logger.info("SET POWER TO [%s]", power)
+        self._logger.info("SET POWER TO [%s]", power)
         pass
 
     def state(self):
@@ -46,8 +46,7 @@ class Actor(Base):
 
 
 class Sensor(Base):
-    def __init__(self):
-        self.logger = logging.getLogger(__name__)
+    __logger = logging.getLogger(__name__)
 
     unit = ""
 
@@ -71,7 +70,7 @@ class Sensor(Base):
         self.cbpi.ws_emit("SENSOR_UPDATE", self.cbpi.cache["sensors"][self.id])
 
     def execute(self):
-        self.logger.info("EXECUTE")
+        self.__logger.info("EXECUTE")
         pass
 
 
@@ -81,9 +80,11 @@ class ControllerBase(object):
     __dirty = False
     __running = False
 
+    __logger = logging.getLogger(__name__)
+
     @staticmethod
     def init_global():
-        print "GLOBAL CONTROLLER INIT"
+        ControllerBase.__logger.info("GLOBAL CONTROLLER INIT")
 
     def notify(self, headline, message, type="success", timeout=5000):
         self.api.notify(headline, message, type, timeout)

@@ -19,8 +19,8 @@ def execute_file(curernt_version, data):
                 conn.commit()
 
     except sqlite3.OperationalError as err:
-        print "EXCEPT"
-        print err
+        cbpi._app.logger.info("EXCEPT")
+        cbpi._app.logger.error(err)
 
 @cbpi.addon.core.initializer(order=-9999)
 def init(cbpi):
@@ -37,7 +37,7 @@ def init(cbpi):
             pass
         result = []
         for filename in os.listdir("./update"):
-            print filename
+            cbpi._app.logger.info(filename)
             if filename.endswith(".sql"):
                 d = {"version": int(filename[:filename.index('_')]), "file": filename}
                 result.append(d)

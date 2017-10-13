@@ -224,5 +224,5 @@ class CoreAPI(BaseAPI):
 
 class Buzzer(object):
 
-    def beep():
+    def beep(self):
         pass

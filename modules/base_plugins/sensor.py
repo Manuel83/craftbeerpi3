@@ -9,7 +9,7 @@ from modules.core.proptypes import Property
 
 import logging
 
-print "INit SENSOR"
+
 @cbpi.addon.sensor.type("Dummy Sensor")
 class Dummy(Sensor):
 
@@ -18,6 +18,7 @@ class Dummy(Sensor):
 
     def __init__(self):
         self.logger = logging.getLogger(__name__)
+        self.logger.info("INIT SENSOR")
 
     def init(self):
         if self.api.get_config_parameter("unit","C") == "C":
@@ -40,7 +41,9 @@ class Dummy(Sensor):
 
 @cbpi.addon.core.action(key="clear", label="Clear all Logs")
 def woohoo(cbpi):
-    print "COOL"
+    logger = logging.getLogger(__name__)
+    logger.info("COOL")
+
     dir = "./logs"
     test = os.listdir(dir)
 
