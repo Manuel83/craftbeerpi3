@@ -170,8 +170,8 @@ class BoilStep(StepBase):
     hop_4_added = Property.Number("", default_value=None)
     hop_5 = Property.Number("Hop 5 Addition", configurable=True, description="Fifth Hop alert")
     hop_5_added = Property.Number("", default_value=None)
-    fining = Property.Number("Fining Addition", configurable=True, default_value=15)
-    fining_added = Property.Number("",default_value=None, description="Fining Agent Alert")
+    fining = Property.Number("Fining Addition", configurable=True, default_value=15, description("Fining alert"))
+    fining_added = Property.Number("",default_value=None)
 
     def init(self):
         '''
