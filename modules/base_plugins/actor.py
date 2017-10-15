@@ -11,7 +11,7 @@ class Dummy(Actor):
 
     @cbpi.addon.actor.action("WOHOO")
     def myaction(self):
-        self.logger.debug("HALLO!!!")
+        pass
 
     def on(self, power=100):
         '''
@@ -28,12 +28,10 @@ class Dummy(Actor):
 
 @cbpi.addon.kettle.controller()
 class MyController(KettleController):
-    def __init__(self):
-        self.logger = logging.getLogger(__name__)
 
     def run(self):
         while self.is_running():
-            self.logger.debug("HALLO")
+
             self.sleep(1)
 
 @cbpi.addon.fermenter.controller()
@@ -50,10 +48,7 @@ class MyController2(FermenterController):
 def init(cbpi):
 
     class MyBuzzer(Buzzer):
-        def __init__(self):
-            self.logger = logging.getLogger(__name__)
-
         def beep(self):
-            self.logger.info("BEEEEEEP")
+            pass
 
     cbpi.buzzer = MyBuzzer()

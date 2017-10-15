@@ -21,6 +21,7 @@ class Dummy(Sensor):
         self.logger.info("INIT SENSOR")
 
     def init(self):
+
         if self.api.get_config_parameter("unit","C") == "C":
             self.unit = "°C"
         else:
@@ -28,7 +29,6 @@ class Dummy(Sensor):
 
     @cbpi.addon.sensor.action("WOHOO")
     def myaction(self):
-        self.logger.info(self.text)
         self.logger.debug("SENSOR ACTION HALLO!!!")
 
     def execute(self):
@@ -41,8 +41,6 @@ class Dummy(Sensor):
 
 @cbpi.addon.core.action(key="clear", label="Clear all Logs")
 def woohoo(cbpi):
-    logger = logging.getLogger(__name__)
-    logger.info("COOL")
 
     dir = "./logs"
     test = os.listdir(dir)

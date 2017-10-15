@@ -10,7 +10,7 @@ class User(flask_login.UserMixin):
 
 @addon.core.initializer(order=0)
 def log(cbpi):
-    logger = logging.getLogger(__name__)
+
 
     cbpi._login_manager = flask_login.LoginManager()
     cbpi._login_manager.init_app(cbpi._app)
@@ -39,8 +39,8 @@ def log(cbpi):
 
     @cbpi._login_manager.user_loader
     def user_loader(user):
-        logger.debug(cbpi.get_config_parameter("password_security", "NO"))
-        logger.debug(user)
+
+
 
         if cbpi.get_config_parameter("password_security", "NO") == "YES":
             if user != "craftbeerpi":

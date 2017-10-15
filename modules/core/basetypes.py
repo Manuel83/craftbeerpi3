@@ -20,7 +20,7 @@ class Actor(Base):
 
     @classmethod
     def init_global(cls):
-        cls.__logger.info("GLOBAL INIT ACTOR")
+
         pass
 
     def init(self):
@@ -235,6 +235,7 @@ class Timer(object):
 
 
 class Step(Base, Timer):
+
 
     @classmethod
     def init_global(cls):

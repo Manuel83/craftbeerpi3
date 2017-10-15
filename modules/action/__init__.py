@@ -19,7 +19,7 @@ class ActionView(FlaskView):
           200:
             description: action invoked
         """
-        self.logger.info(self.cbpi.cache["actions"])
+
         self.cbpi.cache["actions"][action]["function"](self.cbpi)
 
         return ('',204)

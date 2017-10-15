@@ -76,7 +76,7 @@ class ActorCore(object):
 
     def init_one(self, id):
         try:
-            self.logger.info("INIT ONE ACTOR [%s]", id)
+
             actor = self.cbpi.cache["actors"][id]
             clazz = self.cbpi.cache[self.key].get(actor.type)["class"]
             cfg = actor.config.copy()
@@ -150,8 +150,7 @@ class ActorCore(object):
         job = self.cbpi._socketio.start_background_task(target=toggle, id=id, seconds=seconds)
 
     def get_state(self, actor_id):
-        self.logger.debug(actor_id)
-        self.logger.debug(self.cbpi)
+        pass
 
 
 class SensorCore(object):
@@ -177,7 +176,7 @@ class SensorCore(object):
             cfg.update(dict(cbpi=self.cbpi, id=id))
             self.cbpi.cache["sensors"][id].instance = clazz(**cfg)
             self.cbpi.cache["sensors"][id].instance.init()
-            self.logger.debug(self.cbpi.cache["sensors"][id].instance)
+
             self.cbpi.emit("INIT_SENSOR", id=id)
 
             def job(obj):
@@ -190,7 +189,7 @@ class SensorCore(object):
             self.logger.error(e)
 
     def stop_one(self, id):
-        self.logger.info("OBJ [%s]", self.cbpi.cache["sensors"][id])
+
         self.cbpi.cache["sensors"][id].instance.stop()
         self.cbpi.emit("STOP_SENSOR", id=id)
 
@@ -201,8 +200,7 @@ class SensorCore(object):
             return None
 
     def get_state(self, actor_id):
-        self.logger.info("Get state actor id [%s]", actor_id)
-        self.logger.debug(self.cbpi)
+        pass
 
     def write_log(self, id, value, prefix="sensor"):
         filename = "./logs/%s_%s.log" % (prefix, str(id))
@@ -281,8 +279,6 @@ class CraftBeerPI(object):
     eventbus = {}
 
     def __init__(self):
-        #FORMAT = '%(asctime)-15s - %(levelname)s - %(message)s'
-        #logging.basicConfig(filename='./logs/app.log', level=logging.INFO, format=FORMAT)
         logging.config.dictConfig(yaml.load(open('./config/logger.yaml', 'r')))
         self.logger = logging.getLogger(__name__)
 
@@ -315,6 +311,7 @@ class CraftBeerPI(object):
             port = int(cbpi.get_config_parameter('port', '5000'))
         except ValueError:
             port = 5000
+        print port
         self._socketio.run(self._app, host='0.0.0.0', port=port)
 
     def beep(self):
@@ -331,7 +328,7 @@ class CraftBeerPI(object):
         self._socketio.emit(key, data, namespace='/brew')
 
     def __init_db(self, ):
-        self.logger.info("INIT DB")
+
         with self._app.app_context():
             db = self.get_db()
             try:
@@ -390,7 +387,7 @@ class CraftBeerPI(object):
 
     def loadPlugins(self):
         for filename in os.listdir("./modules/plugins"):
-            self.logger.info("Loading plugin [%s]", filename)
+
             if os.path.isdir("./modules/plugins/" + filename) is False:
                 continue
             try:

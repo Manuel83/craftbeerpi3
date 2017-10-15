@@ -1,6 +1,7 @@
 import flask_login
+import requests
 import yaml
-from flask import json, url_for, Response
+from flask import json, url_for, Response, request
 from flask_classy import FlaskView, route
 from flask_login import login_required, current_user
 from git import Repo, Git
@@ -54,8 +55,15 @@ class SystemView(FlaskView):
         return ('', 204)
 
     @login_required
-    @route('/tags/<name>', methods=['GET'])
-    def checkout_tag(self,name):
+    @route('/checkout', methods=['POST'])
+    def checkout_tag(self):
+
+        data = request.json
+        name = data.get("name")
+
+        if name is None:
+            return ('', 500)
+
         repo = Repo('./')
         repo.git.reset('--hard')
         o = repo.remotes.origin
@@ -65,9 +73,30 @@ class SystemView(FlaskView):
         cbpi.notify("Checkout successful", "Please restart the system")
         return ('', 204)
 
+
     @login_required
     @route('/git/status', methods=['GET'])
     def git_status(self):
+
+        repo = Repo('./')
+
+        o = repo.remotes.origin
+        o.fetch()
+
+        branch = repo.active_branch
+
+        url = 'https://api.github.com/repos/manuel83/craftbeerpi3/releases'
+        response = requests.get(url)
+
+        result = {"current_branch": branch.name, "branches": [], "releases": []}
+        result["branches"].append({"name": "master"})
+
+        for branch in repo.branches:
+            result["branches"].append({"name": branch.name})
+
+        for r in response.json():
+            result["releases"].append({"name": "tags/%s" % r.get("tag_name")})
+
         """
         Check for GIT status
         ---
@@ -77,28 +106,7 @@ class SystemView(FlaskView):
           200:
             description: Git Status
         """
-        repo = Repo('./')
-        o = repo.remotes.origin
-        o.fetch()
-        # Tags
-        tags = []
-        for t in repo.tags:
-            tags.append({"name": t.name, "commit": str(t.commit), "date": t.commit.committed_date,
-                         "committer": t.commit.committer.name, "message": t.commit.message})
-        try:
-            branch_name = repo.active_branch.name
-            # test1
-        except:
-            branch_name = None
-
-        changes = []
-        commits_behind = repo.iter_commits('master..origin/master')
-
-        for c in list(commits_behind):
-            changes.append({"committer": c.committer.name, "message": c.message})
-
-        return json.dumps({"tags": tags, "headcommit": str(repo.head.commit), "branchname": branch_name,
-                           "master": {"changes": changes}})
+        return json.dumps(result)
 
     @login_required
     @route('/check_update', methods=['GET'])

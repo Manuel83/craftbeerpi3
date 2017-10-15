@@ -17,6 +17,6 @@ def web(cbpi):
     def index():
         return s.send_static_file("index.html")
 
-    logger.info("REGISTER")
+
     cbpi.addon.core.add_menu_link("ReactJS View", "/webviewreact")
     cbpi._app.register_blueprint(s, url_prefix='/webviewreact')
