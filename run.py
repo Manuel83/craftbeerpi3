@@ -1,12 +1,6 @@
 #!/usr/bin/env python
 
 from modules.core.core import *
-
-cbpi = CraftBeerPI()
-
-addon = cbpi.addon
-
-
 from modules.core.db_migrate import *
 from modules.buzzer import *
 from modules.config import *

@@ -65,6 +65,7 @@ class Sensor(Base):
 
     def update_value(self, value):
         self.value = value
+        self.__logger.info("Updated value for sensor [%s] with value [%s].", self.id, value)
         self.cbpi.sensor.write_log(self.id, value)
         self.cbpi.emit("SENSOR_UPDATE", id=self.id, value=value)
         self.cbpi.ws_emit("SENSOR_UPDATE", self.cbpi.cache["sensors"][self.id])
