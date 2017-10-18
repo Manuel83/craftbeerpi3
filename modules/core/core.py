@@ -203,11 +203,9 @@ class SensorCore(object):
         pass
 
     def write_log(self, id, value, prefix="sensor"):
-        self.logger.info("Write Log")
         filename = "./logs/%s_%s.log" % (prefix, str(id))
         formatted_time = strftime("%Y-%m-%d %H:%M:%S", localtime())
         msg = str(formatted_time) + "," + str(value) + "\n"
-        self.logger.info("Write to log [%s]", msg)
 
         with open(filename, "a") as file:
             file.write(msg)
@@ -314,7 +312,7 @@ class CraftBeerPI(object):
             port = int(cbpi.get_config_parameter('port', '5000'))
         except ValueError:
             port = 5000
-        print port
+        self.logger.info("port [%s]", port)
         self._socketio.run(self._app, host='0.0.0.0', port=port)
 
     def beep(self):
