@@ -203,9 +203,11 @@ class SensorCore(object):
         pass
 
     def write_log(self, id, value, prefix="sensor"):
+        self.logger.info("Write Log")
         filename = "./logs/%s_%s.log" % (prefix, str(id))
         formatted_time = strftime("%Y-%m-%d %H:%M:%S", localtime())
         msg = str(formatted_time) + "," + str(value) + "\n"
+        self.logger.info("Write to log [%s]", msg)
 
         with open(filename, "a") as file:
             file.write(msg)
@@ -244,7 +246,7 @@ class BrewingCore(object):
             # Start controller
             if kettle.logic is not None:
                 cfg = kettle.config.copy()
-                cfg.update(dict(api=cbpi, kettle_id=kettle.id, heater=kettle.heater, sensor=kettle.sensor))
+                cfg.update(dict(api=self.cbpi, kettle_id=kettle.id, heater=kettle.heater, sensor=kettle.sensor))
                 instance = self.get_controller(kettle.logic).get("class")(**cfg)
                 instance.init()
                 kettle.instance = instance
@@ -254,13 +256,13 @@ class BrewingCore(object):
 
                 t = self.cbpi._socketio.start_background_task(target=run, instance=instance)
             kettle.state = not kettle.state
-            self.cbpi.ws_emit("UPDATE_KETTLE", cbpi.cache.get("kettle").get(id))
+            self.cbpi.ws_emit("UPDATE_KETTLE", self.cbpi.cache.get("kettle").get(id))
             self.cbpi.emit("KETTLE_CONTROLLER_STARTED", id=id)
         else:
             # Stop controller
             kettle.instance.stop()
             kettle.state = not kettle.state
-            self.cbpi.ws_emit("UPDATE_KETTLE", cbpi.cache.get("kettle").get(id))
+            self.cbpi.ws_emit("UPDATE_KETTLE", self.cbpi.cache.get("kettle").get(id))
             self.cbpi.emit("KETTLE_CONTROLLER_STOPPED", id=id)
 
 
@@ -281,6 +283,7 @@ class CraftBeerPI(object):
     def __init__(self):
         logging.config.dictConfig(yaml.load(open('./config/logger.yaml', 'r')))
         self.logger = logging.getLogger(__name__)
+        self.logger.info("Logger got initialized.")
 
         self.cache["messages"] = []
         self.cache["version"] = "3.1"
@@ -395,7 +398,6 @@ class CraftBeerPI(object):
             except Exception as e:
                 self.logger.error(e)
                 self.notify("Failed to load plugin %s " % filename, str(e), type="danger", timeout=None)
-
 
 cbpi = CraftBeerPI()
 addon = cbpi.addon
