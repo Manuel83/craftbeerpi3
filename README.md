@@ -1,3 +1,5 @@
+[![BCH compliance](https://bettercodehub.com/edge/badge/isarvalley/craftbeerpi3?branch=core_refactoring)](https://bettercodehub.com/)
+
 # CraftBeerPi V3.0
 
 This is CraftBeerPi version 3.0. It's currently in beta status.
