@@ -7,6 +7,8 @@ from modules.core.core import cbpi
 
 class LogView(FlaskView):
 
+    _log_directory = "./logs"
+
     @route('/', methods=['GET'])
     def get_all_logfiles(self):
         """
@@ -19,7 +21,7 @@ class LogView(FlaskView):
             description: List of all log files
         """
         result = []
-        for filename in os.listdir("./logs"):
+        for filename in os.listdir(self._log_directory):
             if filename.endswith(".log"):
                 result.append(filename)
         return json.dumps(result)

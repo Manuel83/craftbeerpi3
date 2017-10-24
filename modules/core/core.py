@@ -10,6 +10,7 @@ from functools import wraps, update_wrapper
 from importlib import import_module
 from time import localtime, strftime
 import time
+import os.path
 
 from flask import Flask, redirect, json, g, make_response
 from flask_socketio import SocketIO
@@ -275,11 +276,16 @@ class FermentationCore(object):
 
 
 class CraftBeerPI(object):
+
+    _logger_configuration_file = './config/logger.yaml'
+
     cache = {}
     eventbus = {}
 
     def __init__(self):
-        logging.config.dictConfig(yaml.load(open('./config/logger.yaml', 'r')))
+        if os.path.isfile(self._logger_configuration_file):
+            logging.config.dictConfig(yaml.load(open(self._logger_configuration_file, 'r')))
+
         self.logger = logging.getLogger(__name__)
         self.logger.info("Logger got initialized.")
 
