@@ -1,15 +1,13 @@
-
 from modules.logs import LogView
+from tests.testlib import utils
 
 
 class TestLogView(object):
 
     def test_get_all_logfiles(self):
+        LogView._log_directory = utils.get_base_path() + "/logs"
 
-        LogView._log_directory = "./logs"
+        logfiles = LogView().get_all_logfiles()
 
-        log_view = LogView()
-        logfiles = log_view.get_all_logfiles()
-
-        print(logfiles)
-        assert (len(logfiles) == 2)
+        # if no log file is found then two square brackets "[]" are returned and string length is 2
+        assert (len(logfiles) > 2)
