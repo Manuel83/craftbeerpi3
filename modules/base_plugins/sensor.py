@@ -3,16 +3,22 @@ import os
 
 from os.path import join
 
-from modules.core.basetypes import Actor, Sensor
+from modules.core.basetypes import Sensor
 from modules.core.core import cbpi
 from modules.core.proptypes import Property
-import random
+
+import logging
+
 
 @cbpi.addon.sensor.type("Dummy Sensor")
 class Dummy(Sensor):
 
     text = Property.Text(label="Text", required=True, description="This is a parameter", configurable=True)
     p = Property.Select(label="hallo",options=[1,2,3])
+
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
+        self.logger.info("INIT SENSOR")
 
     def init(self):
 
@@ -23,8 +29,7 @@ class Dummy(Sensor):
 
     @cbpi.addon.sensor.action("WOHOO")
     def myaction(self):
-
-        print "SENSOR ACTION HALLO!!!"
+        self.logger.debug("SENSOR ACTION HALLO!!!")
 
     def execute(self):
         while True:

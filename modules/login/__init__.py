@@ -3,6 +3,8 @@ from flask import request
 
 from modules.core.core import cbpi, addon
 
+import logging
+
 class User(flask_login.UserMixin):
     pass
 

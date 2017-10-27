@@ -1,3 +1,11 @@
+[![Build Status](https://travis-ci.org/isarvalley/craftbeerpi3.svg?branch=core_refactoring)](https://travis-ci.org/isarvalley/craftbeerpi3)
+
+[![codebeat badge](https://codebeat.co/badges/72fa1981-c82a-488f-9a53-9e21ed9de4cc)](https://codebeat.co/projects/github-com-isarvalley-craftbeerpi3-core_refactoring)
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0a970c7873f84953bd772c36d5ffc05c)](https://www.codacy.com/app/isar_valley/craftbeerpi3?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=isarvalley/craftbeerpi3&amp;utm_campaign=Badge_Grade)
+
+[![BCH compliance](https://bettercodehub.com/edge/badge/isarvalley/craftbeerpi3?branch=core_refactoring)](https://bettercodehub.com/)
+
 # CraftBeerPi V3.0
 
 This is CraftBeerPi version 3.0. It's currently in beta status.

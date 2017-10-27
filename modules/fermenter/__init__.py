@@ -1,3 +1,4 @@
+import logging
 import time
 from flask import request
 from flask_classy import route
@@ -12,6 +13,8 @@ class FermenterView(BaseView):
     model = Fermenter
     cache_key = "fermenter"
 
+    def __init__(self):
+        self.logger = logging.getLogger(__name__)
 
     def _post_post_callback(self, m):
         m.state = False

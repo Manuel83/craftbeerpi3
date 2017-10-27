@@ -19,8 +19,7 @@ def execute_file(curernt_version, data):
                 conn.commit()
 
     except sqlite3.OperationalError as err:
-
-        print err
+        cbpi._app.logger.error(err)
 
 @cbpi.addon.core.initializer(order=-9999)
 def init(cbpi):

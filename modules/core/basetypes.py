@@ -1,3 +1,5 @@
+import logging
+
 from modules.core.proptypes import Property
 import time
 
@@ -12,7 +14,9 @@ class Base(object):
         self.value = None
         self.__dirty = False
 
+
 class Actor(Base):
+    __logger = logging.getLogger(__name__)
 
     @classmethod
     def init_global(cls):
@@ -26,15 +30,15 @@ class Actor(Base):
         pass
 
     def on(self, power=100):
-        print "SWITCH ON"
+        self._logger.info("SWITCH ON")
         pass
 
     def off(self):
-        print "SWITCH OFF"
+        self._logger.info("SWITCH OFF")
         pass
 
     def power(self, power):
-        print "SET POWER", power
+        self._logger.info("SET POWER TO [%s]", power)
         pass
 
     def state(self):
@@ -42,6 +46,7 @@ class Actor(Base):
 
 
 class Sensor(Base):
+    __logger = logging.getLogger(__name__)
 
     unit = ""
 
@@ -60,12 +65,13 @@ class Sensor(Base):
 
     def update_value(self, value):
         self.value = value
+        self.__logger.info("Updated value for sensor [%s] with value [%s].", self.id, value)
         self.cbpi.sensor.write_log(self.id, value)
         self.cbpi.emit("SENSOR_UPDATE", id=self.id, value=value)
         self.cbpi.ws_emit("SENSOR_UPDATE", self.cbpi.cache["sensors"][self.id])
 
     def execute(self):
-        print "EXECUTE"
+        self.__logger.info("EXECUTE")
         pass
 
 
@@ -75,9 +81,11 @@ class ControllerBase(object):
     __dirty = False
     __running = False
 
+    __logger = logging.getLogger(__name__)
+
     @staticmethod
     def init_global():
-        print "GLOBAL CONTROLLER INIT"
+        ControllerBase.__logger.info("GLOBAL CONTROLLER INIT")
 
     def notify(self, headline, message, type="success", timeout=5000):
         self.api.notify(headline, message, type, timeout)
@@ -251,12 +259,13 @@ class Step(Base, Timer):
         pass
 
     def execute(self):
-
-        print "Step Info"
-        print "Kettle ID: %s" % self.kettle_id
-        print "ID: %s" % self.id
+        self.logger.info("-------------")
+        self.logger.info("Step Info")
+        self.logger.info("Kettle ID: %s" % self.kettle_id)
+        self.logger.info("ID: %s" % self.id)
 
     def __init__(self, *args, **kwds):
+        self.logger = logging.getLogger(__name__)
 
         for a in kwds:
             super(Step, self).__setattr__(a, kwds.get(a))
