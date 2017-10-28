@@ -10,10 +10,11 @@ except Exception as e:
 class Buzzer(object):
 
     sound = ["H", 0.1, "L", 0.1, "H", 0.1, "L", 0.1, "H", 0.1, "L"]
-    def __init__(self, gpio):
+    def __init__(self, gpio, beep_level):
         try:
             cbpi.app.logger.info("INIT BUZZER NOW GPIO%s" % gpio)
             self.gpio = int(gpio)
+            self.beep_level = beep_level
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.gpio, GPIO.OUT)
             self.state = True
@@ -31,10 +32,14 @@ class Buzzer(object):
             try:
                 for i in sound:
                     if (isinstance(i, str)):
-                        if i == "H":
+                        if i == "H" and self.beep_level == "HIGH":
                             GPIO.output(int(self.gpio), GPIO.HIGH)
-                        else:
+                        elif i == "H" and self.beep_level != "HIGH":
                             GPIO.output(int(self.gpio), GPIO.LOW)
+                        elif i == "L" and self.beep_level == "HIGH":
+                            GPIO.output(int(self.gpio), GPIO.LOW)
+                        else:
+                            GPIO.output(int(self.gpio), GPIO.HIGH)
                     else:
                         time.sleep(i)
             except Exception as e:
@@ -45,6 +50,8 @@ class Buzzer(object):
 @cbpi.initalizer(order=1)
 def init(cbpi):
     gpio = cbpi.get_config_parameter("buzzer", 16)
-    cbpi.buzzer = Buzzer(gpio)
+    beep_level = cbpi.get_config_parameter("buzzer_beep_level", "HIGH")
+
+    cbpi.buzzer = Buzzer(gpio, beep_level)
     cbpi.beep()
     cbpi.app.logger.info("INIT OK")
