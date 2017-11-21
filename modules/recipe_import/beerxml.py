@@ -55,11 +55,12 @@ class BeerXMLImport(FlaskView):
             if request.method == 'POST':
                 file = request.files['file']
                 if file and self.allowed_file(file.filename):
-                    file.save(os.path.join(self.api.app.config['UPLOAD_FOLDER'], "beer.xml"))
+                    file.save(os.path.join(self.api.get_config_parameter('UPLOAD_FOLDER', "./upload"), "beer.xml"))
                     self.api.notify(headline="Upload Successful", message="The Beer XML file was uploaded succesfully")
                     return ('', 204)
                 return ('', 404)
         except Exception as e:
+            print e
             self.api.notify(headline="Upload Failed", message="Failed to upload Beer xml", type="danger")
             return ('', 500)
 
@@ -88,12 +89,12 @@ class BeerXMLImport(FlaskView):
         name = self.getRecipeName(id)
         self.api.set_config_parameter("brew_name", name)
         boil_time = self.getBoilTime(id)
-        mashstep_type = cbpi.get_config_parameter("step_mash", "MashStep")
-        mash_kettle = cbpi.get_config_parameter("step_mash_kettle", None)
+        mashstep_type = self.api.get_config_parameter("step_mash", "MashStep")
+        mash_kettle = self.api.get_config_parameter("step_mash_kettle", None)
 
-        boilstep_type = cbpi.get_config_parameter("step_boil", "BoilStep")
-        boil_kettle = cbpi.get_config_parameter("step_boil_kettle", None)
-        boil_temp = 100 if cbpi.get_config_parameter("unit", "C") == "C" else 212
+        boilstep_type = self.api.get_config_parameter("step_boil", "BoilStep")
+        boil_kettle = self.api.get_config_parameter("step_boil_kettle", None)
+        boil_temp = 100 if self.api.get_config_parameter("unit", "C") == "C" else 212
 
         # READ KBH DATABASE
         Step.delete_all()
@@ -108,7 +109,8 @@ class BeerXMLImport(FlaskView):
             Step.insert(**{"name": "Boil", "type": boilstep_type, "config": {"kettle": boil_kettle, "temp": boil_temp, "timer": boil_time}})
             ## Add Whirlpool step
             Step.insert(**{"name": "Whirlpool", "type": "ChilStep", "config": {"timer": 15}})
-            self.api.emit("UPDATE_ALL_STEPS", Step.get_all())
+
+            self.api.ws_emit("UPDATE_ALL_STEPS", Step.get_all())
             self.api.notify(headline="Recipe %s loaded successfully" % name, message="")
         except Exception as e:
             self.api.notify(headline="Failed to load Recipe", message=e.message, type="danger")
@@ -125,9 +127,6 @@ class BeerXMLImport(FlaskView):
         return float(e.find('./RECIPE[%s]/BOIL_TIME' % (str(id))).text)
 
     def getSteps(self, id):
-
-
-
         e = xml.etree.ElementTree.parse(self.BEER_XML_FILE).getroot()
         steps = []
         for e in e.findall('./RECIPE[%s]/MASH/MASH_STEPS/MASH_STEP' % (str(id))):

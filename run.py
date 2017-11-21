@@ -29,5 +29,6 @@ from modules.base_plugins.steps import *
 from modules.example_plugins.WebViewJquery import *
 from modules.example_plugins.WebViewReactJs import *
 from modules.example_plugins.swagger import *
+from modules.recipe_book import *
 
 cbpi.run()

@@ -106,6 +106,7 @@ class FermenterView(BaseView):
 
     @route('/<int:id>/start', methods=['POST'])
     def start_fermentation(self, id):
+        print "START"
         active = None
         for idx, s in enumerate(cbpi.cache.get(self.cache_key)[id].steps):
             if s.state == 'A':
@@ -196,6 +197,7 @@ class FermenterView(BaseView):
         return cbpi.cache["fermenter"].get(id)
 
     def target_temp_reached(self,id, step):
+        print "TARGET TEMP REACHED"
         timestamp = time.time()
 
         days = step.days * 24 * 60 * 60
@@ -210,19 +212,22 @@ class FermenterView(BaseView):
         cbpi.ws_emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key)[id])
 
     def check_step(self):
+        print "CHECK STEP"
+        print cbpi.cache["fermenter_task"]
         for key, value in cbpi.cache["fermenter_task"].iteritems():
-
+            print value
             try:
                 fermenter = self.get_fermenter(key)
-                current_temp = current_temp = cbpi.get_sensor_value(int(fermenter.sensor))
+                current_temp = current_temp = cbpi.sensor.get_value(int(fermenter.sensor))
 
                 if value.timer_start is None:
-
+                    print "TIMER IS NONE"
                     if value.direction == "H" :
-
+                        print "TIMER WATING FOR HEATING"
                         if current_temp >= value.temp:
                             self.target_temp_reached(key,value)
                     else:
+                        print "TIMER WATING FOR COILING"
                         if current_temp <= value.temp:
                             self.target_temp_reached(key, value)
                 else:
@@ -231,6 +236,7 @@ class FermenterView(BaseView):
                     else:
                         pass
             except Exception as e:
+                print e
                 pass
 
 

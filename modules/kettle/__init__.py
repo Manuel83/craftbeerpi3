@@ -217,6 +217,17 @@ class KettleView(BaseView):
         self.api.brewing.toggle_automatic(id)
         return ('', 204)
 
+
+@cbpi.addon.core.listen("SET_TARGET_TEMP")
+def set_target_temp(id, temp):
+    '''
+    Change Taget Temp Event
+    :param id: kettle id
+    :param temp: target temp to set
+    :return: None
+    '''
+    KettleView().postTargetTemp(id,temp)
+
 @cbpi.addon.core.backgroundjob(key="read_target_temps", interval=5)
 def read_target_temps(api):
     """

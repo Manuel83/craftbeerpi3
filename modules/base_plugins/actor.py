@@ -8,6 +8,7 @@ class Dummy(Actor):
 
     @cbpi.addon.actor.action("WOHOO")
     def myaction(self):
+        print "WOOHOO"
         pass
 
     def on(self, power=100):
@@ -29,6 +30,7 @@ class MyController(KettleController):
     def run(self):
         while self.is_running():
 
+
             self.sleep(1)
 
 @cbpi.addon.fermenter.controller()
@@ -38,6 +40,8 @@ class MyController2(FermenterController):
     def run(self):
         while self.is_running():
             print "HALLO"
+
+            self.get_target_temp()
             self.sleep(1)
 
 @cbpi.addon.core.initializer(order=200)

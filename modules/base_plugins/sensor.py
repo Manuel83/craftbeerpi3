@@ -24,7 +24,7 @@ class Dummy(Sensor):
     @cbpi.addon.sensor.action("WOHOO")
     def myaction(self):
 
-        print "SENSOR ACTION HALLO!!!"
+        self.api.notify(headline="WOHOO", message="HALLO")
 
     def execute(self):
         while True:
@@ -32,7 +32,7 @@ class Dummy(Sensor):
                 self.update_value(int(self.text))
             except:
                 pass
-            self.api.sleep(1)
+            self.api.sleep(5)
 
 @cbpi.addon.core.action(key="clear", label="Clear all Logs")
 def woohoo(cbpi):

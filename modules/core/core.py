@@ -364,12 +364,21 @@ class CraftBeerPI(object):
         method.callback = True
         self.cache[key] = method
 
-    def get_config_parameter(self, key, default):
+    def get_config_parameter(self, key, default=None):
         cfg = self.cache["config"].get(key)
         if cfg is None:
             return default
         else:
             return cfg.value
+
+    def set_config_parameter(self, name, value):
+        from modules.config import Config
+        with self._app.app_context():
+            update_data = {"name": name, "value": value}
+            self.cache.get("config")[name].__dict__.update(**update_data)
+            c = Config.update(**update_data)
+            self.ws_emit("UPDATE_CONFIG", c)
+
 
     def emit(self, key, **kwargs):
 

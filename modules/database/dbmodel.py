@@ -132,3 +132,4 @@ class FermenterStep(DBModel):
         cur = get_db().cursor()
         cur.execute("UPDATE %s SET state = 'I', start = NULL, end = NULL, timer_start = NULL WHERE fermenter_id = ?" % cls.__table_name__, (id,))
         get_db().commit()
+

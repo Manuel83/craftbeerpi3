@@ -227,6 +227,8 @@ class Timer(object):
             return False
 
 
+
+
 class Step(Base, Timer):
 
 
@@ -266,6 +268,25 @@ class Step(Base, Timer):
         self.kettle_id = kwds.get("kettleid")
         self.value = None
         self.__dirty = False
+
+    def set_target_temp(self, temp, id=None):
+        temp = float(temp)
+
+        try:
+            if id is None:
+                self.api.emit("SET_TARGET_TEMP", id=self.kettle_id, temp=temp)
+            else:
+                self.api.emit("SET_TARGET_TEMP", id=id, temp=temp)
+        except Exception as e:
+
+            self.api.notify("Faild to set Target Temp", "", type="warning")
+
+
+    def get_kettle_temp(self, id=None):
+        id = int(id)
+        if id is None:
+            id = self.kettle_id
+        return self.api.sensor.get_value(int(self.api.cache.get("kettle").get(id).sensor))
 
     def is_dirty(self):
         return self.__dirty

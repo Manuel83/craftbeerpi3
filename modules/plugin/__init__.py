@@ -46,6 +46,7 @@ class PluginView(FlaskView):
         response = requests.get("https://raw.githubusercontent.com/Manuel83/craftbeerpi-plugins/master/plugins.yaml")
         self.api.cache["plugins"] = self.merge(yaml.load(response.text), self.api.cache["plugins"])
         for key, value in  cbpi.cache["plugins"].iteritems():
+            print key
             value["installed"] = os.path.isdir("./plugins/%s/" % (key))
         return json.dumps(cbpi.cache["plugins"])
 

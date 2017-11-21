@@ -43,6 +43,7 @@ class StepView(BaseView):
         """
         self.model.delete_all()
         self.api.emit("ALL_BREWING_STEPS_DELETED")
+        self.api.set_config_parameter("brew_name", "")
         cbpi.ws_emit("UPDATE_ALL_STEPS", self.model.get_all())
         return ('', 204)
 
