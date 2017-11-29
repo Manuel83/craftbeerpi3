@@ -1,14 +1,16 @@
 import time
+
+from flask import request
 from flask_classy import route
 from flask_login import login_required
 
 from modules.core.db import DBModel
-from modules.core.core import cbpi
-from modules.core.baseview import BaseView
+from modules import cbpi
+from modules.core.baseview import RestApi
 from modules.database.dbmodel import Actor
 
 
-class ActorView(BaseView):
+class ActorView(RestApi):
     model = Actor
     cache_key = "actors"
 
@@ -121,7 +123,7 @@ class ActorView(BaseView):
     def toggleTimeJob(self, id, t):
         self.api.cache.get("actors").get(int(id)).timer = int(time.time()) + int(t)
         self.toggle(int(id))
-        self.api._socketio.sleep(t)
+        self.api.sleep(t)
         self.api.cache.get("actors").get(int(id)).timer = None
         self.toggle(int(id))
 
@@ -179,13 +181,18 @@ class ActorView(BaseView):
           200:
             description: Actor Action called
         """
-
-        self.api.actor.action(id, method)
+        data = request.json
+        if data:
+            cbpi.actor.action(id, method, **data)
+        else:
+            cbpi.actor.action(id, method)
         return ('', 204)
+
+
 
 
 @cbpi.addon.core.initializer(order=1000)
 def init(cbpi):
-    ActorView.register(cbpi._app, route_base='/api/actor')
+    ActorView.register(cbpi.web, route_base='/api/actor')
     ActorView.init_cache()
     #cbpi.init_actors()

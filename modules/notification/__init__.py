@@ -1,6 +1,6 @@
 import json
 from flask_classy import FlaskView, route
-from modules.core.core import cbpi
+from modules import cbpi
 
 class NotificationView(FlaskView):
 
@@ -63,4 +63,4 @@ def init(cbpi):
         msg = {"id": len(cbpi.cache["messages"]), "type": "info", "headline": "Support CraftBeerPi with your donation", "message": "You will find the PayPay Donation button in the system menu" , "read": False}
         cbpi.cache["messages"].append(msg)
 
-    NotificationView.register(cbpi._app, route_base='/api/notification')
+    NotificationView.register(cbpi.web, route_base='/api/notification')

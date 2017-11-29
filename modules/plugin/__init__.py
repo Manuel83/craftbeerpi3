@@ -1,7 +1,7 @@
 import sys
 from flask import  request, send_from_directory, json
 from importlib import import_module
-from modules.core.core import cbpi
+from modules import cbpi
 from git import Repo
 import os
 import requests
@@ -46,7 +46,7 @@ class PluginView(FlaskView):
         response = requests.get("https://raw.githubusercontent.com/Manuel83/craftbeerpi-plugins/master/plugins.yaml")
         self.api.cache["plugins"] = self.merge(yaml.load(response.text), self.api.cache["plugins"])
         for key, value in  cbpi.cache["plugins"].iteritems():
-            print key
+
             value["installed"] = os.path.isdir("./plugins/%s/" % (key))
         return json.dumps(cbpi.cache["plugins"])
 
@@ -136,4 +136,4 @@ class PluginView(FlaskView):
 def init(cbpi):
     cbpi.cache["plugins"] = {}
     PluginView.api = cbpi
-    PluginView.register(cbpi._app, route_base='/api/plugin')
+    PluginView.register(cbpi.web, route_base='/api/plugin')

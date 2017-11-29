@@ -2,10 +2,10 @@ from flask import request, json
 from flask_classy import route, FlaskView
 from flask_login import login_required
 
-from modules.core.core import cbpi
+from modules import cbpi
 
 
-class BaseView(FlaskView):
+class RestApi(FlaskView):
 
     as_array = False
     cache_key = None
@@ -39,7 +39,7 @@ class BaseView(FlaskView):
     def post(self):
 
         data = request.json
-        self.api._app.logger.info("INSERT Model %s", self.model.__name__)
+        self.api.web.logger.info("INSERT Model %s", self.model.__name__)
         self._pre_post_callback(data)
         m = self.model.insert(**data)
         if self.api.cache.get(self.cache_key) is not None:
@@ -101,7 +101,7 @@ class BaseView(FlaskView):
 
     @classmethod
     def init_cache(cls):
-        with cls.api._app.app_context():
+        with cls.api.web.app_context():
 
             if cls.model.__as_array__ is True:
                 cls.api.cache[cls.cache_key] = []

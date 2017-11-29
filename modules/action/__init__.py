@@ -1,6 +1,8 @@
 import json
+
+from flask import request
 from flask_classy import FlaskView, route
-from modules.core.core import cbpi
+from modules import cbpi
 
 class ActionView(FlaskView):
 
@@ -15,9 +17,10 @@ class ActionView(FlaskView):
           200:
             description: action invoked
         """
+        data = request.json
 
-        self.cbpi.cache["actions"][action]["function"](self.cbpi)
-
+        obj = self.cbpi.cache["actions"][action]["class"](self.cbpi)
+        obj.execute(**data)
         return ('',204)
 
 @cbpi.addon.core.initializer()
@@ -28,4 +31,4 @@ def init(cbpi):
     :return: None
     """
     ActionView.cbpi = cbpi
-    ActionView.register(cbpi._app, route_base='/api/action')
+    ActionView.register(cbpi.web, route_base='/api/action')

@@ -2,13 +2,13 @@ import time
 
 from flask import json, request
 from flask_classy import route
-from modules.core.core import cbpi
+from modules import cbpi
 from modules.core.db import DBModel
-from modules.core.baseview import BaseView
+from modules.core.baseview import RestApi
 from modules.database.dbmodel import Config
 
 
-class ConfigView(BaseView):
+class ConfigView(RestApi):
     model = Config
     cache_key = "config"
 
@@ -77,7 +77,7 @@ class ConfigView(BaseView):
     @classmethod
     def init_cache(cls):
 
-        with cls.api._app.app_context():
+        with cls.api.web.app_context():
             cls.api.cache[cls.cache_key] = {}
             for key, value  in cls.model.get_all().iteritems():
                 cls.post_init_callback(value)
@@ -85,5 +85,5 @@ class ConfigView(BaseView):
 
 @cbpi.addon.core.initializer(order=0)
 def init(cbpi):
-    ConfigView.register(cbpi._app, route_base='/api/config')
+    ConfigView.register(cbpi.web, route_base='/api/config')
     ConfigView.init_cache()

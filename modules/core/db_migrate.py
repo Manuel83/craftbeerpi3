@@ -1,11 +1,11 @@
 import sqlite3
 import os
-from modules.core.core import  cbpi
+from modules import cbpi
 from modules.core.db import get_db
 
 def execute_file(curernt_version, data):
     if curernt_version >= data["version"]:
-        cbpi._app.logger.info("SKIP DB FILE: %s" % data["file"])
+        cbpi.web.logger.info("SKIP DB FILE: %s" % data["file"])
         return
     try:
         with sqlite3.connect("craftbeerpi.db") as conn:
@@ -18,14 +18,13 @@ def execute_file(curernt_version, data):
                 cur.execute("INSERT INTO schema_info (version,filename) values (?,?)", (data["version"], data["file"]))
                 conn.commit()
 
-    except sqlite3.OperationalError as err:
-
-        print err
+    except sqlite3.OperationalError as e:
+        cbpi.logger.error(e)
 
 @cbpi.addon.core.initializer(order=-9999)
 def init(cbpi):
 
-    with cbpi._app.app_context():
+    with cbpi.web.app_context():
         conn = get_db()
         cur = conn.cursor()
         current_version = None

@@ -5,7 +5,7 @@ from flask import json, url_for, Response, request
 from flask_classy import FlaskView, route
 from flask_login import login_required, current_user
 from git import Repo, Git
-from modules.core.core import cbpi
+from modules import cbpi
 import pprint
 import time
 
@@ -190,4 +190,4 @@ class SystemView(FlaskView):
 def init(cbpi):
 
     SystemView.api = cbpi
-    SystemView.register(cbpi._app, route_base='/api/system')
+    SystemView.register(cbpi.web, route_base='/api/system')

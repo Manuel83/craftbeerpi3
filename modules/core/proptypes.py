@@ -16,6 +16,7 @@ class Property(object):
             self.configurable = configurable
             self.default_value = default_value
             self.description = description
+            self.unit = unit
 
     class Text(PropertyType):
         def __init__(self, label, configurable=False, required=False, default_value="", description=""):
@@ -44,5 +45,6 @@ class Property(object):
         def __init__(self, label, description=""):
             PropertyType.__init__(self)
             self.label = label
+            self.unit = ""
             self.configurable = True
             self.description = description

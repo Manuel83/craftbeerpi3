@@ -2,7 +2,7 @@ from flask import json, request
 from flask_classy import FlaskView, route
 from git import Repo, Git
 import sqlite3
-from modules.core.core import cbpi
+from modules import cbpi
 from werkzeug.utils import secure_filename
 import pprint
 import time
@@ -60,7 +60,7 @@ class BeerXMLImport(FlaskView):
                     return ('', 204)
                 return ('', 404)
         except Exception as e:
-            print e
+            self.api.logger.error(e)
             self.api.notify(headline="Upload Failed", message="Failed to upload Beer xml", type="danger")
             return ('', 500)
 
@@ -143,4 +143,4 @@ class BeerXMLImport(FlaskView):
 def init(cbpi):
 
     BeerXMLImport.api = cbpi
-    BeerXMLImport.register(cbpi._app, route_base='/api/beerxml')
+    BeerXMLImport.register(cbpi.web, route_base='/api/beerxml')

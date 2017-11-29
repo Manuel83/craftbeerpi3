@@ -22,7 +22,6 @@ from modules.database.dbmodel import Kettle
 class ComplexEncoder(json.JSONEncoder):
     def default(self, obj):
         try:
-
             if isinstance(obj, DBModel):
                 return obj.__dict__
             elif isinstance(obj, Actor):
@@ -33,30 +32,10 @@ class ComplexEncoder(json.JSONEncoder):
                 return obj()
             else:
                 return None
-
             return None
         except TypeError as e:
             pass
         return None
-
-
-class Addon(object):
-    def __init__(self, cbpi):
-        self.step = StepAPI(cbpi)
-        self.actor = ActorAPI(cbpi)
-        self.sensor = SensorAPI(cbpi)
-        self.kettle = KettleAPI(cbpi)
-        self.fermenter = FermenterAPI(cbpi)
-        self.core = CoreAPI(cbpi)
-
-    def init(self):
-        self.core.init()
-        self.step.init()
-        self.actor.init()
-        self.sensor.init()
-        # self.kettle.init()
-        # self.fermenter.init()
-
 
 class ActorCore(object):
     key = "actor_types"
@@ -82,8 +61,7 @@ class ActorCore(object):
             actor.power = 100
             self.cbpi.emit("INIT_ACTOR", id=id)
         except Exception as e:
-            print e
-            self.cbpi._app.logger.error(e)
+            self.cbpi.web.logger.error(e)
 
     def stop_one(self, id):
         self.cbpi.cache["actors"][id]["instance"].stop()
@@ -99,7 +77,7 @@ class ActorCore(object):
             self.cbpi.emit("SWITCH_ACTOR_ON", id=id, power=power)
             return True
         except Exception as e:
-            print e
+            self.cbpi.logger.error(e)
             return False
 
     def off(self, id):
@@ -111,7 +89,7 @@ class ActorCore(object):
             self.cbpi.emit("SWITCH_ACTOR_OFF", id=id)
             return True
         except Exception as e:
-            print e
+            self.cbpi.logger.error(e)
             return False
 
     def toggle(self, id):
@@ -129,11 +107,11 @@ class ActorCore(object):
             self.cbpi.emit("SWITCH_ACTOR_POWER_CHANGE", id=id, power=power)
             return True
         except Exception as e:
-            print e
+            self.cbpi.logger.error(e)
             return False
 
-    def action(self, id, method):
-        self.cbpi.cache.get("actors").get(id).instance.__getattribute__(method)()
+    def action(self, id, method, **data):
+        self.cbpi.cache.get("actors").get(id).instance.__getattribute__(method)(**data)
 
 
     def toggle_timeout(self, id, seconds):
@@ -182,7 +160,7 @@ class SensorCore(object):
 
         except Exception as e:
             print "ERROR"
-            self.cbpi._app.logger.error(e)
+            self.cbpi.web.logger.error(e)
 
     def stop_one(self, id):
 
@@ -206,12 +184,12 @@ class SensorCore(object):
         with open(filename, "a") as file:
             file.write(msg)
 
-    def action(self, id, method):
-        self.cbpi.cache.get("sensors").get(id).instance.__getattribute__(method)()
-
+    def action(self, id, method, **data):
+        self.cbpi.cache.get("sensors").get(id).instance.__getattribute__(method)(**data)
 
 
 class BrewingCore(object):
+
     def __init__(self, cbpi):
         self.cbpi = cbpi
         self.cbpi.cache["step_types"] = {}
@@ -240,7 +218,7 @@ class BrewingCore(object):
             # Start controller
             if kettle.logic is not None:
                 cfg = kettle.config.copy()
-                cfg.update(dict(api=cbpi, kettle_id=kettle.id, heater=kettle.heater, sensor=kettle.sensor))
+                cfg.update(dict(api=self.cbpi, kettle_id=kettle.id, heater=kettle.heater, sensor=kettle.sensor))
                 instance = self.get_controller(kettle.logic).get("class")(**cfg)
                 instance.init()
                 kettle.instance = instance
@@ -250,13 +228,13 @@ class BrewingCore(object):
 
                 t = self.cbpi._socketio.start_background_task(target=run, instance=instance)
             kettle.state = not kettle.state
-            self.cbpi.ws_emit("UPDATE_KETTLE", cbpi.cache.get("kettle").get(id))
+            self.cbpi.ws_emit("UPDATE_KETTLE", self.cbpi.cache.get("kettle").get(id))
             self.cbpi.emit("KETTLE_CONTROLLER_STARTED", id=id)
         else:
             # Stop controller
             kettle.instance.stop()
             kettle.state = not kettle.state
-            self.cbpi.ws_emit("UPDATE_KETTLE", cbpi.cache.get("kettle").get(id))
+            self.cbpi.ws_emit("UPDATE_KETTLE", self.cbpi.cache.get("kettle").get(id))
             self.cbpi.emit("KETTLE_CONTROLLER_STOPPED", id=id)
 
 
@@ -270,28 +248,50 @@ class FermentationCore(object):
         return self.cbpi.cache["fermentation_controller_types"].get(name)
 
 
+class Logger(object):
+    def __init__(self, cbpi):
+        self.cbpi = cbpi
+
+    def error(self, msg, *args, **kwargs):
+        self.cbpi.web.logger.error(msg, *args, **kwargs)
+
+    def info(self, msg, *args, **kwargs):
+        self.cbpi.web.logger.info(msg, *args, **kwargs)
+
+    def debug(self, msg, *args, **kwargs):
+        self.cbpi.web.logger.debug(msg, *args, **kwargs)
+
+    def warning(self, msg, *args, **kwargs):
+        self.cbpi.web.logger.warning(msg, *args, **kwargs)
+
 class CraftBeerPI(object):
     cache = {}
     eventbus = {}
 
     def __init__(self):
-        FORMAT = '%(asctime)-15s - %(levelname)s - %(message)s'
-        logging.basicConfig(filename='./logs/app.log', level=logging.INFO, format=FORMAT)
         self.cache["messages"] = []
         self.cache["version"] = "3.1"
-        self.modules = {}
+        FORMAT = '%(asctime)-15s - %(levelname)s - %(message)s'
+        logging.basicConfig(filename='./logs/app.log', level=logging.INFO, format=FORMAT)
+        logging.getLogger('socketio').setLevel(logging.ERROR)
+        logging.getLogger('engineio').setLevel(logging.ERROR)
+        self.web = Flask(__name__)
+        self.logger = Logger(self)
 
+        self.logger.info("###Startup CraftBeerPi %s ###" % self.cache.get("version"))
+        self.web.secret_key = 'Cr4ftB33rP1'
+        self.web.json_encoder = ComplexEncoder
+        self._socketio = SocketIO(self.web, json=json, logging=False)
+
+
+        self.modules = {}
         self.addon = Addon(self)
         self.actor = ActorCore(self)
         self.sensor = SensorCore(self)
         self.brewing = BrewingCore(self)
         self.fermentation = FermentationCore(self)
-        self._app = Flask(__name__)
-        self._app.secret_key = 'Cr4ftB33rP1'
-        self._app.json_encoder = ComplexEncoder
-        self._socketio = SocketIO(self._app, json=json, logging=False)
 
-        @self._app.route('/')
+        @self.web.route('/')
         def index():
             return redirect('ui')
 
@@ -303,17 +303,21 @@ class CraftBeerPI(object):
         self.actor.init()
         self.beep()
         try:
-            port = int(cbpi.get_config_parameter('port', '5000'))
+            port = int(self.get_config_parameter('port', '5000'))
         except ValueError:
             port = 5000
-        print port
-        self._socketio.run(self._app, host='0.0.0.0', port=port)
+
+        self._socketio.run(self.web, host='0.0.0.0', port=port)
 
     def beep(self):
         self.buzzer.beep()
 
     def sleep(self, seconds):
         self._socketio.sleep(seconds)
+
+    def start_background_task(self, target, *args, **kwargs):
+
+        self._socketio.start_background_task(target, *args, **kwargs)
 
     def notify(self, headline, message, type="success", timeout=5000):
         msg = {"id": str(uuid.uuid1()), "type": type, "headline": headline, "message": message, "timeout": timeout}
@@ -324,10 +328,10 @@ class CraftBeerPI(object):
 
     def __init_db(self, ):
 
-        with self._app.app_context():
+        with self.web.app_context():
             db = self.get_db()
             try:
-                with self._app.open_resource('../../config/schema.sql', mode='r') as f:
+                with self.web.open_resource('../../config/schema.sql', mode='r') as f:
                     db.cursor().executescript(f.read())
                 db.commit()
             except Exception as e:
@@ -373,7 +377,7 @@ class CraftBeerPI(object):
 
     def set_config_parameter(self, name, value):
         from modules.config import Config
-        with self._app.app_context():
+        with self.web.app_context():
             update_data = {"name": name, "value": value}
             self.cache.get("config")[name].__dict__.update(**update_data)
             c = Config.update(**update_data)
@@ -381,7 +385,6 @@ class CraftBeerPI(object):
 
 
     def emit(self, key, **kwargs):
-
         if self.eventbus.get(key) is not None:
             for value in self.eventbus[key]:
                 if value["async"] is False:
@@ -400,6 +403,3 @@ class CraftBeerPI(object):
 
                 self.notify("Failed to load plugin %s " % filename, str(e), type="danger", timeout=None)
 
-
-cbpi = CraftBeerPI()
-addon = cbpi.addon

@@ -12,11 +12,15 @@ class Base(object):
         self.value = None
         self.__dirty = False
 
+class Action(Base):
+
+    def execute(self):
+        pass
+
 class Actor(Base):
 
     @classmethod
     def init_global(cls):
-
         pass
 
     def init(self):
@@ -67,9 +71,6 @@ class Sensor(Base):
     def execute(self):
         print "EXECUTE"
         pass
-
-
-
 
 class ControllerBase(object):
     __dirty = False
@@ -271,7 +272,6 @@ class Step(Base, Timer):
 
     def set_target_temp(self, temp, id=None):
         temp = float(temp)
-
         try:
             if id is None:
                 self.api.emit("SET_TARGET_TEMP", id=self.kettle_id, temp=temp)
@@ -280,7 +280,6 @@ class Step(Base, Timer):
         except Exception as e:
 
             self.api.notify("Faild to set Target Temp", "", type="warning")
-
 
     def get_kettle_temp(self, id=None):
         id = int(id)
@@ -294,6 +293,8 @@ class Step(Base, Timer):
     def reset_dirty(self):
         self.__dirty = False
 
+    def notify(self, headline, messsage, timeout=None):
+        self.api.notify(headline, messsage, timeout)
     def __setattr__(self, name, value):
 
         if name != "_StepBase__dirty" and name in self.managed_fields:

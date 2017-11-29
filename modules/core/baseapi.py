@@ -22,6 +22,9 @@ class BaseAPI(object):
         except:
             doc = ""
 
+        if self.cbpi.cache.get(key) is None:
+            self.cbpi.cache[key] = {}
+        self.cbpi.logger.debug(name)
         self.cbpi.cache.get(key)[name] = {"name": name, "class": cls, "description":doc, "properties": [], "actions": []}
         self.cbpi.cache.get(key)[name].update(options)
         members = [attr for attr in dir(tmpObj) if not callable(getattr(tmpObj, attr)) and not attr.startswith("__")]
@@ -29,23 +32,39 @@ class BaseAPI(object):
             t = tmpObj.__getattribute__(m)
 
             if isinstance(t, Property.Number):
-                self.cbpi.cache.get(key)[name]["properties"].append({"name": m, "label": t.label, "type": "number", "configurable": t.configurable, "description": t.description, "default_value": t.default_value})
+                self.cbpi.cache.get(key)[name]["properties"].append({"name": m, "label": t.label, "type": "number", "configurable": t.configurable, "description": t.description, "default_value": t.default_value, "unit": t.unit})
             elif isinstance(t, Property.Text):
                 self.cbpi.cache.get(key)[name]["properties"].append({"name": m, "label": t.label, "type": "text", "required": t.required, "configurable": t.configurable, "description": t.description, "default_value": t.default_value})
-            elif isinstance(tmpObj.__getattribute__(m), Property.Select):
+            elif isinstance(t, Property.Select):
                 self.cbpi.cache.get(key)[name]["properties"].append({"name": m, "label": t.label, "type": "select",  "configurable": True, "options": t.options, "description": t.description})
-            elif isinstance(tmpObj.__getattribute__(m), Property.Actor):
+            elif isinstance(t, Property.Actor):
                 self.cbpi.cache.get(key)[name]["properties"].append({"name": m, "label": t.label, "type": "actor",  "configurable": True, "description": t.description})
-            elif isinstance(tmpObj.__getattribute__(m), Property.Sensor):
+            elif isinstance(t, Property.Sensor):
                 self.cbpi.cache.get(key)[name]["properties"].append({"name": m, "label": t.label, "type": "sensor", "configurable": True, "description": t.description})
-            elif isinstance(tmpObj.__getattribute__(m), Property.Kettle):
+            elif isinstance(t, Property.Kettle):
                 self.cbpi.cache.get(key)[name]["properties"].append({"name": m, "label": t.label, "type": "kettle", "configurable": True, "description": t.description})
 
         for method_name, method in cls.__dict__.iteritems():
             if hasattr(method, "action"):
                 label = method.__getattribute__("label")
-                self.cbpi.cache.get(key)[name]["actions"].append({"method": method_name, "label": label})
+                parameters = method.__getattribute__("parameters")
+                props = []
+                if parameters is not None:
+                    for k, t in parameters.iteritems():
+                        if isinstance(t, Property.Number):
+                            props.append({"name": k, "label": t.label, "type": "number", "configurable": t.configurable, "description": t.description, "default_value": t.default_value, "unit": t.unit})
+                        elif isinstance(t, Property.Text):
+                            props.append({"name": k, "label": t.label, "type": "text", "required": t.required, "configurable": t.configurable, "description": t.description, "default_value": t.default_value})
+                        elif isinstance(t, Property.Select):
+                            props.append({"name": k, "label": t.label, "type": "select", "configurable": True, "options": t.options, "description": t.description})
+                        elif isinstance(t, Property.Actor):
+                            props.append({"name": k, "label": t.label, "type": "actor", "configurable": True, "description": t.description})
+                        elif isinstance(t, Property.Sensor):
+                            props.append({"name": k, "label": t.label, "type": "sensor", "configurable": True, "description": t.description})
+                        elif isinstance(t, Property.Kettle):
+                            props.append({"name": k, "label": t.label, "type": "kettle", "configurable": True, "description": t.description})
 
+                self.cbpi.cache.get(key)[name]["actions"].append({"method": method_name, "label": label, "properties":props })
         return cls
 
 
@@ -59,9 +78,11 @@ class SensorAPI(BaseAPI):
             return f
        return decorator
 
-    def action(self, label):
+    def action(self, label, parameters=None):
+
         def real_decorator(func):
             func.action = True
+            func.parameters = parameters
             func.label = label
             return func
         return real_decorator
@@ -80,10 +101,11 @@ class StepAPI(BaseAPI):
             return f
        return decorator
 
-    def action(self, label):
+    def action(self, label, parameters=None):
         def real_decorator(func):
             func.action = True
             func.label = label
+            func.parameters = parameters
             return func
         return real_decorator
 
@@ -100,10 +122,11 @@ class ActorAPI(BaseAPI):
             return f
        return decorator
 
-    def action(self, label):
+    def action(self, label, parameters=None):
         def real_decorator(func):
             func.action = True
             func.label = label
+            func.parameters = parameters
             return func
         return real_decorator
 
@@ -119,10 +142,11 @@ class KettleAPI(BaseAPI):
             return f
        return decorator
 
-    def action(self, label):
+    def action(self, label, parameters=None):
         def real_decorator(func):
             func.action = True
             func.label = label
+            func.parameters = parameters
             return func
         return real_decorator
 
@@ -136,10 +160,11 @@ class FermenterAPI(BaseAPI):
             return f
        return decorator
 
-    def action(self, label):
+    def action(self, label, parameters=None):
         def real_decorator(func):
             func.action = True
             func.label = label
+            func.parameters = parameters
             return func
         return real_decorator
 
@@ -156,7 +181,6 @@ class CoreAPI(BaseAPI):
         self.cbpi.cache["web_menu"] =[]
 
     def init(self):
-
         self.cbpi.cache["init"] = sorted(self.cbpi.cache["init"], key=lambda k: k['order'])
         for value in self.cbpi.cache.get("init"):
 
@@ -168,12 +192,17 @@ class CoreAPI(BaseAPI):
                 try:
                     method(self.cbpi)
                 except Exception as e:
-                    print e
-                self.cbpi._socketio.sleep(interval)
+                    self.cbpi.logger.error(e)
+                self.cbpi.sleep(interval)
 
         for value in self.cbpi.cache.get("background"):
-            t = self.cbpi._socketio.start_background_task(target=job,  interval=value.get("interval"),  method=value.get("function"))
+            t = self.cbpi.start_background_task(target=job,  interval=value.get("interval"),  method=value.get("function"))
 
+    def action(self, **options):
+       def decorator(f):
+            BaseAPI.parseProps(self, "actions", f)
+            return f
+       return decorator
 
     def add_js(self, name, file):
         self.cbpi.cache["js"][name] = file
@@ -187,15 +216,7 @@ class CoreAPI(BaseAPI):
              return f
         return decorator
 
-
-    def action(self, key, label, **options):
-        def decorator(f):
-             self.cbpi.cache.get("actions")[key] = {"label": label, "function": f}
-             return f
-        return decorator
-
-
-    def backgroundjob(self, key, interval, **options):
+    def backgroundtask(self, key, interval, **options):
         def decorator(f):
              self.cbpi.cache.get("background").append({"function": f, "key": key, "interval": interval})
              return f
@@ -220,5 +241,20 @@ class CoreAPI(BaseAPI):
 
 class Buzzer(object):
 
-    def beep():
+    def beep(self):
         pass
+
+class Addon(object):
+    def __init__(self, cbpi):
+        self.step = StepAPI(cbpi)
+        self.actor = ActorAPI(cbpi)
+        self.sensor = SensorAPI(cbpi)
+        self.kettle = KettleAPI(cbpi)
+        self.fermenter = FermenterAPI(cbpi)
+        self.core = CoreAPI(cbpi)
+
+    def init(self):
+        self.core.init()
+        self.step.init()
+        self.actor.init()
+        self.sensor.init()

@@ -2,7 +2,7 @@ import time
 from thread import start_new_thread
 
 from modules.core.baseapi import Buzzer
-from modules.core.core import cbpi
+from modules import cbpi
 
 try:
     import RPi.GPIO as GPIO
@@ -16,19 +16,19 @@ class GPIOBuzzer(Buzzer):
 
     def __init__(self, gpio):
         try:
-            cbpi._app.logger.info("INIT BUZZER NOW GPIO%s" % gpio)
+            cbpi.web.logger.info("INIT BUZZER NOW GPIO%s" % gpio)
             self.gpio = int(gpio)
             GPIO.setmode(GPIO.BCM)
             GPIO.setup(self.gpio, GPIO.OUT)
             self.state = True
-            cbpi._app.logger.info("BUZZER SETUP OK")
+            cbpi.web.logger.info("BUZZER SETUP OK")
         except Exception as e:
-            cbpi._app.logger.info("BUZZER EXCEPTION %s" % str(e))
+            cbpi.web.logger.info("BUZZER EXCEPTION %s" % str(e))
             self.state = False
 
     def beep(self):
         if self.state is False:
-            cbpi._app.logger.error("BUZZER not working")
+            cbpi.web.logger.error("BUZZER not working")
             return
 
         def play(sound):

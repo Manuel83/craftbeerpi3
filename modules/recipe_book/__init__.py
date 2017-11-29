@@ -7,8 +7,8 @@ from flask import json, request, send_from_directory
 from flask_classy import route, FlaskView
 
 from modules.core.db import DBModel
-from modules.core.baseview import BaseView
-from modules.core.core import cbpi
+from modules.core.baseview import RestApi
+from modules import cbpi
 from modules.database.dbmodel import Step
 from yaml import Loader, Dumper
 from yaml import load, dump
@@ -59,7 +59,7 @@ class RecipeBook(FlaskView):
                     description: Log file downloaded
                 """
         file = "%s.json" % name
-        print file
+
         if not self.check_filename(file):
             return ('File Not Found111', 404)
         return send_from_directory('../../recipes', file, as_attachment=True, attachment_filename=file)
@@ -143,4 +143,4 @@ class RecipeBook(FlaskView):
 @cbpi.addon.core.initializer(order=2000)
 def init(cbpi):
     RecipeBook.api = cbpi
-    RecipeBook.register(cbpi._app, route_base='/api/recipebook')
+    RecipeBook.register(cbpi.web, route_base='/api/recipebook')

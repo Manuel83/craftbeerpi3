@@ -3,12 +3,12 @@ from flask import json, request
 from flask_classy import route
 
 from modules.core.db import DBModel
-from modules.core.baseview import BaseView
-from modules.core.core import cbpi
+from modules.core.baseview import RestApi
+from modules import cbpi
 from modules.database.dbmodel import Step
 
 
-class StepView(BaseView):
+class StepView(RestApi):
     model = Step
     def _pre_post_callback(self, data):
         order = self.model.get_max_order()
@@ -207,24 +207,25 @@ def init_after_startup():
 @cbpi.addon.core.initializer(order=2000)
 def init(cbpi):
 
-    StepView.register(cbpi._app, route_base='/api/step')
+    StepView.register(cbpi.web, route_base='/api/step')
 
     def get_all():
-        with cbpi._app.app_context():
+        with cbpi.web.app_context():
             return Step.get_all()
 
-    with cbpi._app.app_context():
+    with cbpi.web.app_context():
         init_after_startup()
 
     cbpi.add_cache_callback("steps", get_all)
 
-@cbpi.addon.core.backgroundjob(key="step_task", interval=0.1)
+@cbpi.addon.core.backgroundtask(key="step_task", interval=0.1)
 def execute_step(api):
     '''
     Background job which executes the step
     :return:
     '''
-    with cbpi._app.app_context():
+    with cbpi.web.app_context():
+
         step = cbpi.cache.get("active_step")
         if step is not None:
             step.execute()

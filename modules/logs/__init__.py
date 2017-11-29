@@ -2,7 +2,7 @@ import datetime
 import os
 from flask import Blueprint, request, send_from_directory, json
 from flask_classy import FlaskView, route
-from modules.core.core import cbpi
+from modules import cbpi
 
 
 class LogView(FlaskView):
@@ -172,4 +172,4 @@ def init(cbpi):
     :param app: the flask app
     :return: None
     """
-    LogView.register(cbpi._app, route_base='/api/logs')
+    LogView.register(cbpi.web, route_base='/api/logs')

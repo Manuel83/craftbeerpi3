@@ -1,18 +1,19 @@
 import flask_login
 from flask import request
 
-from modules.core.core import cbpi, addon
+from modules import cbpi
 
 class User(flask_login.UserMixin):
     pass
 
-@addon.core.initializer(order=0)
+@cbpi.addon.core.initializer(order=0)
 def log(cbpi):
 
 
     cbpi._login_manager = flask_login.LoginManager()
-    cbpi._login_manager.init_app(cbpi._app)
-    @cbpi._app.route('/login', methods=['POST'])
+    cbpi._login_manager.init_app(cbpi.web)
+
+    @cbpi.web.route('/login', methods=['POST'])
     def login():
 
          data = request.json
@@ -30,15 +31,29 @@ def log(cbpi):
             return ('',401)
 
 
-    @cbpi._app.route('/logout', methods=['POST'])
+    @cbpi.web.route('/logout', methods=['POST'])
     def logout():
         flask_login.logout_user()
         return 'Logged out'
 
+    @cbpi._login_manager.request_loader
+    def load_user_from_request(request):
+
+
+        api_key = request.args.get('api_key')
+
+        if cbpi.get_config_parameter("password_security", "NO") == "NO":
+            user = User()
+            user.id = "craftbeerpi"
+            return user
+        elif api_key == "123":
+            user = User()
+            user.id = "craftbeerpi"
+            return user
+        return None
+
     @cbpi._login_manager.user_loader
     def user_loader(user):
-
-
 
         if cbpi.get_config_parameter("password_security", "NO") == "YES":
             if user != "craftbeerpi":
@@ -53,4 +68,6 @@ def log(cbpi):
 
     @cbpi._login_manager.unauthorized_handler
     def unauthorized_handler():
+
+
         return ('Please login',401)

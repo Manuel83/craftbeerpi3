@@ -2,7 +2,7 @@ from flask import json, request
 from flask_classy import FlaskView, route
 from git import Repo, Git
 import sqlite3
-from modules.core.core import cbpi
+from modules import cbpi
 from werkzeug.utils import secure_filename
 import pprint
 import time
@@ -39,7 +39,7 @@ class KBH(FlaskView):
                 result.append({"id": row[0], "name": row[1], "brewed": row[2]})
             return json.dumps(result)
         except Exception as e:
-            print e
+            self.api.logger.error(e)
             self.api.notify(headline="Failed to load KHB database", message="ERROR", type="danger")
             return ('', 500)
         finally:
@@ -143,4 +143,4 @@ class KBH(FlaskView):
 def init(cbpi):
 
     KBH.api = cbpi
-    KBH.register(cbpi._app, route_base='/api/kbh')
+    KBH.register(cbpi.web, route_base='/api/kbh')

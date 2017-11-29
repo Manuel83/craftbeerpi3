@@ -1,5 +1,5 @@
 from modules.core.basetypes import Step
-from modules.core.core import cbpi
+from modules import cbpi
 from modules.core.proptypes import Property
 import time
 
@@ -18,7 +18,7 @@ class Dummy(Step):
     time = Property.Text(label="Text", configurable=True, description="WOHOOO")
 
     def execute(self):
-        #print self.text
+
         pass
 
     def reset(self):
@@ -36,8 +36,8 @@ class MashStep(Step):
     Just put the decorator @cbpi.step on top of a method
     '''
     # Properties
-    temp = Property.Number("Temperature", configurable=True, description="Target Temperature of Mash Step")
-    kettle = Property.Kettle("Kettle", description="Kettle in which the mashing takes place")
+    temp = Property.Number("Temperature", configurable=True, description="Target Temperature of Mash Step", unit="C")
+    kettle = Property.Kettle("Kettle", description="Kettle in which the mashing takes place" )
     timer = Property.Number("Timer in Minutes", configurable=True, description="Timer is started when the target temperature is reached")
 
     def init(self):
@@ -79,6 +79,7 @@ class MashStep(Step):
 
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
+            self.api.beep()
             self.notify("Mash Step Completed!", "Starting the next step", timeout=None)
             self.next()
 
@@ -243,3 +244,5 @@ class BoilStep(Step):
         if self.is_timer_finished() == True:
             self.notify("Boil Step Completed!", "Starting the next step", timeout=None)
             self.next()
+
+

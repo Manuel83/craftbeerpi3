@@ -1,11 +1,11 @@
 from flask import request
 from flask_classy import FlaskView, route
-from modules.core.core import cbpi
-from modules.core.baseview import BaseView
+from modules import cbpi
+from modules.core.baseview import RestApi
 from modules.core.db import DBModel
 from modules.database.dbmodel import Kettle
 
-class KettleView(BaseView):
+class KettleView(RestApi):
     model = Kettle
     cache_key = "kettle"
 
@@ -228,7 +228,7 @@ def set_target_temp(id, temp):
     '''
     KettleView().postTargetTemp(id,temp)
 
-@cbpi.addon.core.backgroundjob(key="read_target_temps", interval=5)
+@cbpi.addon.core.backgroundtask(key="read_target_temps", interval=5)
 def read_target_temps(api):
     """
     background process that reads all passive sensors in interval of 1 second
@@ -241,5 +241,5 @@ def read_target_temps(api):
 @cbpi.addon.core.initializer()
 def init(cbpi):
     KettleView.api = cbpi
-    KettleView.register(cbpi._app, route_base='/api/kettle')
+    KettleView.register(cbpi.web, route_base='/api/kettle')
     KettleView.init_cache()

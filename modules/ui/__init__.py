@@ -1,12 +1,12 @@
 from flask import Blueprint,render_template
 
-from modules.core.core import cbpi
+from modules import cbpi
 
 react = Blueprint('ui', __name__, template_folder='templates', static_folder='static')
 
 @cbpi.addon.core.initializer(order=10)
 def init(cbpi):
-    cbpi._app.register_blueprint(react, url_prefix='/ui')
+    cbpi.web.register_blueprint(react, url_prefix='/ui')
 
 
 @react.route('/',  methods=["GET"])
@@ -22,7 +22,7 @@ def index():
 
 
 
-@cbpi._app.errorhandler(404)
+@cbpi.web.errorhandler(404)
 def page_not_found(e):
     return render_template('404.html'), 404
 

@@ -2,13 +2,13 @@ import time
 from flask import request
 from flask_classy import route
 
-from modules.core.core import  cbpi
+from modules import cbpi
 from modules.core.db import get_db, DBModel
-from modules.core.baseview import BaseView
+from modules.core.baseview import RestApi
 from modules.database.dbmodel import Fermenter, FermenterStep
 
 
-class FermenterView(BaseView):
+class FermenterView(RestApi):
     model = Fermenter
     cache_key = "fermenter"
 
@@ -212,10 +212,9 @@ class FermenterView(BaseView):
         cbpi.ws_emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key)[id])
 
     def check_step(self):
-        print "CHECK STEP"
-        print cbpi.cache["fermenter_task"]
+
         for key, value in cbpi.cache["fermenter_task"].iteritems():
-            print value
+
             try:
                 fermenter = self.get_fermenter(key)
                 current_temp = current_temp = cbpi.sensor.get_value(int(fermenter.sensor))
@@ -236,11 +235,11 @@ class FermenterView(BaseView):
                     else:
                         pass
             except Exception as e:
-                print e
+                self.api.looger.error(e)
                 pass
 
 
-@cbpi.addon.core.backgroundjob(key="read_target_temps_fermenter", interval=5)
+@cbpi.addon.core.backgroundtask(key="read_target_temps_fermenter", interval=5)
 def read_target_temps(cbpi):
     """
     background process that reads all passive sensors in interval of 1 second
@@ -253,9 +252,9 @@ def read_target_temps(cbpi):
 
 instance = FermenterView()
 
-@cbpi.addon.core.backgroundjob(key="fermentation_task", interval=1)
+@cbpi.addon.core.backgroundtask(key="fermentation_task", interval=1)
 def execute_fermentation_step(cbpi):
-    with cbpi._app.app_context():
+    with cbpi.web.app_context():
         instance.check_step()
 
 
@@ -268,5 +267,5 @@ def init_active_steps():
 def init(cbpi):
 
     cbpi.cache["fermenter_task"] = {}
-    FermenterView.register(cbpi._app, route_base='/api/fermenter')
+    FermenterView.register(cbpi.web, route_base='/api/fermenter')
     FermenterView.init_cache()
