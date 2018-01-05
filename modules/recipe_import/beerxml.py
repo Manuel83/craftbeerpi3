@@ -48,6 +48,7 @@ class BeerXMLImport(FlaskView):
 
 
         steps = self.getSteps(id)
+        boil_time_alerts = self.getBoilAlerts(id)
         name = self.getRecipeName(id)
         self.api.set_config_parameter("brew_name", name)
         boil_time = self.getBoilTime(id)
@@ -67,8 +68,26 @@ class BeerXMLImport(FlaskView):
             for row in steps:
                 Step.insert(**{"name": row.get("name"), "type": mashstep_type, "config": {"kettle": mash_kettle, "temp": float(row.get("temp")), "timer": row.get("timer")}})
             Step.insert(**{"name": "ChilStep", "type": "ChilStep", "config": {"timer": 15}})
-            ## Add cooking step
-            Step.insert(**{"name": "Boil", "type": boilstep_type, "config": {"kettle": boil_kettle, "temp": boil_temp, "timer": boil_time}})
+            ## Add boiling step
+            Step.insert(**{
+                "name": "Boil",
+                "type": boilstep_type,
+                "config": {
+                    "kettle": boil_kettle,
+                    "temp": boil_temp,
+                    "timer": boil_time,
+                    ## Beer XML defines additions as the total time spent in boiling,
+                    ## CBP defines it as time-until-alert
+
+                    ## Also, The model supports five boil-time additions.
+                    ## Set the rest to None to signal them being absent
+                    "hop_1": boil_time - boil_time_alerts[0] if len(boil_time_alerts) >= 1 else None,
+                    "hop_2": boil_time - boil_time_alerts[1] if len(boil_time_alerts) >= 2 else None,
+                    "hop_3": boil_time - boil_time_alerts[2] if len(boil_time_alerts) >= 3 else None,
+                    "hop_4": boil_time - boil_time_alerts[3] if len(boil_time_alerts) >= 4 else None,
+                    "hop_5": boil_time - boil_time_alerts[4] if len(boil_time_alerts) >= 5 else None
+                }
+            })
             ## Add Whirlpool step
             Step.insert(**{"name": "Whirlpool", "type": "ChilStep", "config": {"timer": 15}})
             self.api.emit("UPDATE_ALL_STEPS", Step.get_all())
@@ -87,18 +106,40 @@ class BeerXMLImport(FlaskView):
         e = xml.etree.ElementTree.parse(self.BEER_XML_FILE).getroot()
         return float(e.find('./RECIPE[%s]/BOIL_TIME' % (str(id))).text)
 
+    def getBoilAlerts(self, id):
+        e = xml.etree.ElementTree.parse(self.BEER_XML_FILE).getroot()
+
+        recipe = e.find('./RECIPE[%s]' % (str(id)))
+        alerts = []
+        for e in recipe.findall('./HOPS/HOP'):
+            use = e.find('USE').text
+            ## Hops which are not used in the boil step should not cause alerts
+            if use != 'Aroma' and use != 'Boil':
+                continue
+
+            alerts.append(float(e.find('TIME').text))
+
+        ## There might also be miscelaneous additions during boild time
+        for e in recipe.findall('MISCS/MISC[USE="Boil"]'):
+            alerts.append(float(e.find('TIME').text))
+
+        ## Dedupe and order the additions by their time, to prevent multiple alerts at the same time
+        alerts = sorted(list(set(alerts)))
+
+        ## CBP should have these additions in reverse
+        alerts.reverse()
+
+        return alerts
+
     def getSteps(self, id):
-
-
-
         e = xml.etree.ElementTree.parse(self.BEER_XML_FILE).getroot()
         steps = []
         for e in e.findall('./RECIPE[%s]/MASH/MASH_STEPS/MASH_STEP' % (str(id))):
-
             if self.api.get_config_parameter("unit", "C") == "C":
                 temp = float(e.find("STEP_TEMP").text)
             else:
                 temp = round(9.0 / 5.0 * float(e.find("STEP_TEMP").text) + 32, 2)
+
             steps.append({"name": e.find("NAME").text, "temp": temp, "timer": float(e.find("STEP_TIME").text)})
 
         return steps
