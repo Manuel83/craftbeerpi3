@@ -217,12 +217,15 @@ class BoilStep(StepBase):
             # Check if Timer is Running
             if self.is_timer_finished() is None:
                 self.start_timer(int(self.timer) * 60)
-            else:
-                self.check_hop_timer(1, self.hop_1)
-                self.check_hop_timer(2, self.hop_2)
-                self.check_hop_timer(3, self.hop_3)
-                self.check_hop_timer(4, self.hop_4)
-                self.check_hop_timer(5, self.hop_5)
+        
+        # Check if hop time reached
+        if self.is_timer_finished() == False:
+            self.check_hop_timer(1, self.hop_1)
+            self.check_hop_timer(2, self.hop_2)
+            self.check_hop_timer(3, self.hop_3)
+            self.check_hop_timer(4, self.hop_4)
+            self.check_hop_timer(5, self.hop_5)
+                
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
             self.notify("Boil Step Completed!", "Starting the next step", timeout=None)
