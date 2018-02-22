@@ -159,17 +159,17 @@ class BoilStep(StepBase):
     # Properties
     temp = Property.Number("Temperature", configurable=True, default_value=100, description="Target temperature for boiling")
     kettle = StepProperty.Kettle("Kettle", description="Kettle in which the boiling step takes place")
-    timer = Property.Number("Timer in Minutes", configurable=True, default_value=90, description="Timer is started when target temperature is reached")
-    hop_1 = Property.Number("Hop 1 Addition", configurable=True, description="Fist Hop alert")
+    timer = Property.Number("Timer in Minutes", configurable=True, default_value=60, description="Timer is started when target temperature is reached")
+    hop_1 = Property.Number("Hop 1 Addition", default_value="-1", configurable=True, description="Fist Hop alert")
     hop_1_added = Property.Number("",default_value=None)
-    hop_2 = Property.Number("Hop 2 Addition", configurable=True, description="Second Hop alert")
+    hop_2 = Property.Number("Hop 2 Addition", default_value="-1", configurable=True, description="Second Hop alert")
     hop_2_added = Property.Number("", default_value=None)
-    hop_3 = Property.Number("Hop 3 Addition", configurable=True)
-    hop_3_added = Property.Number("", default_value=None, description="Third Hop alert")
-    hop_4 = Property.Number("Hop 4 Addition", configurable=True)
-    hop_4_added = Property.Number("", default_value=None, description="Fourth Hop alert")
-    hop_5 = Property.Number("Hop 5 Addition", configurable=True)
-    hop_5_added = Property.Number("", default_value=None, description="Fives Hop alert")
+    hop_3 = Property.Number("Hop 3 Addition", default_value="-1", configurable=True, description="Third Hop alert")
+    hop_3_added = Property.Number("", default_value=None)
+    hop_4 = Property.Number("Hop 4 Addition", default_value="-1", configurable=True, description="Fourth Hop alert")
+    hop_4_added = Property.Number("", default_value=None)
+    hop_5 = Property.Number("Hop 5 Addition", default_value="-1", configurable=True, description="Fifth Hop alert")
+    hop_5_added = Property.Number("", default_value=None)
 
     def init(self):
         '''
@@ -202,8 +202,7 @@ class BoilStep(StepBase):
 
     def check_hop_timer(self, number, value):
 
-        if self.__getattribute__("hop_%s_added" % number) is not True and time.time() > (
-            self.timer_end - (int(self.timer) * 60 - int(value) * 60)):
+        if self.__getattribute__("hop_%s_added" % number) is not True and self.timer_end - int(time.time()) <= (int(value) * 60):
             self.__setattr__("hop_%s_added" % number, True)
             self.notify("Hop Alert", "Please add Hop %s" % number, timeout=None)
 
