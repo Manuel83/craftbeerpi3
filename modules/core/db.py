@@ -1,7 +1,9 @@
 import sqlite3
-
+import os
 from flask import json, g
 
+db_root=os.getenv("DB_ROOT", "")
+db_location=db_root + '/craftbeerpi.db'
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -11,7 +13,7 @@ def get_db():
             for idx, col in enumerate(cursor.description):
                 d[col[0]] = row[idx]
             return d
-        db = g._database = sqlite3.connect('craftbeerpi.db')
+        db = g._database = sqlite3.connect(db_location)
         db.row_factory = dict_factory
     return db
 

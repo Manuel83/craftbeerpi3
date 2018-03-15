@@ -1,14 +1,14 @@
 import sqlite3
 import os
 from modules import  cbpi
-from db import get_db
+from db import get_db, db_location
 
 def execute_file(curernt_version, data):
     if curernt_version >= data["version"]:
         cbpi.app.logger.info("SKIP DB FILE: %s" % data["file"])
         return
     try:
-        with sqlite3.connect("craftbeerpi.db") as conn:
+        with sqlite3.connect(db_location) as conn:
             with open('./update/%s' % data["file"], 'r') as f:
                 d = f.read()
                 sqlCommands = d.split(";")
