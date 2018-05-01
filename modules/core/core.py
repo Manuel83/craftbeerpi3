@@ -1,16 +1,14 @@
 import inspect
-import pprint
 
-import sqlite3
 from flask import make_response, g
 import datetime
 from datetime import datetime
-from flask.views import MethodView
-from flask_classy import FlaskView, route
 
 from time import localtime, strftime
 from functools import wraps, update_wrapper
 
+import requests
+import json
 
 from props import *
 
@@ -149,12 +147,25 @@ class SensorAPI(object):
         self.save_to_file(id, value)
 
     def save_to_file(self, id, value, prefix="sensor"):
-        filename = "./logs/%s_%s.log" % (prefix, str(id))
+        sensor_name = "%s_%s" % (prefix, str(id))
+        filename = "./logs/%slog" % sensor_name
         formatted_time = strftime("%Y-%m-%d %H:%M:%S", localtime())
         msg = str(formatted_time) + "," +str(value) + "\n"
 
         with open(filename, "a") as file:
             file.write(msg)
+
+        kairosdb_server = "http://192.168.178.20:5001"
+
+        data = [
+            dict(name=sensor_name, datapoints=[
+                [int(round(time.time() * 1000)), value]
+            ], tags={
+                "cbpi": prefix
+            })
+        ]
+
+        response = requests.post(kairosdb_server + "/api/v1/datapoints", json.dumps(data))
 
     def log_action(self, text):
         filename = "./logs/action.log"

@@ -1,23 +1,16 @@
+from flask import Flask, json, g
+from flask_socketio import SocketIO
 
-import json
-import sys, os
-from flask import Flask, render_template, redirect, json, g
-
-
-from flask_socketio import SocketIO, emit
-
-import logging
-
-
+import yaml
+import logging.config
 
 from modules.core.core import CraftBeerPi, ActorBase, SensorBase
 from modules.core.db import DBModel
 
 app = Flask(__name__)
 
-FORMAT = '%(asctime)-15s - %(levelname)s - %(message)s'
+logging.config.dictConfig(yaml.load(open('./config/logger.yaml', 'r')))
 
-logging.basicConfig(filename='./logs/app.log',level=logging.INFO, format=FORMAT)
 app.config['SECRET_KEY'] = 'craftbeerpi'
 app.config['UPLOAD_FOLDER'] = './upload'
 
