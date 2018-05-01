@@ -19,7 +19,8 @@ show_menu () {
    "7" "Software Update (git pull)" \
    "8" "Reset File Changes (git reset --hard)" \
    "9" "Clear all logs" \
-   "10" "Reboot Raspberry Pi"  3>&1 1>&2 2>&3)
+   "10" "Reboot Raspberry Pi" \
+   "11" "Stop CraftBeerPi, Clear logs, Start CraftBeerPi" 3>&1 1>&2 2>&3)
 
    BUTTON=$?
    # Exit if user pressed cancel or escape
@@ -139,6 +140,17 @@ show_menu () {
             confirmAnswer "Are you sure you want to reboot the Raspberry Pi?"
             if [ $? = 0 ]; then
               sudo reboot
+            else
+              show_menu
+            fi
+            ;;
+        11)
+            confirmAnswer "Are you sure you want to reboot CraftBeerPi and delete all log files?"
+            if [ $? = 0 ]; then
+              sudo /etc/init.d/craftbeerpiboot stop
+	      sudo rm -rf logs/*.log
+	      sudo /etc/init.d/craftbeerpiboot start
+	      show_menu
             else
               show_menu
             fi

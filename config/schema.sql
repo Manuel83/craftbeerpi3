@@ -85,6 +85,7 @@ INSERT OR IGNORE INTO config VALUES ('sensor_cols', 4, 'select', 'Adjust the wid
 INSERT OR IGNORE INTO config VALUES ('unit', 'C', 'select', 'Temperature Unit', '["C","F"]');
 INSERT OR IGNORE INTO config VALUES ('brewery_name', 'My Home Brewery', 'text', 'Your brewery name', NULL );
 INSERT OR IGNORE INTO config VALUES ('buzzer', 16, 'select', 'Buzzer GPIO', '[16,17,18,19,20]');
+INSERT OR IGNORE INTO config VALUES ('buzzer_beep_level', 'HIGH', 'select', 'Buzzer Logic Beep Level', '["HIGH", "LOW"]');
 INSERT OR IGNORE INTO config VALUES ('setup', 'YES', 'select', 'Show the Setup dialog', '["YES","NO"]');
 INSERT OR IGNORE INTO config VALUES ('brew_name', '', 'text', 'Brew Name', NULL);
 INSERT OR IGNORE INTO config VALUES ('donation_notification', 'YES', 'select', 'Disable Donation Notification', '["YES","NO"]');
