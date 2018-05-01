@@ -38,17 +38,18 @@ class LogView(FlaskView):
             description: List of all log files
         """
         filename = "./logs/action.log"
-        if os.path.isfile(filename) == False:
-            return
-        import csv
         array = []
-        with open(filename, 'rb') as f:
-            reader = csv.reader(f)
-            for row in reader:
-                try:
-                    array.append([int((datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S") - datetime.datetime(1970, 1, 1)).total_seconds()) * 1000, row[1]])
-                except:
-                    pass
+        if os.path.isfile(filename):
+            import csv
+            array = []
+            with open(filename, 'rb') as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    try:
+                        array.append([int((datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S") - datetime.datetime(1970, 1, 1)).total_seconds()) * 1000, row[1]])
+                    except:
+                        pass
+
         return json.dumps(array)
 
     @route('/<file>', methods=["DELETE"])

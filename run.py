@@ -23,5 +23,6 @@ from modules.base_plugins.steps import *
 from modules.example_plugins.WebViewJquery import *
 from modules.example_plugins.WebViewReactJs import *
 from modules.example_plugins.swagger import *
+from modules.time_series_recorder import *
 
 cbpi.run()

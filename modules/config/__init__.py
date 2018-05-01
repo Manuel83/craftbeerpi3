@@ -76,10 +76,9 @@ class ConfigView(BaseView):
 
     @classmethod
     def init_cache(cls):
-
         with cls.api._app.app_context():
             cls.api.cache[cls.cache_key] = {}
-            for key, value  in cls.model.get_all().iteritems():
+            for key, value in cls.model.get_all().iteritems():
                 cls.post_init_callback(value)
                 cls.api.cache[cls.cache_key][value.name] = value
 
@@ -87,3 +86,6 @@ class ConfigView(BaseView):
 def init(cbpi):
     ConfigView.register(cbpi._app, route_base='/api/config')
     ConfigView.init_cache()
+
+
+

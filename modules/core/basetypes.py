@@ -50,6 +50,11 @@ class Sensor(Base):
 
     unit = ""
 
+    @staticmethod
+    def chart(sensor):
+        result = [{"name": sensor.name, "data_type": "sensor", "data_id": sensor.id}]
+        return result
+
     @classmethod
     def init_global(cls):
         pass
