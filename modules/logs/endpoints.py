@@ -61,12 +61,12 @@ class LogView(FlaskView):
         return ('', 204)
 
     def querry_tsdb(self, type, id):
-        kairosdb_server = "http://192.168.178.20:5001"
+        kairosdb_server = "http://127.0.0.1:" + cbpi.cache["config"]["kairos_db_port"].__dict__["value"]
 
         data = dict(metrics=[
             {
                 "tags": {},
-                "name": "%s_%s" % (type, id),
+                "name": "cbpi.%s_%s" % (type, id),
                 "aggregators": [
                     {
                         "name": "avg",
@@ -94,9 +94,7 @@ class LogView(FlaskView):
         else:
             self.logger.warning("Failed to fetch time series for [%s_%s]. Response [%s]", type, id, response)
 
-    def read_log_as_json(self, type, id):
-        return self.querry_tsdb(type, id)
-
+    def querry_log(self, type, id):
         filename = "./logs/%s_%s.log" % (type, id)
         if os.path.isfile(filename) == False:
             return
@@ -113,8 +111,16 @@ class LogView(FlaskView):
                                   float(row[1])])
                 except:
                     pass
-        print(array)
         return array
+
+    def read_log_as_json(self, type, id):
+        use_kairosdb = (cbpi.cache["config"]["kairos_db"].__dict__["value"] == "YES")
+
+        if use_kairosdb:
+            return self.querry_tsdb(type, id)
+        else:
+            return self.querry_log(type, id)
+
 
     def convert_chart_data_to_json(self, chart_data):
         return {"name": chart_data["name"],

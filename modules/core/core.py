@@ -148,24 +148,29 @@ class SensorAPI(object):
 
     def save_to_file(self, id, value, prefix="sensor"):
         sensor_name = "%s_%s" % (prefix, str(id))
-        filename = "./logs/%slog" % sensor_name
-        formatted_time = strftime("%Y-%m-%d %H:%M:%S", localtime())
-        msg = str(formatted_time) + "," +str(value) + "\n"
+        use_kairosdb = (self.cache["config"]["kairos_db"].__dict__["value"] == "YES")
 
-        with open(filename, "a") as file:
-            file.write(msg)
+        if use_kairosdb:
+            kairosdb_server = "http://127.0.0.1:" + self.cache["config"]["kairos_db_port"].__dict__["value"]
 
-        kairosdb_server = "http://192.168.178.20:5001"
+            data = [
+                dict(name="cbpi." + sensor_name, datapoints=[
+                    [int(round(time.time() * 1000)), value]
+                ], tags={
+                    "cbpi": prefix
+                })
+            ]
 
-        data = [
-            dict(name=sensor_name, datapoints=[
-                [int(round(time.time() * 1000)), value]
-            ], tags={
-                "cbpi": prefix
-            })
-        ]
+            response = requests.post(kairosdb_server + "/api/v1/datapoints", json.dumps(data))
+        else:
+            filename = "./logs/%s.log" % sensor_name
+            formatted_time = strftime("%Y-%m-%d %H:%M:%S", localtime())
+            msg = str(formatted_time) + "," +str(value) + "\n"
 
-        response = requests.post(kairosdb_server + "/api/v1/datapoints", json.dumps(data))
+            with open(filename, "a") as file:
+                file.write(msg)
+
+
 
     def log_action(self, text):
         filename = "./logs/action.log"
