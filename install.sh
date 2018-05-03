@@ -20,7 +20,8 @@ show_menu () {
    "8" "Reset File Changes (git reset --hard)" \
    "9" "Clear all logs" \
    "10" "Reboot Raspberry Pi" \
-   "11" "Stop CraftBeerPi, Clear logs, Start CraftBeerPi" 3>&1 1>&2 2>&3)
+   "11" "Stop CraftBeerPi, Clear logs, Start CraftBeerPi" \
+   "12" "Install KairosDB" 3>&1 1>&2 2>&3)
 
    BUTTON=$?
    # Exit if user pressed cancel or escape
@@ -49,7 +50,7 @@ show_menu () {
            apt-get -y install libpcre3-dev
            pip install -r requirements.txt
 
-           confirmAnswer "Would you like to add active 1-wire support at your Raspberry PI now? IMPORTANT: The 1-wire thermometer must be conneted to GPIO 4!"
+           confirmAnswer "Would you like to add active 1-wire support at your Raspberry PI now? IMPORTANT: The 1-wire thermometer must be connected to GPIO 4!"
            if [ $? = 0 ]; then
              #apt-get -y update; apt-get -y upgrade;
              echo '# CraftBeerPi 1-wire support' >> "/boot/config.txt"
@@ -62,14 +63,14 @@ show_menu () {
            sed "s@#DIR#@${PWD}@g" config/craftbeerpiboot > /etc/init.d/craftbeerpiboot
            chmod 755 /etc/init.d/craftbeerpiboot;
 
-           whiptail --title "Installition Finished" --msgbox "CraftBeerPi installation finished! You must hit OK to continue." 8 78
+           whiptail --title "Installation Finished" --msgbox "CraftBeerPi installation finished! You must hit OK to continue." 8 78
            show_menu
            ;;
        2)
           confirmAnswer "Are you sure you want to clear the CraftBeerPi. All hardware setting will be deleted"
           if [ $? = 0 ]; then
             sudo rm -f craftbeerpi.db
-            whiptail --title "Database Delted" --msgbox "The CraftBeerPi database was succesfully deleted. You must hit OK to continue." 8 78
+            whiptail --title "Database Deleted" --msgbox "The CraftBeerPi database was successfully deleted. You must hit OK to continue." 8 78
             show_menu
           else
            show_menu
@@ -81,7 +82,7 @@ show_menu () {
              sed "s@#DIR#@${PWD}@g" config/craftbeerpiboot > /etc/init.d/craftbeerpiboot
              chmod 755 /etc/init.d/craftbeerpiboot;
              update-rc.d craftbeerpiboot defaults;
-             whiptail --title "Added succesfull to autostart" --msgbox "The CraftBeerPi was added to autostart succesfully. You must hit OK to continue." 8 78
+             whiptail --title "Added successful to autostart" --msgbox "The CraftBeerPi was added to autostart successfully. You must hit OK to continue." 8 78
              show_menu
            else
             show_menu
@@ -104,7 +105,7 @@ show_menu () {
            ;;
        6)
            sudo /etc/init.d/craftbeerpiboot stop
-           whiptail --title "CraftBeerPi stoped" --msgbox "The software is stoped" 8 78
+           whiptail --title "CraftBeerPi stopped" --msgbox "The software is stopped" 8 78
            show_menu
             ;;
        7)
@@ -118,7 +119,7 @@ show_menu () {
            fi
            ;;
         8)
-           confirmAnswer "Are you sure you want to reset all file changes for this git respository (git reset --hard)?"
+           confirmAnswer "Are you sure you want to reset all file changes for this git repository (git reset --hard)?"
            if [ $? = 0 ]; then
               whiptail --textbox /dev/stdin 20 50 <<<"$(git reset --hard)"
               show_menu
@@ -151,6 +152,15 @@ show_menu () {
 	      sudo rm -rf logs/*.log
 	      sudo /etc/init.d/craftbeerpiboot start
 	      show_menu
+            else
+              show_menu
+            fi
+            ;;
+		12)
+            confirmAnswer "Are you sure you want to install KairosDB?"
+            if [ $? = 0 ]; then
+			  wget https://github.com/kairosdb/kairosdb/releases/download/v1.2.1/kairosdb_1.2.1-1_all.deb
+              sudo dpkg -i kairosdb_1.2.1-1_all.deb
             else
               show_menu
             fi
