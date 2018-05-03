@@ -1,2 +1,2 @@
 INSERT OR IGNORE INTO config VALUES ('kairos_db', 'NO', 'select', 'Use timeseries database KairosDB for storing sensor values. For now you have to install KairosDB by yourself.', '["YES","NO"]' );
-INSERT OR IGNORE INTO config VALUES ('kairos_db_port', 5001, 'number', 'Port for KairosDB. We assume the DB is running on your PI, so IP-Address is 127.0.0.1.', NULL );
+INSERT OR IGNORE INTO config VALUES ('kairos_db_port', 8080, 'number', 'Port for KairosDB. We assume the DB is running on your PI, so IP-Address is 127.0.0.1.', NULL );

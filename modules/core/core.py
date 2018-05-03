@@ -157,7 +157,8 @@ class SensorAPI(object):
                 dict(name="cbpi." + sensor_name, datapoints=[
                     [int(round(time.time() * 1000)), value]
                 ], tags={
-                    "cbpi": prefix
+                    "cbpi": prefix,
+                    "brew": self.cache["active_brew"]
                 })
             ]
 

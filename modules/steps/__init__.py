@@ -1,4 +1,5 @@
 import time
+import datetime
 from flask import json, request
 from flask_classy import route
 
@@ -142,9 +143,14 @@ class StepView(BaseView):
         # set step instance to ache
         cbpi.cache["active_step"] = instance
 
-    @route('/next', methods=['POST'])
     @route('/start', methods=['POST'])
     def start(self):
+        cbpi.cache["active_brew"] = cbpi.cache["config"]["brew_name"].__dict__["value"] + \
+                                    "_" + datetime.datetime.now().strftime('%y-%m-%dT%H:%M')
+        return self.next()
+
+    @route('/next', methods=['POST'])
+    def next(self):
         active = Step.get_by_state("A")
         inactive = Step.get_by_state('I')
 
@@ -163,6 +169,7 @@ class StepView(BaseView):
         else:
             cbpi.log_action("Brewing Finished")
             cbpi.notify("Brewing Finished", "You are done!", timeout=None)
+            cbpi.cache["active_brew"] = "none"
 
         cbpi.emit("UPDATE_ALL_STEPS", Step.get_all())
         return ('', 204)
