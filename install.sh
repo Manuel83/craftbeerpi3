@@ -161,6 +161,8 @@ show_menu () {
             if [ $? = 0 ]; then
 			  wget https://github.com/kairosdb/kairosdb/releases/download/v1.2.1/kairosdb_1.2.1-1_all.deb
               sudo dpkg -i kairosdb_1.2.1-1_all.deb
+			  sudo service kairosdb start
+			  show_menu
             else
               show_menu
             fi
