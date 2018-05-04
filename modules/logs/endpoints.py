@@ -63,17 +63,22 @@ class LogView(FlaskView):
     def querry_tsdb(self, type, id):
         kairosdb_server = "http://127.0.0.1:" + cbpi.cache["config"]["kairos_db_port"].__dict__["value"]
 
+        if cbpi.cache["active_brew"] != "" and cbpi.cache["active_brew"] != "none":
+            tag = '"brew": "%s"' % cbpi.cache["active_brew"]
+        else:
+            tag = ""
+
         data = dict(metrics=[
             {
-                "tags": {},
+                "tags": {tag},
                 "name": "cbpi.%s_%s" % (type, id),
                 "aggregators": [
                     {
                         "name": "avg",
                         "align_sampling": True,
                         "sampling": {
-                            "value": "1",
-                            "unit": "minutes"
+                            "value": "5",
+                            "unit": "seconds"
                         },
                         "align_start_time": True
                     }
@@ -85,6 +90,8 @@ class LogView(FlaskView):
                 "value": "1",
                 "unit": "days"
             })
+
+        self.logger.debug("query: %s", json.dumps(data))
 
         response = requests.post(kairosdb_server + "/api/v1/datapoints/query", json.dumps(data))
         if response.ok:
