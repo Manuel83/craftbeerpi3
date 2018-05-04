@@ -63,10 +63,10 @@ class LogView(FlaskView):
     def querry_tsdb(self, type, id):
         kairosdb_server = "http://127.0.0.1:" + cbpi.cache["config"]["kairos_db_port"].__dict__["value"]
 
+        tag = ""
+
         if cbpi.cache["active_brew"] != "" and cbpi.cache["active_brew"] != "none":
             tag = '"brew": "%s"' % cbpi.cache["active_brew"]
-        else:
-            tag = ""
 
         data = dict(metrics=[
             {
