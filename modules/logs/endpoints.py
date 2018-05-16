@@ -23,19 +23,7 @@ class LogView(FlaskView):
     @route('/actions')
     def actions(self):
         filename = "./logs/action.log"
-        if not os.path.isfile(filename):
-            self.logger.warn("File does not exist [%s]", filename)
-            return json.dumps([])
-        import csv
-        array = []
-        with open(filename, 'rb') as f:
-            reader = csv.reader(f)
-            for row in reader:
-                try:
-                    time.mktime(time.strptime(row[0], "%Y-%m-%d %H:%M:%S"))
-                    array.append([int(time.mktime(time.strptime(row[0], "%Y-%m-%d %H:%M:%S")) * 1000), row[1]])
-                except:
-                    pass
+        array = self.query_log(filename, "string")
 
         json_dumps = json.dumps(array)
         self.logger.debug("Loaded action.log [%s]", json_dumps)
@@ -99,22 +87,30 @@ class LogView(FlaskView):
         else:
             self.logger.warning("Failed to fetch time series for [%s_%s]. Response [%s]", type, id, response)
 
-    def querry_log(self, type, id):
-        filename = "./logs/%s_%s.log" % (type, id)
-        if os.path.isfile(filename) == False:
-            return
+    def query_log(self, filename, value_type):
+        array = []
+
+        if not os.path.isfile(filename):
+            self.logger.warn("File does not exist [%s]", filename)
+            return array
 
         import csv
-        array = []
+
+        if value_type == "float":
+            converter = float
+        else:
+            converter = str
+
         with open(filename, 'rb') as f:
             reader = csv.reader(f)
             for row in reader:
                 try:
-                    array.append([int((datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S") - datetime.datetime(1970,
-                                                                                                                   1,
-                                                                                                                   1)).total_seconds()) * 1000,
-                                  float(row[1])])
+                    point_of_time = int((datetime.datetime.strptime(row[0], "%Y-%m-%d %H:%M:%S")
+                                         - datetime.datetime(1970, 1, 1)).total_seconds()) * 1000
+                    value = converter(row[1])
+                    array.append([point_of_time, value])
                 except:
+                    self.logger.exception("error in reading logfile [%s]", filename)
                     pass
         return array
 
@@ -122,10 +118,10 @@ class LogView(FlaskView):
         use_kairosdb = (cbpi.cache["config"]["kairos_db"].__dict__["value"] == "YES")
 
         if use_kairosdb:
-            return self.querry_tsdb(type, id)
             return self.query_tsdb(type, id)
         else:
-            return self.querry_log(type, id)
+            filename = "./logs/%s_%s.log" % (type, id)
+            return self.query_log(filename, "float")
 
 
     def convert_chart_data_to_json(self, chart_data):
