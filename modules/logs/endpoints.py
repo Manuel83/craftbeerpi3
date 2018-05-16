@@ -60,17 +60,12 @@ class LogView(FlaskView):
             cbpi.notify("Failed to delete log", "", type="danger")
         return ('', 204)
 
-    def querry_tsdb(self, type, id):
+    def query_tsdb(self, type, id):
         kairosdb_server = "http://127.0.0.1:" + cbpi.cache["config"]["kairos_db_port"].__dict__["value"]
-
-        tag = ""
-
-        if cbpi.cache["active_brew"] != "" and cbpi.cache["active_brew"] != "none":
-            tag = '"brew": "%s"' % cbpi.cache["active_brew"]
 
         data = dict(metrics=[
             {
-                "tags": {tag},
+                "tags": {},
                 "name": "cbpi.%s_%s" % (type, id),
                 "aggregators": [
                     {
@@ -90,6 +85,9 @@ class LogView(FlaskView):
                 "value": "1",
                 "unit": "days"
             })
+
+        if cbpi.cache["active_brew"] != "none":
+            data["metrics"][0]["tags"] = {"brew": [cbpi.cache["active_brew"]]}
 
         self.logger.debug("query: %s", json.dumps(data))
 
@@ -125,6 +123,7 @@ class LogView(FlaskView):
 
         if use_kairosdb:
             return self.querry_tsdb(type, id)
+            return self.query_tsdb(type, id)
         else:
             return self.querry_log(type, id)
 
