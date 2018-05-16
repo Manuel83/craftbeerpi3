@@ -94,6 +94,7 @@ class StepView(BaseView):
         self.model.reset_all_steps()
         self.stop_step()
         cbpi.emit("UPDATE_ALL_STEPS", self.model.get_all())
+        cbpi.cache["active_brew"] = "none"
         return ('', 204)
 
     def stop_step(self):

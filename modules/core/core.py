@@ -222,7 +222,8 @@ class CraftBeerPi(ActorAPI, SensorAPI):
         "messages": [],
         "plugins": {},
         "fermentation_controller_types": {},
-        "fermenter_task": {}
+        "fermenter_task": {},
+        "active_brew": "none"
     }
     buzzer = None
     eventbus = {}
