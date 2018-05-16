@@ -45,6 +45,7 @@ show_menu () {
 
            # By default DietPi does not have this package installed.
            apt-get -y install build-essential
+	   apt-get -y install python-rpi.gpio
 
            apt-get -y install python-setuptools
            easy_install pip
