@@ -16,6 +16,7 @@ from hardware import *
 
 import time
 import uuid
+import logging
 
 
 class NotificationAPI(object):
@@ -85,6 +86,8 @@ class SensorAPI(object):
         :return: 
         '''
 
+        self.logger = logging.getLogger(__name__)
+
         self.app.logger.info("Init Sensors")
 
         t = self.cache.get("sensor_types")
@@ -144,41 +147,48 @@ class SensorAPI(object):
 
     def receive_sensor_value(self, id, value):
         self.emit("SENSOR_UPDATE", self.cache.get("sensors")[id])
-        self.save_to_file(id, value)
+        self.save_to_file(id, value, "sensor")
 
-    def save_to_file(self, id, value, prefix="sensor"):
+    def save_to_file(self, id, value, prefix):
         sensor_name = "%s_%s" % (prefix, str(id))
         use_kairosdb = (self.cache["config"]["kairos_db"].__dict__["value"] == "YES")
 
         if use_kairosdb:
-            kairosdb_server = "http://127.0.0.1:" + self.cache["config"]["kairos_db_port"].__dict__["value"]
-
-            data = [
-                dict(name="cbpi." + sensor_name, datapoints=[
-                    [int(round(time.time() * 1000)), value]
-                ], tags={
-                    "cbpi": prefix,
-                    "brew": self.cache["active_brew"]
-                })
-            ]
-
-            response = requests.post(kairosdb_server + "/api/v1/datapoints", json.dumps(data))
+            self.write_to_tsdb(prefix, sensor_name, value)
         else:
-            filename = "./logs/%s.log" % sensor_name
-            formatted_time = strftime("%Y-%m-%d %H:%M:%S", localtime())
-            msg = str(formatted_time) + "," +str(value) + "\n"
+            self.write_to_logfile(sensor_name, value)
 
-            with open(filename, "a") as file:
-                file.write(msg)
+    def write_to_logfile(self, sensor_name, value):
+        filename = "./logs/%s.log" % sensor_name
+        formatted_time = strftime("%Y-%m-%d %H:%M:%S", localtime())
+        msg = str(formatted_time) + "," + str(value) + "\n"
 
+        with open(filename, "a") as file:
+            file.write(msg)
 
+    def write_to_tsdb(self, prefix, sensor_name, value):
+        kairosdb_server = "http://127.0.0.1:" + self.cache["config"]["kairos_db_port"].__dict__["value"]
+
+        data = [
+            dict(name="cbpi." + sensor_name, datapoints=[
+                [int(round(time.time() * 1000)), value]
+            ], tags={
+                "cbpi": prefix,
+                "brew": self.cache["active_brew"]
+            })
+        ]
+
+        response = requests.post(kairosdb_server + "/api/v1/datapoints", json.dumps(data))
+        if not response.ok:
+            self.logger.warning("Failed to write time series entry for [%s]. Response [%s]", sensor_name, response)
 
     def log_action(self, text):
-        filename = "./logs/action.log"
-        formatted_time = strftime("%Y-%m-%d %H:%M:%S", localtime())
-        with open(filename, "a") as file:
-            text = text.encode("utf-8")
-            file.write("%s,%s\n" % (formatted_time, text))
+        use_kairosdb = (self.cache["config"]["kairos_db"].__dict__["value"] == "YES")
+
+        if use_kairosdb:
+            self.write_to_tsdb("action", "action", text)
+        else:
+            self.write_to_logfile("action", text)
 
     def shutdown_sensor(self, id):
         self.cache.get("sensors")[id].stop()
