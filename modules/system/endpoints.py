@@ -61,6 +61,10 @@ class SystemView(FlaskView):
         for t in repo.tags:
             tags.append({"name": t.name, "commit": str(t.commit), "date": t.commit.committed_date,
                          "committer": t.commit.committer.name, "message": t.commit.message})
+        for b in repo.branches:
+            tags.append({"name": b.name, "commit": str(b.commit), "date": b.commit.committed_date,
+                         "committer": b.commit.committer.name, "message": b.commit.message})
+
         try:
             branch_name = repo.active_branch.name
             # test1
