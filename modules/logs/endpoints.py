@@ -56,7 +56,7 @@ class LogView(FlaskView):
                         "name": "avg",
                         "align_sampling": True,
                         "sampling": {
-                            "value": "5",
+                            "value": cbpi.cache["config"]["kairos_db_sampling_value"].__dict__["value"],
                             "unit": "seconds"
                         },
                         "align_start_time": True
@@ -66,7 +66,7 @@ class LogView(FlaskView):
         ],
             cache_time=0,
             start_relative={
-                "value": "1",
+                "value": cbpi.cache["config"]["kairos_db_start_relative"].__dict__["value"],
                 "unit": "days"
             })
 
