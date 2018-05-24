@@ -37,6 +37,8 @@ show_menu () {
 
            confirmAnswer "Would you like to install wiringPI? This is required to control the GPIO"
            if [ $? = 0 ]; then
+             # By default DietPi does not have this package installed.
+             apt-get -y install build-essential
              git clone git://git.drogon.net/wiringPi;
              cd wiringPi;
              ./build; cd ..;
@@ -44,8 +46,7 @@ show_menu () {
            fi
 
            # By default DietPi does not have this package installed.
-           apt-get -y install build-essential
-	   apt-get -y install python-rpi.gpio
+	       apt-get -y install python-rpi.gpio
 
            apt-get -y install python-setuptools
            easy_install pip
