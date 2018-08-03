@@ -90,6 +90,7 @@ class BeerXMLImport(FlaskView):
             })
             ## Add Whirlpool step
             Step.insert(**{"name": "Whirlpool", "type": "ChilStep", "config": {"timer": 15}})
+            StepView().reset()
             self.api.emit("UPDATE_ALL_STEPS", Step.get_all())
             self.api.notify(headline="Recipe %s loaded successfully" % name, message="")
         except Exception as e:
