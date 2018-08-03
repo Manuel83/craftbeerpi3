@@ -34,7 +34,5 @@ class Hysteresis(KettleController):
                 self.heater_on(100)
             elif self.get_temp() >= self.get_target_temp() - float(self.off):
                 self.heater_off()
-            else:
-                self.heater_off()
             self.sleep(1)
 

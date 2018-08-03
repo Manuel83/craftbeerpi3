@@ -40,7 +40,6 @@ class ActorAPI(object):
             value = self.cache.get("actors").get(int(id))
             cfg = value.config.copy()
             cfg.update(dict(api=self, id=id, name=value.name))
-            cfg.update(dict(api=self, id=id, name=value.name))
             clazz = self.cache.get("actor_types").get(value.type).get("class")
             value.instance = clazz(**cfg)
             value.instance.init()
