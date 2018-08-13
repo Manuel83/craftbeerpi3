@@ -1,0 +1,9 @@
+# docker-compose file for development on a pc/mac
+version: '3.3'
+services:
+  app:
+    build: .
+    ports: 
+      - 5000:5000
+    volumes:
+      - $PWD:/usr/src/app
