@@ -28,6 +28,21 @@ http://web.craftbeerpi.com/hardware/
 
 CraftBeerPi 3.0 is a complete rewrite. Server as well as user interface. I recommend to use a second SD card for testing.
 
+## Docker-based development
+
+For developing this application or its plugins on a PC/Mac you can use the docker-compose file:
+
+``` shell
+$ docker-compose up
+...
+Starting craftbeerpi3_app_1 ... done
+Attaching to craftbeerpi3_app_1
+app_1  | [2018-08-13 12:54:44,264] ERROR in __init__: BUZZER not working
+app_1  | (1) wsgi starting up on http://0.0.0.0:5000
+```
+
+The contents of this folder will be mounted to `/usr/src/craftbeerpi3` and the server will be accesible on `localhost:3000`.
+
 ## Donation
 
 CraftBeerPi is a free & open source project. If you like to support the project I happy about a donation:
