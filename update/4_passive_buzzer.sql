@@ -1,0 +1,1 @@
+INSERT OR IGNORE INTO config VALUES ('buzzer_type', 'ACTIVE', 'select', 'Buzzer type', '["ACTIVE", "PASSIVE"]');
