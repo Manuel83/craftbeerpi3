@@ -141,7 +141,12 @@ class BeerXMLImport(FlaskView):
             else:
                 temp = round(9.0 / 5.0 * float(e.find("STEP_TEMP").text) + 32, 2)
 
-            steps.append({"name": e.find("NAME").text, "temp": temp, "timer": float(e.find("STEP_TIME").text)})
+            if e.find("STEP_TIME").text is None:
+                stepTime = 0.0
+            else:
+                stepTime = float(e.find("STEP_TIME").text)
+
+            steps.append({"name": e.find("NAME").text, "temp": temp, "timer": stepTime})
 
         return steps
 
