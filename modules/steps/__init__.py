@@ -146,7 +146,8 @@ class StepView(BaseView):
 
     @route('/start', methods=['POST'])
     def start(self):
-        cbpi.cache["active_brew"] = cbpi.cache["config"]["brew_name"].__dict__["value"] + \
+        if "none" == cbpi.cache["active_brew"]:
+            cbpi.cache["active_brew"] = cbpi.cache["config"]["brew_name"].__dict__["value"] + \
                                     "_" + datetime.datetime.now().strftime('%y-%m-%dT%H:%M')
         return self.next()
 
