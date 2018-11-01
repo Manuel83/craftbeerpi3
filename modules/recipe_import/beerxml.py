@@ -46,13 +46,13 @@ class BeerXMLImport(FlaskView):
     @route('/<int:id>', methods=['POST'])
     def load(self, id):
 
-
         steps = self.getSteps(id)
         boil_time_alerts = self.getBoilAlerts(id)
         name = self.getRecipeName(id)
         self.api.set_config_parameter("brew_name", name)
         boil_time = self.getBoilTime(id)
         mashstep_type = cbpi.get_config_parameter("step_mash", "MashStep")
+        mashinstep_type = cbpi.get_config_parameter("step_mashin", "MashInStep")
         mash_kettle = cbpi.get_config_parameter("step_mash_kettle", None)
 
         boilstep_type = cbpi.get_config_parameter("step_boil", "BoilStep")
@@ -65,10 +65,20 @@ class BeerXMLImport(FlaskView):
 
         try:
 
+            # Add mash in or mash step, depends on timer > 0
             for row in steps:
-                Step.insert(**{"name": row.get("name"), "type": mashstep_type, "config": {"kettle": mash_kettle, "temp": float(row.get("temp")), "timer": row.get("timer")}})
+                if row.get("timer") > 0:
+                    Step.insert(**{"name": row.get("name"), "type": mashstep_type,
+                                   "config": {"kettle": mash_kettle, "temp": float(row.get("temp")),
+                                              "timer": row.get("timer")}})
+                else:
+                    Step.insert(**{"name": row.get("name"), "type": mashinstep_type,
+                                   "config": {"kettle": mash_kettle, "temp": float(row.get("temp"))}})
+
+            # Add chilling step
             Step.insert(**{"name": "ChilStep", "type": "ChilStep", "config": {"timer": 15}})
-            ## Add boiling step
+
+            # Add boiling step
             Step.insert(**{
                 "name": "Boil",
                 "type": boilstep_type,
@@ -76,11 +86,11 @@ class BeerXMLImport(FlaskView):
                     "kettle": boil_kettle,
                     "temp": boil_temp,
                     "timer": boil_time,
-                    ## Beer XML defines additions as the total time spent in boiling,
-                    ## CBP defines it as time-until-alert
+                    # Beer XML defines additions as the total time spent in boiling,
+                    # CBP defines it as time-until-alert
 
-                    ## Also, The model supports five boil-time additions.
-                    ## Set the rest to None to signal them being absent
+                    # Also, The model supports five boil-time additions.
+                    # Set the rest to None to signal them being absent
                     "hop_1": boil_time - boil_time_alerts[0] if len(boil_time_alerts) >= 1 else None,
                     "hop_2": boil_time - boil_time_alerts[1] if len(boil_time_alerts) >= 2 else None,
                     "hop_3": boil_time - boil_time_alerts[2] if len(boil_time_alerts) >= 3 else None,
@@ -88,7 +98,8 @@ class BeerXMLImport(FlaskView):
                     "hop_5": boil_time - boil_time_alerts[4] if len(boil_time_alerts) >= 5 else None
                 }
             })
-            ## Add Whirlpool step
+
+            # Add Whirlpool step
             Step.insert(**{"name": "Whirlpool", "type": "ChilStep", "config": {"timer": 15}})
             StepView().reset()
             self.api.emit("UPDATE_ALL_STEPS", Step.get_all())
@@ -141,7 +152,12 @@ class BeerXMLImport(FlaskView):
             else:
                 temp = round(9.0 / 5.0 * float(e.find("STEP_TEMP").text) + 32, 2)
 
-            steps.append({"name": e.find("NAME").text, "temp": temp, "timer": float(e.find("STEP_TIME").text)})
+            if e.find("STEP_TIME").text is None:
+                stepTime = 0.0
+            else:
+                stepTime = float(e.find("STEP_TIME").text)
+
+            steps.append({"name": e.find("NAME").text, "temp": temp, "timer": stepTime})
 
         return steps
 
