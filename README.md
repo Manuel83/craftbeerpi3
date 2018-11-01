@@ -41,7 +41,7 @@ app_1  | [2018-08-13 12:54:44,264] ERROR in __init__: BUZZER not working
 app_1  | (1) wsgi starting up on http://0.0.0.0:5000
 ```
 
-The contents of this folder will be mounted to `/usr/src/craftbeerpi3` and the server will be accesible on `localhost:5000`.
+The contents of this folder will be mounted to `/usr/src/craftbeerpi3` and the server will be accesible on `localhost:3000`.
 
 ## Donation
 
