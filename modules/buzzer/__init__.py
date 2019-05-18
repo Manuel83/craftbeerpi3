@@ -49,7 +49,7 @@ class Buzzer(object):
 
 @cbpi.initalizer(order=1)
 def init(cbpi):
-    gpio = cbpi.get_config_parameter("buzzer", 16)
+    gpio = cbpi.get_config_parameter("buzzer", 22)
     beep_level = cbpi.get_config_parameter("buzzer_beep_level", "HIGH")
 
     cbpi.buzzer = Buzzer(gpio, beep_level)
