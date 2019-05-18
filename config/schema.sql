@@ -84,7 +84,7 @@ INSERT OR IGNORE INTO config VALUES ('actor_cols', 4, 'select', 'Adjust the widt
 INSERT OR IGNORE INTO config VALUES ('sensor_cols', 4, 'select', 'Adjust the width of a sensor widget on the brewing dashboard', '[1,2,3, 4, 5, 6, 7, 8, 9, 10, 11, 12]');
 INSERT OR IGNORE INTO config VALUES ('unit', 'C', 'select', 'Temperature Unit', '["C","F"]');
 INSERT OR IGNORE INTO config VALUES ('brewery_name', 'My Home Brewery', 'text', 'Your brewery name', NULL );
-INSERT OR IGNORE INTO config VALUES ('buzzer', 16, 'select', 'Buzzer GPIO', '[16,17,18,19,20]');
+INSERT OR IGNORE INTO config VALUES ('buzzer', 16, 'select', 'Buzzer GPIO', '[16,17,18,19,20,21,22,23]');
 INSERT OR IGNORE INTO config VALUES ('buzzer_beep_level', 'HIGH', 'select', 'Buzzer Logic Beep Level', '["HIGH", "LOW"]');
 INSERT OR IGNORE INTO config VALUES ('setup', 'YES', 'select', 'Show the Setup dialog', '["YES","NO"]');
 INSERT OR IGNORE INTO config VALUES ('brew_name', '', 'text', 'Brew Name', NULL);
