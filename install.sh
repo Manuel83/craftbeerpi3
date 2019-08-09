@@ -37,11 +37,16 @@ show_menu () {
 
            confirmAnswer "Would you like to install wiringPI? This is required to control the GPIO"
            if [ $? = 0 ]; then
+             # By default DietPi does not have this package installed.
+             apt-get -y install build-essential
              git clone git://git.drogon.net/wiringPi;
              cd wiringPi;
              ./build; cd ..;
              rm -rf wiringPi;
            fi
+
+           # By default DietPi does not have this package installed.
+	       apt-get -y install python-rpi.gpio
 
            apt-get -y install python-setuptools
            easy_install pip
@@ -52,12 +57,19 @@ show_menu () {
            confirmAnswer "Would you like to add active 1-wire support at your Raspberry PI now? IMPORTANT: The 1-wire thermometer must be conneted to GPIO 4!"
            if [ $? = 0 ]; then
              #apt-get -y update; apt-get -y upgrade;
-             echo '# CraftBeerPi 1-wire support' >> "/boot/config.txt"
-             echo 'dtoverlay=w1-gpio,gpiopin=4,pullup=on' >> "/boot/config.txt"
-
+             if [ -e /DietPi/config.txt ]; then
+                 echo '# CraftBeerPi 1-wire support' >> "/DietPi/config.txt"
+                 echo 'dtoverlay=w1-gpio,gpiopin=4,pullup=on' >> "/DietPi/config.txt"
+             else
+                 echo '# CraftBeerPi 1-wire support' >> "/boot/config.txt"
+                 echo 'dtoverlay=w1-gpio,gpiopin=4,pullup=on' >> "/boot/config.txt"
+             fi
            fi
 
-           sudo mv ./config/splash.png /usr/share/plymouth/themes/pix/splash.png
+           # checking for file splash.png
+           if [ -e /usr/share/plymouth/themes/pix/splash.png ]; then
+            sudo mv ./config/splash.png /usr/share/plymouth/themes/pix/splash.png
+           fi
 
            sed "s@#DIR#@${PWD}@g" config/craftbeerpiboot > /etc/init.d/craftbeerpiboot
            chmod 755 /etc/init.d/craftbeerpiboot;
@@ -98,7 +110,7 @@ show_menu () {
            ;;
        5)
            sudo /etc/init.d/craftbeerpiboot start
-           ipaddr=`ifconfig wlan0 2>/dev/null|awk '/inet addr:/ {print $2}'|sed 's/addr://'`
+           ipaddr=`ifconfig wlan0 2>/dev/null | awk '/inet/ {print $2}' | head -n1`
            whiptail --title "CraftBeerPi started" --msgbox "Please connect via Browser: http://$ipaddr:5000" 8 78
            show_menu
            ;;
