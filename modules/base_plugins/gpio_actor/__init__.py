@@ -10,7 +10,7 @@ try:
 
     GPIO.setmode(GPIO.BCM)
 except Exception as e:
-    print e
+    print(e)
     pass
 
 
@@ -25,11 +25,11 @@ class GPIOSimple(ActorBase):
         GPIO.output(int(self.gpio), 0)
 
     def on(self, power=0):
-        print "GPIO ON %s" % str(self.gpio)
+        print("GPIO ON %s" % str(self.gpio))
         GPIO.output(int(self.gpio), 1)
 
     def off(self):
-        print "GPIO OFF"
+        print("GPIO OFF")
         GPIO.output(int(self.gpio), 0)
 
 @cbpi.actor
@@ -67,7 +67,7 @@ class GPIOPWM(ActorBase):
         self.p.ChangeDutyCycle(self.power)
 
     def off(self):
-        print "GPIO OFF"
+        print("GPIO OFF")
         self.p.stop()
 
 
@@ -98,10 +98,10 @@ class Dummy(ActorBase):
         :param power: int value between 0 - 100
         :return: 
         '''
-        print "ON"
+        print("ON")
 
     def off(self):
-        print "OFF"
+        print("OFF")
 
 
 

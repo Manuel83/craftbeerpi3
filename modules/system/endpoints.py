@@ -109,7 +109,7 @@ class SystemView(FlaskView):
         vf = self.api.app.view_functions
 
         for f in self.api.app.view_functions:
-            print  f
+            print(f)
         endpoints = {}
         re =  {
             "swagger": "2.0",

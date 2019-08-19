@@ -15,7 +15,7 @@ class DummyTempSensor(SensorActive):
 
     @cbpi.action("My Custom Action")
     def my_action(self):
-        print "HELLO WORLD"
+
         pass
 
     def get_unit(self):

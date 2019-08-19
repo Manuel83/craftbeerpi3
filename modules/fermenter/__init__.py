@@ -210,7 +210,7 @@ class FermenterView(BaseView):
     def toggle(self, id):
         fermenter = cbpi.cache.get(self.cache_key)[id]
         try:
-            print fermenter.state
+            print(fermenter.state)
             if fermenter.state is False:
                 # Start controller
                 if fermenter.logic is not None:
@@ -236,7 +236,7 @@ class FermenterView(BaseView):
                 cbpi.emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key).get(id))
 
         except Exception as e:
-            print e
+            print(e)
             cbpi.notify("Toogle Fementer Controller failed", "Pleae check the %s configuration" % fermenter.name,
                         type="danger", timeout=None)
             return ('', 500)
@@ -261,7 +261,7 @@ class FermenterView(BaseView):
         cbpi.emit("UPDATE_FERMENTER", cbpi.cache.get(self.cache_key)[id])
 
     def check_step(self):
-        for key, value in cbpi.cache["fermenter_task"].iteritems():
+        for key, value in cbpi.cache["fermenter_task"].items():
 
             try:
                 fermenter = self.get_fermenter(key)
@@ -292,7 +292,7 @@ def read_target_temps(api):
     :return: None
     """
     result = {}
-    for key, value in cbpi.cache.get("fermenter").iteritems():
+    for key, value in cbpi.cache.get("fermenter").items():
         cbpi.save_to_file(key, value.target_temp, prefix="fermenter")
 
 

@@ -12,9 +12,9 @@ from time import localtime, strftime
 from functools import wraps, update_wrapper
 
 
-from props import *
+from .props import *
 
-from hardware import *
+from .hardware import *
 
 import time
 import uuid
@@ -28,7 +28,7 @@ class ActorAPI(object):
     def init_actors(self):
         self.app.logger.info("Init Actors")
         t = self.cache.get("actor_types")
-        for key, value in t.iteritems():
+        for key, value in t.items():
             value.get("class").api = self
             value.get("class").init_global()
 
@@ -89,7 +89,7 @@ class SensorAPI(object):
         self.app.logger.info("Init Sensors")
 
         t = self.cache.get("sensor_types")
-        for key, value in t.iteritems():
+        for key, value in t.items():
             value.get("class").init_global()
 
         for key in self.cache.get("sensors"):
@@ -292,7 +292,7 @@ class CraftBeerPi(ActorAPI, SensorAPI):
                 t = tmpObj.__getattribute__(m)
                 self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "kettle", "configurable": t.configurable, "description": t.description})
 
-        for name, method in cls.__dict__.iteritems():
+        for name, method in cls.__dict__.items():
             if hasattr(method, "action"):
                 label = method.__getattribute__("label")
                 self.cache[key][cls.__name__]["actions"].append({"method": name, "label": label})
@@ -309,10 +309,7 @@ class CraftBeerPi(ActorAPI, SensorAPI):
     def actor2(self, description="", power=True, **options):
 
         def decorator(f):
-            print f()
-            print f
-            print options
-            print description
+
             return f
         return decorator
 
@@ -369,7 +366,7 @@ class CraftBeerPi(ActorAPI, SensorAPI):
                 t = tmpObj.__getattribute__(m)
                 self.cache[key][name]["properties"].append({"name": m, "label": t.label, "type": "kettle", "configurable": t.configurable, "description": t.description})
 
-        for name, method in cls.__dict__.iteritems():
+        for name, method in cls.__dict__.items():
             if hasattr(method, "action"):
                 label = method.__getattribute__("label")
                 self.cache[key][cls.__name__]["actions"].append({"method": name, "label": label})

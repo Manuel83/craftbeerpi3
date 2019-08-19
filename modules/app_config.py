@@ -8,8 +8,6 @@ from flask_socketio import SocketIO, emit
 
 import logging
 
-
-
 from modules.core.core import CraftBeerPi, ActorBase, SensorBase
 from modules.core.db import DBModel
 

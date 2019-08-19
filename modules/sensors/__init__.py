@@ -43,6 +43,6 @@ def read_passive_sensor(api):
     :return: None
 
     """
-    for key, value in cbpi.cache.get("sensors").iteritems():
+    for key, value in cbpi.cache.get("sensors").items():
         if value.mode == "P":
             value.instance.read()

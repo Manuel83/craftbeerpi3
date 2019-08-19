@@ -104,6 +104,6 @@ class BaseView(FlaskView):
                     cls.api.cache[cls.cache_key].append(value)
             else:
                 cls.api.cache[cls.cache_key] = {}
-                for key, value  in cls.model.get_all().iteritems():
+                for key, value  in cls.model.get_all().items():
                     cls.post_init_callback(value)
                     cls.api.cache[cls.cache_key][key] = value

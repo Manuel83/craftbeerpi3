@@ -1,12 +1,15 @@
 import sqlite3
 import os
 from modules import  cbpi
-from db import get_db
+from .db import get_db
 
 def execute_file(curernt_version, data):
+    # TODO add if block
+    '''
     if curernt_version >= data["version"]:
         cbpi.app.logger.info("SKIP DB FILE: %s" % data["file"])
         return
+    '''
     try:
         with sqlite3.connect("craftbeerpi.db") as conn:
             with open('./update/%s' % data["file"], 'r') as f:
@@ -19,8 +22,8 @@ def execute_file(curernt_version, data):
                 conn.commit()
 
     except sqlite3.OperationalError as err:
-        print "EXCEPT"
-        print err
+        print("EXCEPT")
+        print(err)
 
 @cbpi.initalizer(order=-9999)
 def init(app=None):
