@@ -4,7 +4,7 @@ craftbeerpi.db
 **/node_modules/*
 *.pyc
 *.templog
-
+venv/
 modules/plugins/*
 !modules/plugins/__init__.py
 *.pyc
