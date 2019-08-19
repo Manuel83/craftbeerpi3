@@ -1,16 +1,9 @@
-import json
-import pprint
-import sys, os
-from flask import Flask, render_template, redirect
-from flask_socketio import SocketIO, emit
-
-import logging
 # Define the WSGI application object
 
-from .app_config import *
 import pprint
 
 from modules.core.db import get_db
+from .app_config import *
 
 
 @app.route('/')
