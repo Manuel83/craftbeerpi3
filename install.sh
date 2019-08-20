@@ -35,14 +35,6 @@ show_menu () {
              apt-get -y update; apt-get -y upgrade;
            fi
 
-           confirmAnswer "Would you like to install wiringPI? This is required to control the GPIO"
-           if [ $? = 0 ]; then
-             git clone git://git.drogon.net/wiringPi;
-             cd wiringPi;
-             ./build; cd ..;
-             rm -rf wiringPi;
-           fi
-
            apt-get -y install python-setuptools
            easy_install pip
            apt-get -y install python-dev
