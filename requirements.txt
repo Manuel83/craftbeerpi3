@@ -8,7 +8,7 @@ python-mimeparse==1.5.2
 python-socketio==1.4.4
 PyYAML==4.2b1
 requests==2.20.0
-Werkzeug==0.11.10
+Werkzeug==0.15.3
 httplib2==0.9.2
 flask-classy==0.6.10
 GitPython==2.1.3
