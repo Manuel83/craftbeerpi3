@@ -201,8 +201,8 @@ class BoilStep(StepBase):
 
 
     def check_hop_timer(self, number, value):
-
-        if self.__getattribute__("hop_%s_added" % number) is not True and time.time() > (
+        if isinstance(value, int) and \
+            self.__getattribute__("hop_%s_added" % number) is not True and time.time() > (
             self.timer_end - (int(self.timer) * 60 - int(value) * 60)):
             self.__setattr__("hop_%s_added" % number, True)
             self.notify("Hop Alert", "Please add Hop %s" % number, timeout=None)
