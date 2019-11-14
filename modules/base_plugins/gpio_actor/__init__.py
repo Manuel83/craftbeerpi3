@@ -62,9 +62,10 @@ class GPIOPWM(ActorBase):
         :param power: int value between 0 - 100
         :return: 
         '''
-        if power is not None:
-            self.power = int(power)
-        self.p.ChangeDutyCycle(self.power)
+        if self.p:
+            if power is not None:
+                self.power = int(power)
+            self.p.ChangeDutyCycle(self.power)
 
     def off(self):
         print "GPIO OFF"
@@ -104,4 +105,24 @@ class Dummy(ActorBase):
         print "OFF"
 
 
+@cbpi.actor
+class DummyPWM(ActorBase):
 
+    power = 100
+
+    def on(self, power=100):
+        '''
+        Code to switch on the actor
+        :param power: int value between 0 - 100
+        :return:
+        '''
+        self.power = int(power) if power is not None else 100
+        print "DummyPWM ON %s" % self.power
+
+    def off(self):
+        self.power = 100
+        print "OFF"
+
+    def set_power(self, power):
+        self.power = int(power)
+        print "DummyPWM POWER %s" % self.power
