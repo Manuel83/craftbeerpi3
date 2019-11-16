@@ -485,7 +485,7 @@ class CraftBeerPi(ActorAPI, SensorAPI):
                 try:
                     method(self)
                 except Exception as e:
-                    self.app.logger.error("Exception" + method.__name__ + ": " + str(e))
+                    self.app.logger.error("Exception " + method.__name__ + ": " + str(e))
                 self.socketio.sleep(interval)
 
 
