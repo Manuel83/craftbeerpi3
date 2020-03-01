@@ -53,14 +53,15 @@ class GPIOPWM(ActorBase):
         if self.frequency is None:
             self.frequency = 0.5  # 2 sec
 
-        self.p = GPIO.PWM(int(self.gpio), float(self.frequency))
+        if self.p is None:
+            self.p = GPIO.PWM(int(self.gpio), float(self.frequency))
         self.p.start(int(self.power))
 
     def set_power(self, power):
         '''
         Optional: Set the power of your actor
         :param power: int value between 0 - 100
-        :return: 
+        :return:
         '''
         if power is not None:
             self.power = int(power)
@@ -96,12 +97,9 @@ class Dummy(ActorBase):
         '''
         Code to switch on the actor
         :param power: int value between 0 - 100
-        :return: 
+        :return:
         '''
         print "ON"
 
     def off(self):
         print "OFF"
-
-
-
