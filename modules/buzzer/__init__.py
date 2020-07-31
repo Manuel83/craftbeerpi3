@@ -1,5 +1,5 @@
 import time
-from thread import start_new_thread
+from _thread import start_new_thread
 from modules import cbpi
 
 try:

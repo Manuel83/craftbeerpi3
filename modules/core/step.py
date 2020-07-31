@@ -96,7 +96,7 @@ class StepBase(Timer, ActorAPI, SensorAPI, KettleAPI):
     managed_fields = []
     n = False
 
-    def next(self):
+    def __next__(self):
         self.n = True
 
     def init(self):
@@ -109,10 +109,10 @@ class StepBase(Timer, ActorAPI, SensorAPI, KettleAPI):
         pass
 
     def execute(self):
-        print "-------------"
-        print "Step Info"
-        print "Kettle ID: %s" % self.kettle_id
-        print "ID: %s" % self.id
+        print("-------------")
+        print("Step Info")
+        print(("Kettle ID: %s" % self.kettle_id))
+        print(("ID: %s" % self.id))
 
 
     def __init__(self, *args, **kwds):

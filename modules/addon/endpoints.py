@@ -11,6 +11,7 @@ import os
 import requests
 import yaml
 import shutil
+import imp
 
 blueprint = Blueprint('addon', __name__)
 
@@ -24,7 +25,7 @@ def merge(source, destination):
     :param destination:
     :return:
     """
-    for key, value in source.items():
+    for key, value in list(source.items()):
         if isinstance(value, dict):
                # get node or create one
             node = destination.setdefault(key, {})
@@ -115,7 +116,7 @@ def reload(name):
     """
     try:
         if name in cache["modules"]:
-            reload(cache["modules"][name])
+            imp.reload(cache["modules"][name])
             cbpi.emit_message("REALOD OF PLUGIN %s SUCCESSFUL" % (name))
             return ('', 204)
         else:
@@ -134,7 +135,7 @@ def plugins():
     """
     response = requests.get("https://raw.githubusercontent.com/Manuel83/craftbeerpi-plugins/master/plugins.yaml")
     cbpi.cache["plugins"] = merge(yaml.load(response.text), cbpi.cache["plugins"])
-    for key, value in  cbpi.cache["plugins"].iteritems():
+    for key, value in  cbpi.cache["plugins"].items():
         value["installed"] = os.path.isdir("./modules/plugins/%s/" % (key))
 
     return json.dumps(cbpi.cache["plugins"])
