@@ -1,1 +1,1 @@
-import endpoints
+import modules.logs.endpoints

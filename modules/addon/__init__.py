@@ -1,1 +1,1 @@
-import endpoints
+import modules.addon.endpoints

@@ -104,12 +104,12 @@ class SystemView(FlaskView):
 
     @route('/endpoints', methods=['GET'])
     def endpoints(self):
-        import urllib
+        import urllib.request, urllib.parse, urllib.error
         output = []
         vf = self.api.app.view_functions
 
         for f in self.api.app.view_functions:
-            print  f
+            print(f)
         endpoints = {}
         re =  {
             "swagger": "2.0",

@@ -58,7 +58,7 @@ class MashStep(StepBase):
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
             self.notify("Mash Step Completed!", "Starting the next step", timeout=None)
-            self.next()
+            next(self)
 
 
 @cbpi.step
@@ -121,7 +121,7 @@ class ChilStep(StepBase):
             self.start_timer(int(self.timer) * 60)
 
         if self.is_timer_finished() == True:
-            self.next()
+            next(self)
 
 @cbpi.step
 class PumpStep(StepBase):
@@ -149,7 +149,7 @@ class PumpStep(StepBase):
             self.start_timer(int(self.timer) * 60)
 
         if self.is_timer_finished() == True:
-            self.next()
+            next(self)
 
 @cbpi.step
 class BoilStep(StepBase):
@@ -226,4 +226,4 @@ class BoilStep(StepBase):
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
             self.notify("Boil Step Completed!", "Starting the next step", timeout=None)
-            self.next()
+            next(self)

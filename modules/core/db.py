@@ -79,7 +79,7 @@ class DBModel(object):
         cur = get_db().cursor()
 
 
-        if cls.__priamry_key__ is not None and kwargs.has_key(cls.__priamry_key__):
+        if cls.__priamry_key__ is not None and cls.__priamry_key__ in kwargs:
             query = "INSERT INTO %s (%s, %s) VALUES (?, %s)" % (
                 cls.__table_name__,
                 cls.__priamry_key__,
