@@ -133,7 +133,7 @@ def plugins():
     Read the central plugin yaml to get a list of all official plugins
     :return:
     """
-    response = requests.get("https://raw.githubusercontent.com/Manuel83/craftbeerpi-plugins/master/plugins.yaml")
+    response = requests.get("https://raw.githubusercontent.com/jpgimenez/craftbeerpi-plugins/master/plugins.yaml")
     cbpi.cache["plugins"] = merge(yaml.load(response.text), cbpi.cache["plugins"])
     for key, value in  cbpi.cache["plugins"].items():
         value["installed"] = os.path.isdir("./modules/plugins/%s/" % (key))
