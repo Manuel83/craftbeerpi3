@@ -78,11 +78,11 @@ class LogView(FlaskView):
 
         if t == "k":
             kettle = cbpi.cache.get("kettle").get(id)
-            result = map(self.convert_chart_data_to_json, cbpi.get_controller(kettle.logic).get("class").chart(kettle))
+            result = list(map(self.convert_chart_data_to_json, cbpi.get_controller(kettle.logic).get("class").chart(kettle)))
 
         if t == "f":
             fermenter = cbpi.cache.get("fermenter").get(id)
-            result = map(self.convert_chart_data_to_json, cbpi.get_fermentation_controller(fermenter.logic).get("class").chart(fermenter))
+            result = list(map(self.convert_chart_data_to_json, cbpi.get_fermentation_controller(fermenter.logic).get("class").chart(fermenter)))
 
         return json.dumps(result)
 

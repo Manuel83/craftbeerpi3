@@ -17,3 +17,7 @@ yarn.lock
 
 
 modules/ui/package-lock.json
+
+.python-version
+upload/*
+*.bak

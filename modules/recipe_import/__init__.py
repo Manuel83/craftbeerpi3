@@ -1,3 +1,3 @@
-import beerxml
-import kbh
-import restapi
+from . import beerxml
+from . import kbh
+from . import restapi
