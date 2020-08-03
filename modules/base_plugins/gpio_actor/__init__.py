@@ -116,12 +116,12 @@ class DummyPWM(ActorBase):
         :return:
         '''
         self.power = int(power) if power is not None else 100
-        print "DummyPWM ON %s" % self.power
+        print("DummyPWM ON %s" % self.power)
 
     def off(self):
         self.power = 100
-        print "OFF"
+        print("OFF")
 
     def set_power(self, power):
         self.power = int(power)
-        print "DummyPWM POWER %s" % self.power
+        print("DummyPWM POWER %s" % self.power)
