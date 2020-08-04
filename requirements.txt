@@ -4,7 +4,7 @@ Flask-SocketIO==2.6.2
 greenlet==0.4.16
 eventlet==0.26.1
 
-python-engineio==3.8.2.post1
+python-engineio==3.13.1
 python-socketio==1.4.4
 
 attrs==19.3.0
