@@ -1,1 +1,1 @@
-import endpoints
+import modules.system.endpoints

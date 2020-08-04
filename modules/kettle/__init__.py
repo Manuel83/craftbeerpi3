@@ -86,7 +86,7 @@ def read_target_temps(api):
     :return: None
     """
     result = {}
-    for key, value in cbpi.cache.get("kettle").iteritems():
+    for key, value in cbpi.cache.get("kettle").items():
         cbpi.save_to_file(key, value.target_temp, prefix="kettle")
 
 @cbpi.initalizer()

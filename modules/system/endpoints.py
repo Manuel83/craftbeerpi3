@@ -104,12 +104,12 @@ class SystemView(FlaskView):
 
     @route('/endpoints', methods=['GET'])
     def endpoints(self):
-        import urllib
+        import urllib.request, urllib.parse, urllib.error
         output = []
         vf = self.api.app.view_functions
 
         for f in self.api.app.view_functions:
-            print  f
+            print(f)
         endpoints = {}
         re =  {
             "swagger": "2.0",
@@ -130,8 +130,8 @@ class SystemView(FlaskView):
                 endpoints[rule.rule][m] = dict(summary="", description="", consumes=["application/json"],produces=["application/json"])
 
         with open("config/version.yaml", 'r') as stream:
+            y = yaml.safe_load(stream)
 
-            y = yaml.load(stream)
         pprint.pprint(y)
         pprint.pprint(re)
         return Response(yaml.dump(re), mimetype='text/yaml')
