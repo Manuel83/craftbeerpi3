@@ -1,5 +1,5 @@
 # Dockerfile for development on a pc/mac
-FROM python:3.5
+FROM python:3.8
 
 EXPOSE 5000
 

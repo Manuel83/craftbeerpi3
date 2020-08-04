@@ -130,8 +130,8 @@ class SystemView(FlaskView):
                 endpoints[rule.rule][m] = dict(summary="", description="", consumes=["application/json"],produces=["application/json"])
 
         with open("config/version.yaml", 'r') as stream:
+            y = yaml.safe_load(stream)
 
-            y = yaml.load(stream)
         pprint.pprint(y)
         pprint.pprint(re)
         return Response(yaml.dump(re), mimetype='text/yaml')

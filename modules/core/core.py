@@ -378,12 +378,12 @@ class CraftBeerPi(ActorAPI, SensorAPI):
 
 
     # Event Bus
-    def event(self, name, async=False):
+    def event(self, name, use_async=False):
 
         def real_decorator(function):
             if self.eventbus.get(name) is None:
                 self.eventbus[name] = []
-            self.eventbus[name].append({"function": function, "async": async})
+            self.eventbus[name].append({"function": function, "async": use_async})
             def wrapper(*args, **kwargs):
                 return function(*args, **kwargs)
             return wrapper

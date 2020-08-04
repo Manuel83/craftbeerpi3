@@ -24,7 +24,7 @@ class NotificationView(FlaskView):
                 cbpi.cache["messages"].pop(idx)
         return ('', 204)
 
-@cbpi.event("MESSAGE", async=True)
+@cbpi.event("MESSAGE", use_async=True)
 def messageEvent(message, **kwargs):
     """
     React on message event. add the message to the cache and push the message to the clients
