@@ -10,7 +10,7 @@ try:
     import RPi.GPIO as GPIO  # pylint: disable=import-error
 
     GPIO.setmode(GPIO.BCM)
-except ModuleNotFoundError as exp:
+except ImportError as exp:
     print(exp)
 
 
