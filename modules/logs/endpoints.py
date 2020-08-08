@@ -41,7 +41,7 @@ class LogView(FlaskView):
         if not os.path.isfile(filename):
             return ('File not found', 404)
         array = []
-        with open(filename, 'rb', encoding='utf-8') as csv_file:
+        with open(filename, 'r', encoding='utf-8') as csv_file:
             reader = csv.reader(csv_file)
             for row in reader:
                 try:
@@ -85,7 +85,7 @@ class LogView(FlaskView):
             return ('File not found', 404)
 
         array = []
-        with open(filename, 'rb', encoding='utf-8') as csv_file:
+        with open(filename, 'r', encoding='utf-8') as csv_file:
             reader = csv.reader(csv_file)
             for row in reader:
                 try:
@@ -114,7 +114,7 @@ class LogView(FlaskView):
                                   chart_data["data_id"])
         }
 
-    @route('/<t>/<int:id>', methods=["POST"])
+    @route('/<log_type>/<int:log_id>', methods=["POST"])
     def get_logs_as_json(self, log_type, log_id):
         """
         :param log_type: log type
