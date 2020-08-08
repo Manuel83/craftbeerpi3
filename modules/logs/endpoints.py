@@ -1,3 +1,4 @@
+import csv
 import datetime
 import os
 from flask import Blueprint, request, send_from_directory, json
@@ -20,9 +21,8 @@ class LogView(FlaskView):
         filename = "./logs/action.log"
         if os.path.isfile(filename) == False:
             return
-        import csv
         array = []
-        with open(filename, 'rb') as f:
+        with open(filename, 'rb', encoding='utf-8') as f:
             reader = csv.reader(f)
             for row in reader:
                 try:
@@ -56,7 +56,7 @@ class LogView(FlaskView):
 
         import csv
         array = []
-        with open(filename, 'rb') as f:
+        with open(filename, 'rb', encoding='utf-8') as f:
             reader = csv.reader(f)
             for row in reader:
                 try:
