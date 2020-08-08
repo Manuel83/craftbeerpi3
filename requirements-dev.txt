@@ -1,3 +1,5 @@
 coverage==5.2.1
 pre-commit
 pylint
+pylint-flask
+black
