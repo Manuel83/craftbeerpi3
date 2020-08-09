@@ -35,11 +35,11 @@ show_menu () {
              apt-get -y update; apt-get -y upgrade;
            fi
 
-           apt-get -y install python-setuptools
-           easy_install pip
-           apt-get -y install python-dev
-           apt-get -y install libpcre3-dev
-           pip install -r requirements.txt
+#           apt-get -y install python-setuptools
+#           easy_install pip
+           apt-get -y install python3-pip python3-dev
+           apt-get -y install libpcre3-dev git
+           pip3 install -r requirements.txt
 
            confirmAnswer "Would you like to add active 1-wire support at your Raspberry PI now? IMPORTANT: The 1-wire thermometer must be conneted to GPIO 4!"
            if [ $? = 0 ]; then
