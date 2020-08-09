@@ -48,7 +48,7 @@ class DummyTempSensor(SensorActive):
         """
         toogle inc from up/down
         """
-        self.inc *= -1
+        self.inc = float(self.inc) * -1
 
     def stop(self):
         """
