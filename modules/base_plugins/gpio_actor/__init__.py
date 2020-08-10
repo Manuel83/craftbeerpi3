@@ -68,7 +68,8 @@ class GPIOPWM(ActorBase):
         if self.frequency is None:
             self.frequency = 0.5  # 2 sec
 
-        self.gpio_inst = GPIO.PWM(int(self.gpio), float(self.frequency))
+        if self.gpio_inst is None:
+            self.gpio_inst = GPIO.PWM(int(self.gpio), float(self.frequency))
         self.gpio_inst.start(int(self.power))
 
     def set_power(self, power):
