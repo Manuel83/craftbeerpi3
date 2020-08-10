@@ -37,7 +37,7 @@ show_menu () {
 
 #           apt-get -y install python-setuptools
 #           easy_install pip
-           apt-get -y install python3-pip python3-dev
+           apt-get -y install python3-pip python3-dev python3-rpi.gpio
            apt-get -y install libpcre3-dev git
            pip3 install -r requirements.txt
 
