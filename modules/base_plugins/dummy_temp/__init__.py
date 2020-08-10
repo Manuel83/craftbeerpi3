@@ -63,7 +63,7 @@ class DummyTempSensor(SensorActive):
         '''
         while self.is_running() is True:
             if not self.current_temp:
-                self.current_temp = self.temp
+                self.current_temp = float(self.temp)
             self.data_received(self.current_temp)
             new_temp = float(self.current_temp) + float(self.inc)
             if float(self.min_temp) <= new_temp <= float(self.max_temp):
