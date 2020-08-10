@@ -3,3 +3,4 @@ pre-commit
 pylint
 pylint-flask
 black
+pdbpp
