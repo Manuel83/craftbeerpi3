@@ -184,7 +184,7 @@ class FermenterView(BaseView):
 
             inactive.state = 'A'
             inactive.start = time.time()
-            inactive.direction = "C" if current_temp >= inactive.temp else "H"
+            inactive.direction = "C" if float(current_temp) >= float(inactive.temp) else "H"
             FermenterStep.update(**inactive.__dict__)
 
             self.postTargetTemp(id, inactive.temp)
