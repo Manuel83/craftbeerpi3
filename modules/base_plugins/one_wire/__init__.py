@@ -52,7 +52,7 @@ class myThread (threading.Thread):
                 ## Test Mode
                 if self.sensor_name is None:
                     return
-                with open('/sys/bus/w1/devices/w1_bus_master1/%s/w1_slave' % self.sensor_name, 'r') as content_file:
+                with open('/sys/bus/w1/devices/%s/w1_slave' % self.sensor_name, 'r') as content_file:
                     content = content_file.read()
                     if (content.split('\n')[0].split(' ')[11] == "YES"):
                         temp = float(content.split("=")[-1]) / 1000  # temp in Celcius
