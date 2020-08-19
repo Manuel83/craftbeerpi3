@@ -46,7 +46,7 @@ class ConfigView(BaseView):
 
         with cls.api.app.app_context():
             cls.api.cache[cls.cache_key] = {}
-            for key, value  in cls.model.get_all().iteritems():
+            for key, value  in cls.model.get_all().items():
                 cls.post_init_callback(value)
                 cls.api.cache[cls.cache_key][value.name] = value
 

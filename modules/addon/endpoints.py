@@ -11,6 +11,7 @@ import os
 import requests
 import yaml
 import shutil
+import imp
 
 blueprint = Blueprint('addon', __name__)
 
@@ -24,7 +25,7 @@ def merge(source, destination):
     :param destination:
     :return:
     """
-    for key, value in source.items():
+    for key, value in list(source.items()):
         if isinstance(value, dict):
                # get node or create one
             node = destination.setdefault(key, {})
@@ -115,7 +116,7 @@ def reload(name):
     """
     try:
         if name in cache["modules"]:
-            reload(cache["modules"][name])
+            imp.reload(cache["modules"][name])
             cbpi.emit_message("REALOD OF PLUGIN %s SUCCESSFUL" % (name))
             return ('', 204)
         else:
@@ -132,9 +133,9 @@ def plugins():
     Read the central plugin yaml to get a list of all official plugins
     :return:
     """
-    response = requests.get("https://raw.githubusercontent.com/Manuel83/craftbeerpi-plugins/master/plugins.yaml")
-    cbpi.cache["plugins"] = merge(yaml.load(response.text), cbpi.cache["plugins"])
-    for key, value in  cbpi.cache["plugins"].iteritems():
+    response = requests.get("https://raw.githubusercontent.com/jpgimenez/craftbeerpi-plugins/master/plugins.yaml")
+    cbpi.cache["plugins"] = merge(yaml.safe_load(response.text), cbpi.cache["plugins"])
+    for key, value in  cbpi.cache["plugins"].items():
         value["installed"] = os.path.isdir("./modules/plugins/%s/" % (key))
 
     return json.dumps(cbpi.cache["plugins"])
@@ -144,9 +145,9 @@ def plugins():
 def download_addon(name):
 
     plugin = cbpi.cache["plugins"].get(name)
-    plugin["loading"] = True
     if plugin is None:
         return ('', 404)
+    plugin["loading"] = True
     try:
         Repo.clone_from(plugin.get("repo_url"), "./modules/plugins/%s/" % (name))
         cbpi.notify("Download successful", "Plugin %s downloaded successfully" % name)
@@ -157,9 +158,28 @@ def download_addon(name):
 
 @blueprint.route('/<name>/update', methods=['POST'])
 def update_addon(name):
+    """
+    Updates a addon
+
+    :param name: plugin name
+    :return: HTTP 204 if ok - HTTP 500 if plugin not exists
+    """
+    plugin = cbpi.cache["plugins"].get(name)
+    if plugin is None:
+        return ('', 404)
+    plugin["loading"] = True
+
     repo = Repo("./modules/plugins/%s/" % (name))
-    o = repo.remotes.origin
-    info = o.pull()
+    if repo.remotes.origin.url == plugin.get('repo_url'):
+        o = repo.remotes.origin
+        _info = o.pull()
+    else:
+        # url has changed the plugin needs to be re-downloaded
+        deletePlugin(name)
+        return download_addon(name)
+
+    reload(name)
+    plugin["loading"] = False
     cbpi.notify("Plugin Updated", "Plugin %s updated successfully. Please restart the system" % name)
     return ('', 204)
 

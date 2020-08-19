@@ -58,7 +58,7 @@ class MashStep(StepBase):
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
             self.notify("Mash Step Completed!", "Starting the next step", timeout=None)
-            self.next()
+            next(self)
 
 
 @cbpi.step
@@ -121,7 +121,7 @@ class ChilStep(StepBase):
             self.start_timer(int(self.timer) * 60)
 
         if self.is_timer_finished() == True:
-            self.next()
+            next(self)
 
 @cbpi.step
 class PumpStep(StepBase):
@@ -149,7 +149,7 @@ class PumpStep(StepBase):
             self.start_timer(int(self.timer) * 60)
 
         if self.is_timer_finished() == True:
-            self.next()
+            next(self)
 
 @cbpi.step
 class BoilStep(StepBase):
@@ -201,8 +201,8 @@ class BoilStep(StepBase):
 
 
     def check_hop_timer(self, number, value):
-
-        if self.__getattribute__("hop_%s_added" % number) is not True and time.time() > (
+        if isinstance(value, int) and \
+            self.__getattribute__("hop_%s_added" % number) is not True and time.time() > (
             self.timer_end - (int(self.timer) * 60 - int(value) * 60)):
             self.__setattr__("hop_%s_added" % number, True)
             self.notify("Hop Alert", "Please add Hop %s" % number, timeout=None)
@@ -226,4 +226,4 @@ class BoilStep(StepBase):
         # Check if timer finished and go to next step
         if self.is_timer_finished() == True:
             self.notify("Boil Step Completed!", "Starting the next step", timeout=None)
-            self.next()
+            next(self)

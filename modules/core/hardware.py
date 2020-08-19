@@ -44,10 +44,10 @@ class SensorBase(Base):
     last_value = 0
 
     def init(self):
-        print "INIT Base SENSOR"
+        print("INIT Base SENSOR")
 
     def stop(self):
-        print "STOP SENSOR"
+        print("STOP SENSOR")
 
     def data_received(self, data):
 
@@ -86,7 +86,7 @@ class SensorActive(SensorBase):
 
 class SensorPassive(SensorBase):
     def init(self):
-        print "INIT PASSIV SENSOR"
+        print("INIT PASSIV SENSOR")
         pass
 
     def read(self):
