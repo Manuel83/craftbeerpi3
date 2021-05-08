@@ -1,6 +1,6 @@
 Flask==0.12.4
 Flask-SocketIO==2.6.2
-eventlet==0.19.0
+eventlet==0.31.0
 greenlet==0.4.10
 python-dateutil==2.5.3
 python-engineio==0.9.2
